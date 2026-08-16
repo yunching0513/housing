@@ -80,6 +80,19 @@ open "/Applications/Python 3.13/Install Certificates.command"
 下載時會依 `Content-Disposition`、Content-Type 與檔頭位元組決定副檔名，
 「下載連結」其實回傳網頁時會存成 `.html` 而不是假裝成 `.csv`。
 
+#### 那一頁沒有，但它連出去的頁面有
+
+政府統計區的入口頁常常一份資料都沒有，只負責連到真正放檔案的那一頁。
+`--crawl` 會把連出去的同站頁面各開一次，回報哪一頁真的有東西：
+
+```bash
+python3 scripts/fetch_pip.py --url "https://pip.moi.gov.tw/Publicize/Info/A4010" --crawl --match "社會住宅|興辦|統計|SCRB"
+```
+
+帶 ★ 的那幾行就是有新檔案的頁面。`--match` 是選用的正規式，只跟隨網址或連結
+文字符合的頁面，避免把整個網站掃一遍。**只算該頁新增的檔案**：全站共用的頁尾
+下載連結若也算數，每一列都會亮星，等於沒講。每次請求之間會停 0.4 秒。
+
 如果步驟 1 什麼都找不到，表示表格是載入後才用 JavaScript 產生的，改用瀏覽器版：
 
 ```bash

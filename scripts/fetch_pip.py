@@ -31,7 +31,7 @@ the network traffic, which catches the request no matter how it is made.
 
 Standard library only, so a stock macOS python3 runs it with no pip install.
 """
-import argparse, hashlib, html, json, pathlib, re, ssl, sys
+import argparse, hashlib, html, json, pathlib, re, ssl, sys, time
 import urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timezone
 
@@ -189,6 +189,21 @@ def discover(page_url):
             form[name] = True
     posts = sorted(set(re.findall(r'__doPostBack\(\s*[\'"]([^\'"]+)', text)))
 
+    # 4. same-host pages worth following: the statistics themselves are usually
+    #    one click away, on a page this one merely links to.
+    pages = {}
+    for m in re.finditer(r'<a\b[^>]*?href\s*=\s*["\']([^"\']+)["\'][^>]*>(.*?)</a>',
+                         text, re.I | re.S):
+        href, label = m.group(1), ' '.join(re.sub(r'<[^>]+>', '', m.group(2)).split())
+        if href.startswith(('#', 'javascript:', 'mailto:')):
+            continue
+        a = absolute(href)
+        if urllib.parse.urlsplit(a).netloc != host or a.rstrip('/') == final.rstrip('/'):
+            continue
+        if re.search(rf'\.({DATA_EXT})(?:$|[?#])', a, re.I):
+            continue
+        pages[a] = label[:80]
+
     titles = re.findall(r'<title[^>]*>(.*?)</title>', text, re.I | re.S)
     return {
         'url': page_url, 'finalUrl': final,
@@ -196,9 +211,54 @@ def discover(page_url):
         'bytes': len(body), 'contentType': hdrs.get('Content-Type', ''),
         'files': [{'url': u, 'label': l} for u, l in sorted(files.items())],
         'apiCandidates': sorted(api),
+        'pageLinks': [{'url': u, 'label': l} for u, l in sorted(pages.items())],
         'aspNetForm': sorted(form),
         'postbackTargets': posts[:40],
     }
+
+
+def crawl(found, limit=25, want=None):
+    """Open each linked page once and report what it carries.
+
+    The landing page of a government statistics section usually holds no data at
+    all — it links to the page that does. Following one level turns "six
+    candidate URLs" into "this is the one with the spreadsheet on it".
+    """
+    seen, out = {found['finalUrl'].rstrip('/')}, []
+    common = {f['url'] for f in found['files']}   # already on the origin page
+    todo = [{'url': u, 'label': ''} for u in found['apiCandidates']] + found['pageLinks']
+    if want:
+        rx = re.compile(want, re.I)
+        todo = [t for t in todo
+                if rx.search(t['url']) or rx.search(t['label'])
+                or rx.search(urllib.parse.unquote(t['url']))]
+    for item in todo:
+        if len(out) >= limit:
+            print(f'（只看前 {limit} 個，其餘見 _discovery.json）')
+            break
+        u = item['url'].rstrip('/')
+        if u in seen:
+            continue
+        seen.add(u)
+        try:
+            sub = discover(item['url'])
+        except SystemExit:
+            raise
+        except Exception as e:
+            print(f'  ✗ {item["url"]}\n      {type(e).__name__}: {e}')
+            continue
+        # Only files this page adds. A site-wide footer link would otherwise
+        # star every single row and tell you nothing.
+        fresh = [f for f in sub['files'] if f['url'] not in common]
+        sub['newFiles'] = fresh
+        mark = '★' if fresh else ' '
+        print(f'  {mark} {sub["title"] or "（無標題）"}')
+        print(f'      {item["url"]}')
+        for f in fresh:
+            print(f'        └ {f["label"] or "（無標題）"}  {f["url"]}')
+        out.append(sub)
+        time.sleep(0.4)                      # be a polite guest on a public site
+    return out
 
 
 def download(found, out_dir, referer):
@@ -242,6 +302,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--url', required=True, help='pip.moi.gov.tw 上的統計頁網址')
     ap.add_argument('--download', action='store_true', help='下載步驟 1 找到的檔案')
+    ap.add_argument('--crawl', action='store_true',
+                    help='把這一頁連出去的同站頁面各開一次，回報哪一頁真的有檔案')
+    ap.add_argument('--match', help='只跟隨網址或連結文字符合此正規式的頁面，例如 社會住宅|興辦|SCRB')
     ap.add_argument('--out', default='.', help='下載目的資料夾')
     a = ap.parse_args()
 
@@ -252,7 +315,8 @@ def main():
     print(f"直接可下載的檔案：{len(found['files'])} 個")
     for f in found['files']:
         print(f"  {f['label'] or '（無標題）'}\n    {f['url']}")
-    print(f"\n可能的資料端點：{len(found['apiCandidates'])} 個")
+    print(f"\n同站頁面連結：{len(found['pageLinks'])} 個")
+    print(f"可能的資料端點：{len(found['apiCandidates'])} 個")
     for u in found['apiCandidates'][:30]:
         print(f'  {u}')
     if found['aspNetForm']:
@@ -270,6 +334,16 @@ def main():
     (outdir / '_discovery.json').write_text(
         json.dumps(found, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f"\n完整結果寫入 {outdir / '_discovery.json'}")
+
+    if a.crawl:
+        print(f"\n逐一打開連出去的頁面（★ 表示該頁有可下載的檔案）：")
+        subs = crawl(found, want=a.match)
+        found['crawled'] = subs
+        (outdir / '_discovery.json').write_text(
+            json.dumps(found, ensure_ascii=False, indent=2), encoding='utf-8')
+        hits = [s for s in subs if s['newFiles']]
+        print(f"\n{len(subs)} 頁掃過，{len(hits)} 頁有檔案。"
+              + ('　用 --download 搭配上面帶 ★ 的網址逐一下載。' if hits else ''))
 
     if a.download:
         if not found['files']:
