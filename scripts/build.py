@@ -31,6 +31,10 @@ PAGES = {
         '__SOC_JSON__': 'tw_social_housing.json',
         '__HOU_JSON__': 'tw_housing.json',
     }),
+    'signal.html': ('signal.template.html', {
+        '__TGEO_JSON__': 'tw_towns.json',
+        '__SIG_JSON__': 'tw_signal.json',
+    }),
     'priority.html': ('priority.template.html', {
         '__AFF_JSON__': 'tw_affordability.json',
         '__HOU_JSON__': 'tw_housing.json',

@@ -1,0 +1,593 @@
+<title>白天的臺灣，晚上的臺灣</title>
+
+<style>
+__SHARED_CSS__
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.lede { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+        border-radius: 3px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.lede h2 { font-size: 17px; }
+.lede p { margin: 0; font-size: 13.6px; color: var(--ink-2); max-width: 74ch; }
+.lede p b { color: var(--ink); }
+
+svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); border-radius: 2px; }
+.town { stroke: var(--coast); stroke-width: .25; stroke-linejoin: round; cursor: pointer; }
+.town:hover, .town.active { stroke: var(--ink); stroke-width: 1.6; }
+.tmap.dimmed .town:not(.active) { opacity: .38; }
+.cty-outline { fill: none; stroke: var(--coast); stroke-width: .85; stroke-linejoin: round;
+               opacity: .55; pointer-events: none; }
+.nodata { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-3); }
+
+.twocol { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: clamp(16px, 2.2vw, 28px); }
+.ranklist { display: flex; flex-direction: column; }
+.rk { display: grid; grid-template-columns: 1.4em 1fr 5.4em 4.2em; gap: 8px; align-items: center;
+      padding: 3.5px 6px; border-radius: 2px; cursor: default; font-size: 12.8px; }
+.rk:hover, .rk.active { background: var(--rule-soft); }
+.rk .i { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3); text-align: right; }
+.rk .n { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rk.active .n { color: var(--ink); font-weight: 600; }
+.rk .v { font-family: var(--f-mono); font-size: 11.5px; font-variant-numeric: tabular-nums;
+         text-align: right; color: var(--ink); }
+.rk .r { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3); text-align: right; }
+
+.flagbox { display: grid; grid-template-columns: repeat(auto-fit, minmax(238px, 1fr)); gap: 12px; }
+.flag { border: 1px solid var(--rule); border-left: 3px solid var(--sq2-1); border-radius: 3px;
+        background: var(--card); padding: 12px 14px; display: flex; flex-direction: column; gap: 5px; }
+.flag h4 { margin: 0; font-family: var(--f-display); font-size: 14.5px; font-weight: 600; }
+.flag .big { font-family: var(--f-mono); font-size: 19px; font-weight: 600; color: var(--ink); line-height: 1.1; }
+.flag p { margin: 0; font-size: 12.2px; color: var(--ink-2); }
+.flag .m { font-size: 11.5px; color: var(--ink-3); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.filters select, .filters input {
+  font-family: var(--f-body); font-size: 13px; color: var(--ink);
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px; padding: 6px 9px;
+}
+.filters .count { font-size: 12.5px; color: var(--ink-3); margin-left: auto; }
+.tallwrap { max-height: 560px; overflow: auto; }
+.tallwrap thead th { position: sticky; top: 0; background: var(--card); z-index: 1; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">民國 112 年 11 月 ・ 368 鄉鎮市區 ・ 電信信令</p>
+    <h1>白天的臺灣，晚上的臺灣</h1>
+    <p class="dek">
+      前面每一頁數的都是<b>戶籍上或普查上人在哪</b>。這一頁數的是<b>手機實際在哪</b>，
+      而且分白天和晚上。差別直接關係到社宅要蓋在哪：
+      <b>臺北市六個行政區白天各多出 8 萬到 13 萬人，新北市六個行政區白天各少 6 萬到 11 萬人</b>。
+      那些人早上過橋去上班，晚上過橋回來睡覺。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="lede">
+    <h2>它數的是SIM卡，不是人</h2>
+    <p>電信信令統計的是<b>手機訊號停留在哪個基地台範圍</b>。一個人兩支手機就是兩個人，
+    沒有手機的小孩和長輩就是零個人。機場把過境旅客算成當地夜間停留人口，
+    觀光區把遊客算成日間活動人口，山地鄉收訊不好會少算。</p>
+    <p>所以這一頁的用法是：<b>看比例、看方向，不要看單一個區的絕對值</b>。
+    最誇張的例子是<b>桃園市大園區</b>：信令的夜間停留人口是普查常住人口的
+    <b id="k-airport"></b> 倍，那不是因為那裡住了很多人，是因為那裡是桃園機場。</p>
+  </div>
+
+  <hr class="rule">
+
+  <div class="controls">
+    <div class="seg" id="seg" role="group" aria-label="切換指標">
+      <button data-k="ratio" aria-pressed="true">平日日夜比</button>
+      <button data-k="ratioWeekend" aria-pressed="false">假日日夜比</button>
+      <button data-k="net" aria-pressed="false">平日淨流入人數</button>
+      <button data-k="signalRatio" aria-pressed="false">信令÷普查</button>
+    </div>
+    <span class="hint">滑過或點選任一鄉鎮市區，地圖、榜單與表格同步</span>
+  </div>
+
+  <div class="figures">
+    <section class="panel">
+      <header><h2 id="map-title">鄉鎮市區分布圖</h2><p id="map-sub"></p></header>
+      <div class="body">
+        <div class="mapwrap">
+          <svg class="tmap" id="tmap" viewBox="0 0 990 1000" role="img"
+               aria-labelledby="map-title" aria-describedby="map-desc"></svg>
+          <p id="map-desc" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header><h2 id="rank-title">榜單</h2><p id="rank-sub"></p></header>
+      <div class="body">
+        <div class="twocol">
+          <div>
+            <p style="margin:0 0 6px;font-size:12px;color:var(--ink-3)" id="rk-hi-lbl"></p>
+            <div class="ranklist" id="rk-hi"></div>
+          </div>
+          <div>
+            <p style="margin:0 0 6px;font-size:12px;color:var(--ink-3)" id="rk-lo-lbl"></p>
+            <div class="ranklist" id="rk-lo"></div>
+          </div>
+        </div>
+        <p class="bandnote" style="font-size:11.8px;color:var(--ink-3);margin-top:12px">
+          右欄小字為該區的夜間停留人口。基數小的區比值會很不穩，排名不宜單獨解讀。
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>雙北那座橋</h2>
+      <p>平日白天淨流入與淨流出人數最多的各六個行政區</p>
+    </header>
+    <div class="body">
+      <div class="flagbox" id="bridge"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:78ch">
+        淨流入前十名有六個在臺北市，淨流出前十名有六個在新北市。這不是巧合，
+        是同一批人：<b>工作在臺北，住在新北</b>。放到「先蓋在哪裡」那一頁一起看，
+        新北市房價所得比 12.63 倍、房貸負擔率 55.30%（內政部分級：過低），
+        而它的居民每天通勤進臺北工作。<b>社宅蓋在哪，等於決定這些人要不要繼續過橋。</b>
+      </p>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:10px;max-width:78ch">
+        但這一頁不能單獨拿來選址。<b>日夜比跟空屋率幾乎沒有關係</b>：368 區的
+        相關係數只有 <b id="k-corr"></b>，只看人口五萬以上的區更是 <b id="k-corr2"></b>。
+        通勤型態推不出住宅壓力，反過來也不行。兩件事要分開量，然後放在一起看。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>三種假訊號</h2>
+      <p>這些不是發現，是方法造成的。列出來是為了不要把它們當成發現</p>
+    </header>
+    <div class="body">
+      <div class="flagbox" id="flags"></div>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:14px;max-width:78ch">
+        判斷方式：<b>夜間停留人口低於 1 萬</b>的區有 <b id="k-small"></b> 個，
+        比值本來就會跳動；<b>信令與普查差距超過 35%</b> 的有 <b id="k-extreme"></b> 個，
+        幾乎全是機場、觀光地與山地離島。表格裡這兩類都有標記。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header><h2>完整資料</h2><p>點欄位標題排序。★ 表示夜間停留人口低於 1 萬或信令與普查差距超過 35%</p></header>
+    <div class="body">
+      <div class="filters" style="margin-bottom:10px">
+        <select id="f-county"><option value="">全部縣市</option></select>
+        <select id="f-kind">
+          <option value="">全部</option>
+          <option value="in">白天淨流入</option>
+          <option value="out">白天淨流出</option>
+          <option value="flag">僅看有標記的</option>
+        </select>
+        <input id="f-q" type="search" placeholder="搜尋鄉鎮市區" aria-label="搜尋鄉鎮市區">
+        <span class="count" id="f-count"></span>
+      </div>
+      <div class="tablewrap tallwrap">
+        <table id="tbl">
+          <thead><tr>
+            <th data-k="county">縣市</th><th data-k="name">鄉鎮市區</th>
+            <th data-k="nightWork">平日夜間</th><th data-k="dayWork">平日日間</th>
+            <th data-k="net">淨流入</th><th data-k="ratio">日夜比</th>
+            <th data-k="ratioWeekend">假日日夜比</th>
+            <th data-k="residents">普查常住</th><th data-k="signalRatio">信令÷普查</th>
+            <th data-k="vacancy">空屋率</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>假日那張圖幾乎是平的</h3>
+      <p>切到「假日日夜比」會看到全臺灣趨近一色：368 個區裡有 <b id="k-wk"></b> 個
+      落在 0.95–1.06 之間。這正好反證平日那張圖量到的是<b>通勤</b>：
+      週末不上班，人就待在自己住的地方。兩張圖用同一組級距，所以可以直接對照。</p>
+    </section>
+    <section>
+      <h3>時間對不起來</h3>
+      <p>信令是 112 年 11 月，普查是 109 年 11 月，差三年。「信令÷普查」那個指標裡，
+      有一部分是真的人口變動、有一部分是方法差異，這份資料分不開。
+      指標放在頁面上是為了標出方法失效的地方，不是為了當人口修正值用。</p>
+    </section>
+    <section>
+      <h3>兩個區沒有圖資</h3>
+      <p>高雄市那瑪夏區與金門縣烏坵鄉在可取得的鄉鎮市區界圖中沒有對應範圍，
+      地圖上畫不出來，資料仍保留在榜單與表格中。這與其他兩頁的缺漏一致。</p>
+    </section>
+    <section>
+      <h3>旅次沒有用在這一頁</h3>
+      <p>原始資料另有平日與假日各四個時段的旅次數（早晨、中午、午後、晚上）。
+      那是「有多少趟移動」不是「有多少人」，跟本頁的停留人口是不同的量，
+      混在一起容易誤讀，所以只存進 <code>data/tw_signal.json</code> 沒有畫出來。</p>
+    </section>
+    <section>
+      <h3>基地台範圍不等於行政區</h3>
+      <p>訊號歸屬是把基地台涵蓋範圍對應到行政區，邊界上的建築可能被分到隔壁區。
+      面積小、被大區包圍的行政區（例如各市的中心區）受這個影響最大。
+      這也是為什麼小基數的區要另外標記。</p>
+    </section>
+    <section>
+      <h3>資料來源</h3>
+      <p>社會經濟資料服務平臺（SEGIS）行政區電信信令人口統計，資料時間 112 年 11 月。
+      解析程式為 <code>scripts/prep_signal.py</code>，368 個鄉鎮市區鍵值與普查雙向核對，
+      任一邊有缺就中止。</p>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="tgeo">__TGEO_JSON__</script>
+<script type="application/json" id="sig">__SIG_JSON__</script>
+
+<script>
+(() => {
+  'use strict';
+  const GEO = JSON.parse(document.getElementById('tgeo').textContent);
+  const S = JSON.parse(document.getElementById('sig').textContent);
+  const T = S.towns.map(t => ({ ...t, net: t.dayWork - t.nightWork }));
+  const D = Object.fromEntries(T.map(t => [t.key, t]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]); return n; };
+  const int = v => Math.round(v).toLocaleString('en-US');
+  const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + int(Math.abs(v));
+
+  // Small base or a signalling/census gap past 35% means the ratio is being
+  // driven by the method, not by where people live. Flagged, never dropped.
+  const SMALL = 10000, EXTREME = 0.35;
+  const flagged = t => t.nightWork < SMALL || Math.abs(t.signalRatio - 1) > EXTREME;
+
+  /* ── projection: same framing as the other township map ─────────────── */
+  const groupOf = k => k.startsWith('金門縣') ? 'kinmen' : k.startsWith('連江縣') ? 'matsu' : 'main';
+  const bounds = {};
+  for (const t of GEO.towns) {
+    const g = groupOf(t.key);
+    const b = bounds[g] || (bounds[g] = [180, 90, -180, -90]);
+    for (const r of t.rings) for (const [x, y] of r) {
+      if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y;
+      if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y;
+    }
+  }
+  const MAIN = [258, 8, 724, 984];
+  const INSETS = { matsu: { mag: 1.5, x: 14, y: 40 }, kinmen: { mag: 2.0, x: 14, y: 292 } };
+  const RECTS = { main: MAIN }, proj = {};
+  const cosOf = b => Math.cos((b[1] + b[3]) / 2 * Math.PI / 180);
+  {
+    const b = bounds.main, k = cosOf(b), [x, y, w, h] = MAIN;
+    const s = Math.min(w / ((b[2] - b[0]) * k), h / (b[3] - b[1]));
+    proj.main = { b, k, s, dx: x + (w - (b[2] - b[0]) * k * s) / 2,
+                  dy: y + (h - (b[3] - b[1]) * s) / 2 };
+  }
+  for (const [g, cfg] of Object.entries(INSETS)) {
+    const b = bounds[g], k = cosOf(b), s = proj.main.s * cfg.mag;
+    RECTS[g] = [cfg.x, cfg.y, (b[2] - b[0]) * k * s, (b[3] - b[1]) * s];
+    proj[g] = { b, k, s, dx: cfg.x, dy: cfg.y };
+  }
+  const px = (g, lon) => proj[g].dx + (lon - proj[g].b[0]) * proj[g].k * proj[g].s;
+  const py = (g, lat) => proj[g].dy + (proj[g].b[3] - lat) * proj[g].s;
+  const pathOf = t => { const g = groupOf(t.key);
+    return t.rings.map(r => 'M' + r.map(([lo, la]) =>
+      `${px(g, lo).toFixed(1)} ${py(g, la).toFixed(1)}`).join('L') + 'Z').join(''); };
+
+  /* ── metrics ────────────────────────────────────────────────────────── */
+  // All four are centred quantities — a district is either above or below
+  // "as many people by day as by night" — so all four use the diverging ramp
+  // with its midpoint on the break that means "no difference".
+  const RATIO_BREAKS = [0.82, 0.90, 0.95, 1.00, 1.06, 1.15, 1.35];
+  const METRICS = {
+    ratio: {
+      label: '平日日夜比', unit: '倍', breaks: RATIO_BREAKS,
+      get: t => t.ratio, fmt: v => v.toFixed(2), tick: v => v.toFixed(2),
+      sub: '平日日間活動人數 ÷ 平日夜間停留人數。1.00 為中點，大於 1 代表白天湧入',
+      lo: '白天流出', hi: '白天湧入',
+      hiLbl: '白天湧入最多', loLbl: '白天流出最多',
+    },
+    ratioWeekend: {
+      label: '假日日夜比', unit: '倍', breaks: RATIO_BREAKS,
+      get: t => t.ratioWeekend, fmt: v => v.toFixed(2), tick: v => v.toFixed(2),
+      sub: '與平日同一組級距，方便直接對照。假日幾乎全臺趨近 1.00',
+      lo: '白天流出', hi: '白天湧入',
+      hiLbl: '假日白天湧入最多', loLbl: '假日白天流出最多',
+    },
+    net: {
+      label: '平日淨流入人數', unit: '人', breaks: [-40000, -15000, -5000, 0, 5000, 15000, 40000],
+      get: t => t.net, fmt: v => sgn(v), tick: v => (v > 0 ? '+' : v < 0 ? '−' : '') +
+        (Math.abs(v) >= 10000 ? Math.abs(v) / 10000 + '萬' : int(Math.abs(v))),
+      sub: '平日日間活動人數減夜間停留人數。0 為中點，正值代表白天淨流入',
+      lo: '淨流出', hi: '淨流入',
+      hiLbl: '淨流入最多', loLbl: '淨流出最多',
+    },
+    signalRatio: {
+      label: '信令÷普查', unit: '倍', breaks: [0.78, 0.86, 0.93, 1.00, 1.08, 1.20, 1.45],
+      get: t => t.signalRatio, fmt: v => v.toFixed(2), tick: v => v.toFixed(2),
+      sub: '112 年 11 月信令夜間停留 ÷ 109 年 11 月普查常住。偏離 1.00 愈遠，方法差異愈可能主導',
+      lo: '信令少', hi: '信令多',
+      hiLbl: '信令高於普查最多', loLbl: '信令低於普查最多',
+    },
+  };
+  const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
+    return i === -1 ? m.breaks.length : i; };
+  const fillOf = (m, v) => `var(--div-${classOf(m, v)})`;
+  let metric = 'ratio', pinned = null, hovered = null;
+
+  /* ── map ────────────────────────────────────────────────────────────── */
+  const svg = document.getElementById('tmap');
+  const gLand = el('g'), gCty = el('g'), gDeco = el('g');
+  svg.append(gLand, gCty, gDeco);
+  for (const t of GEO.towns) {
+    gLand.append(el('path', { class: 'town', d: pathOf(t), 'data-key': t.key,
+      tabindex: '0', role: 'button', 'aria-label': t.county + t.name }));
+  }
+  {
+    const byCounty = {};
+    for (const t of GEO.towns) (byCounty[t.county] ||= []).push(pathOf(t));
+    for (const [name, ds] of Object.entries(byCounty))
+      gCty.append(el('path', { class: 'cty-outline', d: ds.join('') }));
+    const mk = (g, text) => {
+      const [x, y, w, h] = RECTS[g];
+      gDeco.append(el('rect', { class: 'inset-frame', x, y, width: w, height: h, rx: 2 }));
+      gDeco.append(Object.assign(el('text', { class: 'inset-label', x: x + 2, y: y - 6 }),
+        { textContent: `${text} ×${(proj[g].s / proj.main.s).toFixed(1)}` }));
+    };
+    mk('matsu', '連江縣（馬祖）'); mk('kinmen', '金門縣');
+    const KM = 50, x0 = 26, y0 = 946, w = KM * proj.main.s / 111.32;
+    gDeco.append(el('path', { class: 'scalebar',
+      d: `M${x0} ${y0 - 5}V${y0}H${x0 + w}V${y0 - 5}M${x0 + w / 2} ${y0}v-4` }));
+    gDeco.append(Object.assign(el('text', { class: 'inset-label', x: x0, y: y0 + 13 }),
+      { textContent: '0' }));
+    gDeco.append(Object.assign(el('text', { class: 'inset-label', x: x0 + w, y: y0 + 13,
+      'text-anchor': 'end' }), { textContent: `${KM} km` }));
+    const drawn = new Set(GEO.towns.map(t => t.key));
+    const gaps = T.filter(t => !drawn.has(t.key)).map(t => t.county + t.name);
+    if (gaps.length) gDeco.append(Object.assign(el('text', { class: 'nodata', x: 26, y: 906 }),
+      { textContent: `圖資缺：${gaps.join('、')}（資料仍在表格中）` }));
+  }
+
+  /* ── stats ──────────────────────────────────────────────────────────── */
+  {
+    const air = D['桃園市/大園區'];
+    const inflow = [...T].sort((a, b) => b.net - a.net)[0];
+    const outflow = [...T].sort((a, b) => a.net - b.net)[0];
+    const stat = (k, v, sub) =>
+      `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
+    document.getElementById('stats').innerHTML =
+      stat('全國夜間停留', int(S.national.nightWork),
+           `普查常住 ${int(S.national.residents)}，比 ${S.national.signalRatio}`) +
+      stat('白天淨流入最多', inflow.name, `${inflow.county}　${sgn(inflow.net)} 人`) +
+      stat('白天淨流出最多', outflow.name, `${outflow.county}　${sgn(outflow.net)} 人`) +
+      stat('鄉鎮市區日夜比中位數', S.medianRatio.toFixed(2), '半數的區白天人比晚上少');
+    document.getElementById('k-airport').textContent = air.signalRatio.toFixed(2);
+    document.getElementById('k-small').textContent = T.filter(t => t.nightWork < SMALL).length;
+    document.getElementById('k-extreme').textContent =
+      T.filter(t => Math.abs(t.signalRatio - 1) > EXTREME).length;
+    document.getElementById('k-wk').textContent =
+      T.filter(t => t.ratioWeekend >= 0.95 && t.ratioWeekend < 1.06).length;
+  }
+
+  /* ── correlation: day/night ratio against vacancy ───────────────────── */
+  {
+    const pear = (a, b) => {
+      const m = x => x.reduce((s, v) => s + v, 0) / x.length;
+      const ma = m(a), mb = m(b);
+      return a.reduce((s, _, i) => s + (a[i] - ma) * (b[i] - mb), 0) /
+        Math.sqrt(a.reduce((s, v) => s + (v - ma) ** 2, 0) * b.reduce((s, v) => s + (v - mb) ** 2, 0));
+    };
+    const big = T.filter(t => t.nightWork >= 50000);
+    document.getElementById('k-corr').textContent =
+      pear(T.map(t => t.ratio), T.map(t => t.vacancy)).toFixed(2);
+    document.getElementById('k-corr2').textContent =
+      pear(big.map(t => t.ratio), big.map(t => t.vacancy)).toFixed(2);
+  }
+
+  /* ── 雙北 bridge cards ──────────────────────────────────────────────── */
+  {
+    const ins = [...T].sort((a, b) => b.net - a.net).slice(0, 6);
+    const outs = [...T].sort((a, b) => a.net - b.net).slice(0, 6);
+    const card = (title, list, col) => `<div class="flag" style="border-left-color:${col}">
+      <h4>${title}</h4>
+      ${list.map(t => `<div style="display:flex;justify-content:space-between;gap:8px;font-size:12.4px">
+        <span style="color:var(--ink-2)">${t.county.slice(0, 3)}${t.name}</span>
+        <span style="font-family:var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums">${sgn(t.net)}</span>
+      </div>`).join('')}</div>`;
+    document.getElementById('bridge').innerHTML =
+      card('白天淨流入最多的六個區', ins, 'var(--div-6)') +
+      card('白天淨流出最多的六個區', outs, 'var(--div-2)');
+  }
+
+  /* ── artefact cards ─────────────────────────────────────────────────── */
+  {
+    const air = D['桃園市/大園區'], tour = D['新北市/平溪區'], mt = D['屏東縣/霧臺鄉'];
+    document.getElementById('flags').innerHTML = `
+      <div class="flag"><h4>機場：桃園市大園區</h4>
+        <div class="big">${air.signalRatio.toFixed(2)} 倍</div>
+        <p>信令夜間停留 ${int(air.nightWork)} 人，普查常住只有 ${int(air.residents)} 人。</p>
+        <div class="m">過境旅客整晚在航廈，被記成當地夜間停留人口。</div></div>
+      <div class="flag"><h4>觀光：新北市平溪區</h4>
+        <div class="big">日夜比 ${tour.ratio.toFixed(2)}</div>
+        <p>白天 ${int(tour.dayWork)} 人、晚上 ${int(tour.nightWork)} 人，全臺最高。</p>
+        <div class="m">是遊客不是通勤者，且夜間基數不到 ${Math.round(tour.nightWork / 1000)} 千人，比值本來就跳。</div></div>
+      <div class="flag"><h4>收訊：屏東縣霧臺鄉</h4>
+        <div class="big">${mt.signalRatio.toFixed(2)} 倍</div>
+        <p>信令夜間 ${int(mt.nightWork)} 人，普查常住 ${int(mt.residents)} 人，少了一半以上。</p>
+        <div class="m">山地鄉基地台稀疏，人口外移與訊號覆蓋不足在這份資料裡分不開。</div></div>`;
+  }
+
+  /* ── panels ─────────────────────────────────────────────────────────── */
+  const legendEl = document.getElementById('legend');
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  const tip = document.getElementById('tip');
+  const sel = document.getElementById('f-county');
+  [...new Set(T.map(t => t.county))].forEach(c => sel.appendChild(new Option(c, c)));
+  let sortKey = 'net', sortDir = -1;
+
+  function paint() {
+    const m = METRICS[metric];
+    document.getElementById('map-title').textContent = m.label + '分布圖';
+    document.getElementById('map-sub').textContent = m.sub;
+    document.getElementById('rank-title').textContent = m.label + '榜單';
+    document.getElementById('rank-sub').textContent = `各取前 12 名 ・ 單位 ${m.unit}`;
+    document.getElementById('map-desc').textContent =
+      `臺灣 366 個鄉鎮市區的${m.label}分布圖。全國中位數 ${m.fmt(m.get(
+        [...T].sort((a, b) => m.get(a) - m.get(b))[Math.floor(T.length / 2)]))}。`;
+    for (const p of gLand.children) p.style.fill = fillOf(m, m.get(D[p.dataset.key]));
+    drawLegend(m); drawRanks(m); drawTable(); mark();
+  }
+
+  function drawLegend(m) {
+    legendEl.innerHTML = '';
+    const cap = document.createElement('div'); cap.className = 'cap';
+    cap.innerHTML = `<span>← ${m.lo}</span><span class="zero">${
+      metric === 'net' ? '0 為中點' : '1.00 為中點'}</span><span>${m.hi} →</span>`;
+    const sws = document.createElement('div'); sws.className = 'swatches';
+    for (let i = 0; i <= m.breaks.length; i++) {
+      const d = document.createElement('div');
+      d.className = 'sw'; d.style.background = `var(--div-${i})`;
+      const cnt = T.filter(t => classOf(m, m.get(t)) === i).length;
+      d.title = `${cnt} 個鄉鎮市區`;
+      if (!cnt) d.style.opacity = '.34';
+      sws.append(d);
+    }
+    const tk = document.createElement('div'); tk.className = 'ticks';
+    for (const b of m.breaks) {
+      const s = document.createElement('span'); s.textContent = m.tick(b); tk.append(s);
+    }
+    tk.append(document.createElement('span'));
+    legendEl.append(cap, sws, tk);
+  }
+
+  function drawRanks(m) {
+    const sorted = [...T].sort((a, b) => m.get(b) - m.get(a));
+    const row = (t, i) => `<div class="rk" data-key="${t.key}">
+      <span class="i">${i + 1}</span>
+      <span class="n">${t.county.slice(0, 3)}${t.name}${flagged(t) ? ' ★' : ''}</span>
+      <span class="v">${m.fmt(m.get(t))}</span>
+      <span class="r">${int(t.nightWork)}</span></div>`;
+    document.getElementById('rk-hi-lbl').textContent = m.hiLbl;
+    document.getElementById('rk-lo-lbl').textContent = m.loLbl;
+    document.getElementById('rk-hi').innerHTML = sorted.slice(0, 12).map(row).join('');
+    // Reversed, so the first row shown is the overall last: number it from the
+    // bottom of the full list, not from the start of the slice.
+    document.getElementById('rk-lo').innerHTML =
+      sorted.slice(-12).reverse().map((t, i) => row(t, T.length - 1 - i)).join('');
+  }
+
+  function drawTable() {
+    const c = sel.value, kind = document.getElementById('f-kind').value;
+    const q = document.getElementById('f-q').value.trim();
+    const out = T.filter(t =>
+      (!c || t.county === c) &&
+      (!kind || (kind === 'in' ? t.net > 0 : kind === 'out' ? t.net < 0 : flagged(t))) &&
+      (!q || t.name.includes(q) || t.county.includes(q)));
+    out.sort((a, b) => {
+      const x = a[sortKey], y = b[sortKey];
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    const m = METRICS[metric];
+    tbody.innerHTML = out.map(t => `<tr data-key="${t.key}">
+      <td>${t.county}</td>
+      <td><i class="chip" style="background:${fillOf(m, m.get(t))}"></i>${t.name}${flagged(t) ? ' ★' : ''}</td>
+      <td class="num">${int(t.nightWork)}</td><td class="num">${int(t.dayWork)}</td>
+      <td class="num ${t.net > 0 ? 'up' : 'down'}">${sgn(t.net)}</td>
+      <td class="num">${t.ratio.toFixed(2)}</td><td class="num">${t.ratioWeekend.toFixed(2)}</td>
+      <td class="num">${int(t.residents)}</td><td class="num">${t.signalRatio.toFixed(2)}</td>
+      <td class="num">${t.vacancy.toFixed(1)}%</td></tr>`).join('');
+    document.getElementById('f-count').textContent = `${out.length} / ${T.length} 個鄉鎮市區`;
+    const n = S.national;
+    tfoot.innerHTML = `<tr><td>全國</td><td>368 區</td>
+      <td class="num">${int(n.nightWork)}</td><td class="num">${int(n.dayWork)}</td>
+      <td class="num">${sgn(n.dayWork - n.nightWork)}</td>
+      <td class="num">${n.ratio.toFixed(2)}</td><td class="num">－</td>
+      <td class="num">${int(n.residents)}</td><td class="num">${n.signalRatio.toFixed(2)}</td>
+      <td class="num">13.1%</td></tr>`;
+  }
+
+  /* ── linking ────────────────────────────────────────────────────────── */
+  function mark() {
+    const k = pinned || hovered;
+    svg.classList.toggle('dimmed', !!k);
+    for (const p of gLand.children) p.classList.toggle('active', p.dataset.key === k);
+    for (const r of document.querySelectorAll('.rk')) r.classList.toggle('active', r.dataset.key === k);
+    for (const r of tbody.children) r.classList.toggle('active', r.dataset.key === k);
+  }
+  function showTip(e, key) {
+    const t = D[key];
+    tip.innerHTML = `<div class="t-nm">${t.county}${t.name}</div><dl>
+      <dt>平日夜間停留</dt><dd>${int(t.nightWork)}</dd>
+      <dt>平日日間活動</dt><dd>${int(t.dayWork)}</dd>
+      <dt>淨流入</dt><dd class="${t.net > 0 ? 'up' : 'down'}">${sgn(t.net)}</dd>
+      <dt>平日日夜比</dt><dd>${t.ratio.toFixed(2)}</dd>
+      <dt>假日日夜比</dt><dd>${t.ratioWeekend.toFixed(2)}</dd>
+      <dt>信令÷普查</dt><dd>${t.signalRatio.toFixed(2)}</dd>
+      <dt>空屋率</dt><dd>${t.vacancy.toFixed(1)}%</dd>
+      ${flagged(t) ? '<dt>標記</dt><dd style="font-family:var(--f-body)">基數小或差距大</dd>' : ''}
+      </dl>`;
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 16, innerWidth - r.width - 8) + 'px';
+    tip.style.top = Math.max(8, Math.min(e.clientY - 12, innerHeight - r.height - 8)) + 'px';
+  }
+  function hideTip() { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); }
+
+  for (const host of [gLand, document.getElementById('rk-hi'),
+                      document.getElementById('rk-lo'), tbody]) {
+    host.addEventListener('pointerover', e => {
+      const t = e.target.closest('[data-key]'); if (!t) return;
+      hovered = t.dataset.key; showTip(e, hovered); mark();
+    });
+    host.addEventListener('pointermove', e => {
+      const t = e.target.closest('[data-key]'); if (t) showTip(e, t.dataset.key);
+    });
+    host.addEventListener('pointerout', e => {
+      if (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-key]')) return;
+      hovered = null; hideTip(); mark();
+    });
+    host.addEventListener('click', e => {
+      const t = e.target.closest('[data-key]'); if (!t) return;
+      pinned = pinned === t.dataset.key ? null : t.dataset.key; mark();
+    });
+  }
+  addEventListener('keydown', e => { if (e.key === 'Escape') { pinned = null; hideTip(); mark(); } });
+
+  document.getElementById('seg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    metric = b.dataset.k;
+    document.querySelectorAll('#seg button').forEach(x =>
+      x.setAttribute('aria-pressed', String(x === b)));
+    paint();
+  });
+  document.querySelectorAll('#tbl thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.k;
+      sortDir = sortKey === k ? -sortDir : (k === 'county' || k === 'name' ? 1 : -1);
+      sortKey = k;
+      document.querySelectorAll('#tbl thead th').forEach(x => x.removeAttribute('aria-sort'));
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable(); mark();
+    });
+  });
+  [sel, document.getElementById('f-kind'), document.getElementById('f-q')]
+    .forEach(n => n.addEventListener('input', () => { drawTable(); mark(); }));
+
+  paint();
+})();
+</script>
