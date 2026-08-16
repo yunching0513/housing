@@ -123,7 +123,7 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 
 ## 二、頁面
 
-`dist/` 下有七頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
+`dist/` 下有八頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
 
 | 檔案 | 內容 | 空間單元 |
 |---|---|---|
@@ -134,6 +134,7 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 | `social.html` | 包租代管在哪裡：社宅政策實際落點 | 22 縣市（19 有辦） |
 | `priority.html` | 先蓋在哪裡：三種優先序標準的比較 | 22 縣市（21 有負擔能力資料） |
 | `signal.html` | 白天的臺灣，晚上的臺灣：電信信令日夜人口 | 368 鄉鎮市區 |
+| `county.html` | 縣市檔案：選一個縣市，七份資料一次看完 | 22 縣市 |
 | `docs/architecture.html` | 資料站架構草案 | — |
 | `docs/verification.html` | 空屋數字對帳單：與內政部官方文件核對 | — |
 
@@ -286,6 +287,31 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 有一部分是真的人口變動、有一部分是方法差異，這份資料分不開，所以它的用途是
 標出方法失效的地方，不是當人口修正值。
 
+### 2h. 縣市檔案
+
+前七頁各看一個切面。要回答「宜蘭到底怎麼樣」得把七頁都開起來，這一頁反過來：
+**選一個縣市，一次看完**。
+
+- 縣市面量圖當選擇器，可切換四種著色（空屋率／低度使用／房價所得比／包租代管），
+  點地圖、下拉選單、22 個快捷鍵鈕、鍵盤方向鍵都能選
+- 10 格關鍵指標，每格附**全國差距**與**在 22 縣市裡的名次**，下方橫條標出位置
+- 「一句話讀法」由該縣市自己的數字組出來，不是逐縣市手寫的評語：
+  分型、離分界多遠、空屋率名次與房價所得比名次差幾名、用電趨勢、包租代管規模
+- 兩張長期折線（低度使用 23 期、常住人口 45–115 年）
+- 8 條位置帶，一眼看出它在每項指標的分布中落在哪
+
+資料由 `scripts/prep_profile.py` 合併其他六支 prep 腳本的產出，不另外解析原始檔。
+名次採聯賽式並列（兩個 9.21 都是第 5 名，沒有第 6 名），缺值不參與排名，
+分母因此逐項不同（負擔能力 21、包租代管 19、內部差距 21）。
+
+三件事寫在頁面上：**期別不一致**（普查 109/11、用電 114 下、包租代管 115/7/31、
+負擔能力 115Q1、信令 112/11、人口到 115），同格內比較安全、跨格比較要看期別；
+**名次不等於好壞**，空屋率第 1 名是最高不是最好；**內部差距是最高除以最低**，
+金門縣因為烏坵鄉空屋率 0%（80 宅）而算不出，頁面直接寫「算不出」與原因。
+
+兩張折線的縱軸處理不同，也寫在標題上：低度使用兩條線**共用刻度**（都是百分比，
+不共用就會誤讀高度），常住人口則是**各自刻度**（一個縣市對全國 2,371 萬人）。
+
 ### 與內政部用電統計的對帳
 
 `scripts/verify_vacancy.py` 把普查空屋率與內政部低度使用（用電）住宅率逐縣市比對。
@@ -331,7 +357,8 @@ python3 scripts/prep_social_housing.py # 包租代管執行情形 -> data/tw_soc
 python3 scripts/prep_affordability.py # 房價負擔能力     -> data/tw_affordability.json
 python3 scripts/prep_pop_series.py    # 歷次常住人口     -> data/tw_pop_series.json
 python3 scripts/prep_signal.py        # 電信信令日夜人口 -> data/tw_signal.json
-python3 scripts/build.py         # 內嵌並產出七頁     -> dist/*.html
+python3 scripts/prep_profile.py       # 合併成縣市檔案   -> data/tw_county_profile.json（最後跑）
+python3 scripts/build.py         # 內嵌並產出八頁     -> dist/*.html
 python3 scripts/verify_vacancy.py # 與內政部用電統計對帳
 ```
 
