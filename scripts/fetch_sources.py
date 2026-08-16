@@ -94,6 +94,13 @@ def repair_chain(host, store):
 
 def make_ctx(store):
     ctx = ssl.create_default_context()
+    # Python 3.13 turned VERIFY_X509_STRICT on by default. Several TWCA chains
+    # carry a CA certificate with no Subject Key Identifier, which RFC 5280
+    # requires, so 3.13 rejects a chain browsers accept with
+    # "certificate verify failed: Missing Subject Key Identifier". Clearing this
+    # one flag restores the pre-3.13 behaviour; the trust store, chain building
+    # and hostname check are untouched.
+    ctx.verify_flags &= ~getattr(ssl, 'VERIFY_X509_STRICT', 0)
     if store.exists() and store.stat().st_size:
         ctx.load_verify_locations(cafile=str(store))  # adds to, never replaces, the system store
     return ctx

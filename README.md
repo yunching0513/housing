@@ -53,6 +53,27 @@ python3 scripts/fetch_pip.py --url "https://pip.moi.gov.tw/Publicize/Info/A4010"
 python3 scripts/fetch_pip.py --url "https://pip.moi.gov.tw/Publicize/Info/A4010" --download --out "$HOME/2026 - housing_TW/04_住宅政策_中央"
 ```
 
+#### Python 3.13 的憑證問題
+
+Python 3.13 起，`ssl.create_default_context()` 預設打開 `VERIFY_X509_STRICT`。
+不少臺灣政府網站用的 TWCA 憑證鏈裡，有一張 CA 憑證缺少 RFC 5280 要求的
+Subject Key Identifier 欄位，於是 3.13 會拒絕一條瀏覽器與 curl 都接受的憑證鏈：
+
+```
+ssl.SSLCertVerificationError: certificate verify failed: Missing Subject Key Identifier
+```
+
+`fetch_pip.py` 與 `fetch_sources.py` 都只清掉這一個旗標，回到 3.13 之前的行為。
+**信任存放區、憑證鏈建構與主機名稱檢查全部保留**，不是 `CERT_NONE`，
+腳本也不提供關閉驗證的選項。
+
+如果看到的是 `unable to get local issuer certificate`，那是另一回事：
+從 python.org 安裝的 macOS Python 需要手動裝一次根憑證，腳本會直接告訴你跑
+
+```
+open "/Applications/Python 3.13/Install Certificates.command"
+```
+
 `fetch_pip.py` 只用標準函式庫，macOS 內建的 python3 直接可跑。步驟 1 會列出並寫入
 `_discovery.json`：直接可下載的檔案連結、內嵌 script 裡疑似資料端點的網址，
 以及這一頁是不是 ASP.NET 表單頁（有 `__VIEWSTATE` 就代表檔案藏在 POST 後面）。

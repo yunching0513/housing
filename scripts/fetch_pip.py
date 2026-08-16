@@ -31,7 +31,8 @@ the network traffic, which catches the request no matter how it is made.
 
 Standard library only, so a stock macOS python3 runs it with no pip install.
 """
-import argparse, hashlib, html, json, pathlib, re, sys, urllib.error, urllib.parse, urllib.request
+import argparse, hashlib, html, json, pathlib, re, ssl, sys
+import urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timezone
 
 UA = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
@@ -54,13 +55,57 @@ def safe(name, limit=110):
     return BAD.sub('_', html.unescape(name)).strip(' .') [:limit] or 'untitled'
 
 
+def make_ctx():
+    """Full verification, minus one RFC-pedantry flag Python 3.13 turned on.
+
+    3.13 made `create_default_context()` set VERIFY_X509_STRICT. Several Taiwanese
+    government chains (TWCA) include a CA certificate with no Subject Key
+    Identifier extension, which RFC 5280 requires, so 3.13 refuses a chain that
+    every browser and curl accept:
+
+        certificate verify failed: Missing Subject Key Identifier
+
+    Clearing that single flag restores the pre-3.13 behaviour. The trust store,
+    the chain building and the hostname check all still apply — this is not
+    `verify_mode = CERT_NONE`, and the script never offers that.
+    """
+    ctx = ssl.create_default_context()
+    ctx.verify_flags &= ~getattr(ssl, 'VERIFY_X509_STRICT', 0)
+    assert ctx.verify_mode == ssl.CERT_REQUIRED and ctx.check_hostname
+    return ctx
+
+
 def get(url, referer=None):
     h = dict(HEADERS)
     if referer:
         h['Referer'] = referer
     req = urllib.request.Request(url, headers=h)
-    with urllib.request.urlopen(req, timeout=45) as r:
-        return r.read(), dict(r.headers), r.geturl()
+    try:
+        with urllib.request.urlopen(req, timeout=45, context=make_ctx()) as r:
+            return r.read(), dict(r.headers), r.geturl()
+    except urllib.error.URLError as e:
+        # urllib wraps the TLS failure, so the useful text is one level down.
+        reason = getattr(e, 'reason', None)
+        if isinstance(reason, ssl.SSLCertVerificationError):
+            sys.exit(tls_help(reason))
+        raise
+
+
+def tls_help(err):
+    msg = str(err)
+    head = f'憑證驗證失敗：{msg}\n'
+    if 'local issuer' in msg:
+        return head + (
+            '\n這台電腦的 Python 沒有根憑證。macOS 從 python.org 裝的版本要手動跑一次：\n'
+            '    open "/Applications/Python 3.13/Install Certificates.command"\n'
+            '跑完再執行一次原本的指令。')
+    if 'Subject Key Identifier' in msg:
+        return head + (
+            '\n本程式已經關掉 Python 3.13 新增的 VERIFY_X509_STRICT，仍失敗代表\n'
+            '還有別的問題。請改用瀏覽器版：\n'
+            '    node scripts/fetch_pip_browser.mjs --url "<那一頁的網址>" '
+            '--out "$HOME/2026 - housing_TW/04_住宅政策_中央" --headed --wait 120')
+    return head + '\n用瀏覽器開同一個網址確認站台憑證是否正常，再回報這段訊息。'
 
 
 def looks_rejected(body):
