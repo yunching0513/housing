@@ -10,10 +10,14 @@ office connection is not blocked, so the same script works there.
 Two steps, because guessing a government site's download URLs does not work:
 
     # 1. look at what the page actually offers
-    python3 scripts/fetch_pip.py --url https://pip.moi.gov.tw/Publicize/Info/A4010
+    python3 scripts/fetch_pip.py --url "https://pip.moi.gov.tw/Publicize/Info/A4010"
 
     # 2. download what step 1 found
-    python3 scripts/fetch_pip.py --url ... --download --out "/path/to/2026 - housing_TW/04_住宅政策_中央"
+    python3 scripts/fetch_pip.py --url "https://pip.moi.gov.tw/Publicize/Info/A4010" --download --out "$HOME/2026 - housing_TW/04_住宅政策_中央"
+
+Quote the URL and copy the commands whole. Anything in angle brackets in a
+document is a placeholder; pasting one into zsh makes it a redirection and you
+get `no such file or directory`.
 
 Step 1 prints, and writes to _discovery.json:
   * every direct file link (.xls/.xlsx/.csv/.ods/.json/.zip/.pdf)

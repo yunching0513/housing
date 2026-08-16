@@ -43,13 +43,14 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 `Request Rejected` 頁面加一組 support ID。這不是 User-Agent 或憑證問題，換標頭沒有用，
 一般家用或辦公室網路則正常。所以下面兩支工具要在**自己的電腦**上跑。
 
+先確認你在這個 repo 的根目錄，`ls scripts/fetch_pip.py` 要找得到檔案。然後：
+
 ```bash
 # 1. 先看那一頁到底提供什麼
-python3 scripts/fetch_pip.py --url https://pip.moi.gov.tw/Publicize/Info/A4010
+python3 scripts/fetch_pip.py --url "https://pip.moi.gov.tw/Publicize/Info/A4010"
 
 # 2. 下載步驟 1 找到的檔案
-python3 scripts/fetch_pip.py --url <同上> --download \
-        --out "/path/to/2026 - housing_TW/04_住宅政策_中央"
+python3 scripts/fetch_pip.py --url "https://pip.moi.gov.tw/Publicize/Info/A4010" --download --out "$HOME/2026 - housing_TW/04_住宅政策_中央"
 ```
 
 `fetch_pip.py` 只用標準函式庫，macOS 內建的 python3 直接可跑。步驟 1 會列出並寫入
@@ -62,11 +63,14 @@ python3 scripts/fetch_pip.py --url <同上> --download \
 
 ```bash
 npm i playwright && npx playwright install chromium     # 只需一次
-node scripts/fetch_pip_browser.mjs --url <網址> --out <資料夾>
+node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/A4010" --out "$HOME/2026 - housing_TW/04_住宅政策_中央"
 
 # 頁面要自己點篩選條件時：開視窗、給你兩分鐘慢慢點
-node scripts/fetch_pip_browser.mjs --url <網址> --out <資料夾> --headed --wait 120
+node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/A4010" --out "$HOME/2026 - housing_TW/04_住宅政策_中央" --headed --wait 120
 ```
+
+網址記得加引號，`?`與`&`在 shell 裡有特殊意義。不要照抄任何角括號，
+`<` 與 `>` 是 shell 的重新導向符號，貼上去只會得到 `no such file or directory`。
 
 瀏覽器版會把頁面過程中**所有像資料的回應**都存下來（不管是 XHR、postback 還是
 真正的下載動作），另外產出 `_network.json`（每個存下的檔案與其來源網址）與
