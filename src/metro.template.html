@@ -1,0 +1,433 @@
+<title>六都與新竹的內部落差</title>
+
+<style>
+__SHARED_CSS__
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.lede { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+        border-radius: 3px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.lede h2 { font-size: 17px; }
+.lede p { margin: 0; font-size: 13.6px; color: var(--ink-2); max-width: 74ch; }
+.lede p b { color: var(--ink); }
+
+svg.strip { display: block; width: 100%; height: auto; }
+.st-row { stroke: var(--rule-soft); stroke-width: 1; }
+.st-lbl { font-family: var(--f-body); font-size: 13px; fill: var(--ink); font-weight: 600; }
+.st-sub { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-3); }
+.st-tick { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-3); }
+.st-nat { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 4 4; opacity: .7; }
+.st-agg { stroke: var(--ink); stroke-width: 2; }
+.st-dot { fill: var(--accent); fill-opacity: .5; stroke: var(--card); stroke-width: .8; cursor: pointer; }
+.st-dot:hover, .st-dot.active { fill-opacity: 1; stroke: var(--ink); stroke-width: 1.6; }
+.st-end { font-family: var(--f-body); font-size: 10.5px; fill: var(--ink-2); }
+.strip.dimmed .st-dot:not(.active) { fill-opacity: .18; }
+
+.smalls { display: grid; grid-template-columns: repeat(auto-fit, minmax(184px, 1fr)); gap: 12px; }
+.sm { background: var(--card); border: 1px solid var(--rule); border-radius: 3px; padding: 10px 12px 12px;
+      display: flex; flex-direction: column; gap: 4px; }
+.sm h3 { font-size: 14px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.sm h3 .r { font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-3); font-weight: 400; }
+.sm svg { display: block; width: 100%; height: auto; background: var(--sea); border-radius: 2px; }
+.sm .cap { font-family: var(--f-mono); font-size: 10px; color: var(--ink-3); }
+.smt { stroke: var(--coast); stroke-width: .3; stroke-linejoin: round; cursor: pointer; }
+.smt:hover, .smt.active { stroke: var(--ink); stroke-width: 1.4; }
+
+.prirows { display: flex; flex-direction: column; gap: 5px; }
+.prirow { display: grid; grid-template-columns: 4.4em minmax(0, 1fr) 3.4em; gap: 10px; align-items: center; }
+.prirow .pl { font-size: 12.8px; color: var(--ink-2); text-align: right; white-space: nowrap; }
+.pribar { display: flex; height: 20px; border-radius: 2px; overflow: hidden; gap: 1px; }
+.pribar i { display: block; }
+.prirow .pn { font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-3); text-align: right; }
+.prilegend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 12.2px; color: var(--ink-2); }
+.prilegend span { display: flex; align-items: center; gap: 6px; }
+.prilegend i { width: 13px; height: 13px; border-radius: 2px; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.filters select, .filters input {
+  font-family: var(--f-body); font-size: 13px; color: var(--ink);
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px; padding: 6px 9px; }
+.filters .count { font-size: 12.5px; color: var(--ink-3); margin-left: auto; }
+.tallwrap { max-height: 560px; overflow: auto; }
+.tallwrap thead th { position: sticky; top: 0; background: var(--card); z-index: 1; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">民國 109 年 11 月 ・ 六都與新竹縣市 ・ 174 個鄉鎮市區</p>
+    <h1>六都與新竹的內部落差</h1>
+    <p class="dek">
+      這八個縣市裝了全國 <b>75%</b> 的住宅。但用縣市平均看它們，會看不到最重要的事：
+      <b>同一個市裡面，區與區的空屋率可以差到六倍以上</b>。新北市平均 13.1%，
+      蘆洲區 6.1%、石碇區 31.5%。社宅要蓋在哪，得看區，不能看市。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="lede">
+    <h2>為什麼單獨看這八個</h2>
+    <p>一是<b>量體</b>：六都加新竹縣市有 174 個鄉鎮市區，占全國住宅 75.4%、住戶 76.4%，
+    社宅政策的成敗基本上在這裡決定。二是<b>它們最容易被平均值誤導</b>：面積大、內部異質性高，
+    縣市層級的一個數字幾乎沒有指導意義。三是<b>新竹是驗證出來的異常點</b>：
+    用普查與內政部用電兩種算法比對時，新竹縣市的落差是全國最大的之一
+    （普查排第 7、第 10，用電卻排第 17、第 20）。</p>
+  </div>
+
+  <div class="panel">
+    <header>
+      <h2 id="strip-title">每個市裡面，區跟區差多少</h2>
+      <p>一個點是一個鄉鎮市區，點的大小代表住戶數。粗線是該縣市整體空屋率，
+         虛線是全國 <b id="natline"></b>。</p>
+    </header>
+    <div class="body">
+      <svg class="strip" id="strip" viewBox="0 0 920 470" role="img"
+           aria-labelledby="strip-title" aria-describedby="strip-desc"></svg>
+      <p id="strip-desc" hidden></p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <header><h2>八個縣市，各自的樣子</h2><p>顏色為空屋率，與全國圖同一組色階。各圖比例尺不同</p></header>
+    <div class="body"><div class="smalls" id="smalls"></div></div>
+  </div>
+
+  <div class="panel">
+    <header>
+      <h2>各縣市的區，落在哪一型</h2>
+      <p>四型依「該不該新建社宅」由高到低排序，所以用漸層而非四個顏色。長度為區數占比</p>
+    </header>
+    <div class="body">
+      <div class="prirows" id="pri"></div>
+      <div class="prilegend" id="prilegend"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="body">
+      <div class="filters" style="margin-bottom:12px">
+        <select id="f-county" aria-label="篩選縣市"></select>
+        <select id="f-zone" aria-label="篩選分型"></select>
+        <input id="f-text" type="search" placeholder="搜尋鄉鎮市區" aria-label="搜尋鄉鎮市區">
+        <span class="count" id="f-count"></span>
+      </div>
+      <div class="tablewrap tallwrap">
+        <table id="tbl">
+          <caption>民國 109 年 11 月，單位：宅／戶。點欄位標題可換排序。</caption>
+          <thead><tr>
+            <th data-sort="county"       scope="col">縣市</th>
+            <th data-sort="name"         scope="col">鄉鎮市區</th>
+            <th data-sort="houses"       scope="col">住宅數</th>
+            <th data-sort="households"   scope="col">住戶數</th>
+            <th data-sort="idle"         scope="col">沒人使用</th>
+            <th data-sort="vacancy"      scope="col" aria-sort="descending">空屋率</th>
+            <th data-sort="inflow"       scope="col">遷入率</th>
+            <th data-sort="perHousehold" scope="col">宅戶比</th>
+            <th data-sort="quadrant"     scope="col">分型</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>臺北市那一格要小心讀</h3>
+      <p>臺北市 12 個區裡有 11 個被歸為「真的不夠住」，但臺北市的常住人口在這十年是<b>減少</b>的。
+      這兩件事不衝突：分型的橫軸是<b>遷入率</b>，只計搬進來的人，不計搬走的人。
+      臺北市同時有大量遷入與大量遷出，加上空屋率全國最低，於是每一區都落在
+      「有人搬進來、房子也沒空著」。</p>
+      <p>比較貼切的讀法是：臺北市不是沒有需求，是<b>住不起的人被擠出去了</b>，
+      而擠出去的人多半落在新北。</p>
+    </section>
+    <section>
+      <h3>都心空洞化看得見</h3>
+      <p>空屋率最高的幾個區，有些不是偏鄉而是<b>舊市中心</b>：臺中中區 28.6%、
+      高雄前金區 26.1%。這些地方住宅存量老、機能外移，跟山區與離島的高空屋率
+      是完全不同的成因，處方也不一樣。</p>
+    </section>
+    <section>
+      <h3>為什麼分型用漸層不用四色</h3>
+      <p>四種分型其實是有順序的：由「真的不夠住」到「房子多到用不完」，正好是
+      新建社宅優先度由高到低。用單一色相的漸層可以直接讀出這個順序；
+      而且四個獨立顏色在深色模式下無法通過色彩辨識檢核（深藍綠與深赭的色差不足）。</p>
+    </section>
+    <section>
+      <h3>資料與限制</h3>
+      <ul>
+        <li>來源為 109 年人口及住宅普查各縣市報告表，空屋率採「目前沒有使用」定義。</li>
+        <li>八縣市共 174 個鄉鎮市區。<b>高雄市那瑪夏區</b>在可取得的圖資中沒有對應範圍，
+        因此小圖上是空白（高雄畫得出 37 區），但點狀圖與表格都有它的資料。</li>
+        <li>遷入率只計流入不計流出，且與住宅資料同期（109 年 11 月）。</li>
+        <li>各縣市小圖的比例尺不同，不能互相比較面積大小。</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="tgeo">__TGEO_JSON__</script>
+<script type="application/json" id="tdat">__TDAT_JSON__</script>
+
+<script>
+(() => {
+  'use strict';
+  const GEO = JSON.parse(document.getElementById('tgeo').textContent);
+  const D = JSON.parse(document.getElementById('tdat').textContent);
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]); return n; };
+  const int = (v) => Math.round(v).toLocaleString('en-US');
+
+  const METRO = ['臺北市', '新北市', '桃園市', '臺中市', '臺南市', '高雄市', '新竹縣', '新竹市'];
+  const SET = new Set(METRO);
+  const towns = D.towns.filter(t => SET.has(t.county));
+  const T = Object.fromEntries(towns.map(t => [t.key, t]));
+  const geo = Object.fromEntries(GEO.towns.filter(t => SET.has(t.county)).map(t => [t.key, t]));
+  const byCounty = Object.fromEntries(METRO.map(c => [c, towns.filter(t => t.county === c)]));
+  const rate = (list) => list.reduce((s, t) => s + t.idle, 0) / list.reduce((s, t) => s + t.houses, 0) * 100;
+
+  // Four types, ordered by how strongly they argue for building new social housing.
+  // That order is what makes a single-hue ramp the right encoding here.
+  const ORDER = ['tight_growing', 'slack_growing', 'tight_shrinking', 'slack_shrinking'];
+  const LABEL = { tight_growing: '真的不夠住', slack_growing: '有房子，但租不起或不合用',
+                  tight_shrinking: '穩定，但沒有餘裕', slack_shrinking: '房子多到用不完' };
+
+  const VAC_BREAKS = [8, 11, 14, 18, 24];
+  const vacFill = (v) => { const i = VAC_BREAKS.findIndex(b => v < b);
+    return `var(--sq2-${i === -1 ? VAC_BREAKS.length : i})`; };
+
+  let pinned = null, hovered = null;
+  const active = () => pinned || hovered;
+  const tip = document.getElementById('tip');
+
+  // ── strip plot: the point of the page ─────────────────────────────────
+  const stripEl = document.getElementById('strip');
+  function drawStrip() {
+    const L = 108, R = 878, T0 = 34, ROW = 52;
+    const xs = towns.map(t => t.vacancy);
+    const x0 = 0, x1 = Math.max(...xs) * 1.04;
+    const X = v => L + (v - x0) / (x1 - x0) * (R - L);
+    const maxHH = Math.max(...towns.map(t => t.households));
+    const nat = D.vacancyCut;
+    stripEl.innerHTML = '';
+    const gA = el('g'), gD = el('g');
+    stripEl.append(gA, gD);
+
+    for (let v = 0; v <= x1; v += 5) {
+      gA.append(Object.assign(el('text', { class: 'st-tick', x: X(v), y: 20,
+        'text-anchor': 'middle' }), { textContent: v + '%' }));
+    }
+    gA.append(el('line', { class: 'st-nat', x1: X(nat), y1: 26, x2: X(nat), y2: T0 + METRO.length * ROW - 14 }));
+    gA.append(Object.assign(el('text', { class: 'st-sub', x: X(nat), y: T0 + METRO.length * ROW + 2,
+      'text-anchor': 'middle' }), { textContent: `全國 ${nat.toFixed(1)}%` }));
+
+    // Order by internal spread — the widest county first is the page's argument.
+    const ranked = [...METRO].sort((a, b) => {
+      const s = (c) => { const v = byCounty[c].map(t => t.vacancy); return Math.max(...v) / Math.min(...v); };
+      return s(b) - s(a);
+    });
+    ranked.forEach((c, i) => {
+      const y = T0 + i * ROW + 18;
+      const list = [...byCounty[c]].sort((a, b) => a.vacancy - b.vacancy);
+      const lo = list[0], hi = list[list.length - 1];
+      const agg = rate(list);
+      gA.append(el('line', { class: 'st-row', x1: L, y1: y, x2: R, y2: y }));
+      gA.append(Object.assign(el('text', { class: 'st-lbl', x: L - 12, y: y + 4,
+        'text-anchor': 'end' }), { textContent: c }));
+      gA.append(Object.assign(el('text', { class: 'st-sub', x: L - 12, y: y + 18,
+        'text-anchor': 'end' }), { textContent: `${list.length} 區 ・ ${(hi.vacancy / lo.vacancy).toFixed(1)} 倍` }));
+      gA.append(el('line', { class: 'st-agg', x1: X(agg), y1: y - 13, x2: X(agg), y2: y + 13 }));
+      gA.append(Object.assign(el('text', { class: 'st-end', x: X(lo.vacancy), y: y - 17,
+        'text-anchor': 'middle' }), { textContent: lo.name }));
+      gA.append(Object.assign(el('text', { class: 'st-end', x: X(hi.vacancy), y: y - 17,
+        'text-anchor': 'middle' }), { textContent: hi.name }));
+      for (const t of list) {
+        gD.append(el('circle', { class: 'st-dot', cx: X(t.vacancy).toFixed(1), cy: y,
+          r: (3 + 7 * Math.sqrt(t.households / maxHH)).toFixed(1), 'data-key': t.key,
+          tabindex: '0', role: 'button', 'aria-label': `${t.county}${t.name} 空屋率 ${t.vacancy}%` }));
+      }
+    });
+    document.getElementById('natline').textContent = nat.toFixed(1) + '%';
+    document.getElementById('strip-desc').textContent =
+      ranked.map(c => `${c}：` + [...byCounty[c]].sort((a, b) => a.vacancy - b.vacancy)
+        .map(t => `${t.name} ${t.vacancy}%`).join('、')).join('；') + '。';
+  }
+
+  // ── small multiples ───────────────────────────────────────────────────
+  function drawSmalls() {
+    const host = document.getElementById('smalls');
+    host.innerHTML = '';
+    for (const c of METRO) {
+      const list = byCounty[c].filter(t => geo[t.key]);
+      const b = [180, 90, -180, -90];
+      for (const t of list) for (const r of geo[t.key].rings) for (const [x, y] of r) {
+        if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y;
+        if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y;
+      }
+      const W = 200, H = 170, PAD = 8;
+      const k = Math.cos((b[1] + b[3]) / 2 * Math.PI / 180);
+      const s = Math.min((W - PAD * 2) / ((b[2] - b[0]) * k), (H - PAD * 2) / (b[3] - b[1]));
+      const dx = PAD + (W - PAD * 2 - (b[2] - b[0]) * k * s) / 2;
+      const dy = PAD + (H - PAD * 2 - (b[3] - b[1]) * s) / 2;
+      const px = lo => dx + (lo - b[0]) * k * s, py = la => dy + (b[3] - la) * s;
+
+      const card = document.createElement('div');
+      card.className = 'sm';
+      const agg = rate(byCounty[c]);
+      card.innerHTML = `<h3>${c}<span class="r">${agg.toFixed(1)}%</span></h3>`;
+      const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img',
+        'aria-label': `${c}各區空屋率分布圖` });
+      for (const t of list) {
+        const d = geo[t.key].rings.map(r => 'M' + r.map(([lo, la]) =>
+          `${px(lo).toFixed(1)} ${py(la).toFixed(1)}`).join('L') + 'Z').join('');
+        const path = el('path', { class: 'smt', d, 'data-key': t.key,
+          tabindex: '0', role: 'button', 'aria-label': `${t.name} 空屋率 ${t.vacancy}%` });
+        path.style.fill = vacFill(t.vacancy);
+        svg.append(path);
+      }
+      card.append(svg);
+      const cap = document.createElement('span');
+      cap.className = 'cap';
+      const v = byCounty[c].map(t => t.vacancy);
+      cap.textContent = `${byCounty[c].length} 區 ・ ${Math.min(...v).toFixed(1)}–${Math.max(...v).toFixed(1)}%`;
+      card.append(cap);
+      host.append(card);
+    }
+  }
+
+  // ── priority composition ──────────────────────────────────────────────
+  function drawPri() {
+    const host = document.getElementById('pri');
+    host.innerHTML = METRO.map(c => {
+      const list = byCounty[c], n = list.length;
+      const seg = ORDER.map((z, i) => {
+        const k = list.filter(t => t.quadrant === z).length;
+        return k ? `<i style="width:${k / n * 100}%;background:var(--pri-${i})" title="${LABEL[z]} ${k} 區"></i>` : '';
+      }).join('');
+      const top = list.filter(t => t.quadrant === 'tight_growing').length;
+      return `<div class="prirow"><span class="pl">${c}</span>
+        <span class="pribar">${seg}</span><span class="pn">${top}/${n}</span></div>`;
+    }).join('');
+    document.getElementById('prilegend').innerHTML =
+      ORDER.map((z, i) => `<span><i style="background:var(--pri-${i})"></i>${LABEL[z]}</span>`).join('')
+      + '<span style="color:var(--ink-3)">右側數字＝屬「真的不夠住」的區數／總區數</span>';
+  }
+
+  // ── table ─────────────────────────────────────────────────────────────
+  const tbody = document.querySelector('#tbl tbody');
+  let sortKey = 'vacancy', sortDir = -1;
+  function filtered() {
+    const c = document.getElementById('f-county').value;
+    const z = document.getElementById('f-zone').value;
+    const q = document.getElementById('f-text').value.trim();
+    return towns.filter(t => (!c || t.county === c) && (!z || t.quadrant === z)
+      && (!q || (t.county + t.name).includes(q)));
+  }
+  function drawTable() {
+    const rows = filtered().sort((a, b) => {
+      const x = a[sortKey], y = b[sortKey];
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    tbody.innerHTML = rows.map(t => `
+      <tr data-key="${t.key}">
+        <td>${t.county}</td>
+        <td><i class="chip" style="background:${vacFill(t.vacancy)}"></i>${t.name}</td>
+        <td class="num">${int(t.houses)}</td><td class="num">${int(t.households)}</td>
+        <td class="num">${int(t.idle)}</td>
+        <td class="num">${t.vacancy.toFixed(1)}%</td>
+        <td class="num">${t.inflow.toFixed(1)}%</td>
+        <td class="num">${t.perHousehold.toFixed(3)}</td>
+        <td>${LABEL[t.quadrant]}</td>
+      </tr>`).join('');
+    document.getElementById('f-count').textContent = `顯示 ${rows.length} / ${towns.length} 個鄉鎮市區`;
+  }
+
+  // ── linked highlight ──────────────────────────────────────────────────
+  function mark() {
+    const a = active();
+    stripEl.classList.toggle('dimmed', !!a);
+    for (const n of document.querySelectorAll('.st-dot, .smt'))
+      n.classList.toggle('active', n.dataset.key === a);
+    for (const r of tbody.children) r.classList.toggle('active', r.dataset.key === a);
+  }
+  function showTip(key, x, y) {
+    const t = T[key]; if (!t) return;
+    tip.innerHTML = `<div class="t-nm">${t.county}${t.name}</div>
+      <div class="t-en">${LABEL[t.quadrant]}</div>
+      <dl><dt>住宅數</dt><dd>${int(t.houses)}</dd>
+      <dt>住戶數</dt><dd>${int(t.households)}</dd>
+      <dt>沒人使用</dt><dd>${int(t.idle)}</dd>
+      <dt>空屋率</dt><dd>${t.vacancy.toFixed(1)}%</dd>
+      <dt>近 5 年遷入率</dt><dd>${t.inflow.toFixed(1)}%</dd>
+      <dt>宅戶比</dt><dd>${t.perHousehold.toFixed(3)}</dd></dl>`;
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(x + 16, innerWidth - r.width - 12) + 'px';
+    tip.style.top = Math.min(Math.max(12, y - r.height / 2), innerHeight - r.height - 12) + 'px';
+  }
+  const hideTip = () => { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); };
+  function bind(root, getKey) {
+    root.addEventListener('pointerover', e => { const k = getKey(e.target); if (!k) return;
+      hovered = k; mark(); showTip(k, e.clientX, e.clientY); });
+    root.addEventListener('pointermove', e => { const k = getKey(e.target); if (k) showTip(k, e.clientX, e.clientY); });
+    root.addEventListener('pointerout', e => { if (!getKey(e.target)) return;
+      hovered = null; mark(); if (!pinned) hideTip(); });
+    root.addEventListener('click', e => { const k = getKey(e.target); if (!k) return;
+      pinned = pinned === k ? null : k; mark(); pinned ? showTip(k, e.clientX, e.clientY) : hideTip(); });
+    root.addEventListener('focusin', e => { const k = getKey(e.target); if (!k) return;
+      hovered = k; mark(); const b = e.target.getBoundingClientRect();
+      showTip(k, b.right, b.top + b.height / 2); });
+    root.addEventListener('focusout', () => { hovered = null; mark(); if (!pinned) hideTip(); });
+    root.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return;
+      const k = getKey(e.target); if (!k) return;
+      e.preventDefault(); pinned = pinned === k ? null : k; mark(); });
+  }
+  bind(stripEl, t => t.closest?.('.st-dot')?.dataset.key);
+  bind(document.getElementById('smalls'), t => t.closest?.('.smt')?.dataset.key);
+  bind(tbody, t => t.closest?.('tr')?.dataset.key);
+
+  for (const th of document.querySelectorAll('#tbl thead th')) {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      sortDir = sortKey === k ? -sortDir : (k === 'county' || k === 'name' || k === 'quadrant' ? 1 : -1);
+      sortKey = k;
+      for (const o of document.querySelectorAll('#tbl thead th')) o.removeAttribute('aria-sort');
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable(); mark();
+    });
+  }
+  {
+    document.getElementById('f-county').innerHTML =
+      '<option value="">全部縣市</option>' + METRO.map(c => `<option>${c}</option>`).join('');
+    document.getElementById('f-zone').innerHTML =
+      '<option value="">全部分型</option>' + ORDER.map(z => `<option value="${z}">${LABEL[z]}</option>`).join('');
+    for (const id of ['f-county', 'f-zone', 'f-text'])
+      document.getElementById(id).addEventListener('input', () => { drawTable(); mark(); });
+  }
+
+  {
+    const h = towns.reduce((s, t) => s + t.houses, 0);
+    const hh = towns.reduce((s, t) => s + t.households, 0);
+    const allH = D.towns.reduce((s, t) => s + t.houses, 0);
+    const spread = METRO.map(c => {
+      const v = byCounty[c].map(t => t.vacancy);
+      return [c, Math.max(...v) / Math.min(...v)];
+    }).sort((a, b) => b[1] - a[1]);
+    const tp = byCounty['臺北市'].filter(t => t.quadrant === 'tight_growing').length;
+    document.getElementById('stats').innerHTML = [
+      ['八縣市住宅', int(h) + ' 宅', `占全國 ${(h / allH * 100).toFixed(1)}%，住戶 ${int(hh)} 戶`, ''],
+      ['內部落差最大', spread[0][0], `最高區是最低區的 ${spread[0][1].toFixed(1)} 倍`, 'down'],
+      ['臺北市', `${tp} / 12 區`, '被歸為「真的不夠住」，但常住人口在減少', ''],
+      ['內部最均勻', spread[spread.length - 1][0], `僅 ${spread[spread.length - 1][1].toFixed(1)} 倍`, ''],
+    ].map(([k, v, s, cls]) =>
+      `<div class="stat"><dt>${k}</dt><dd class="${cls}">${v}</dd><dd class="sub">${s}</dd></div>`).join('');
+  }
+
+  drawStrip(); drawSmalls(); drawPri(); drawTable();
+})();
+</script>

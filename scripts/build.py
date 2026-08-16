@@ -19,6 +19,10 @@ PAGES = {
         '__TGEO_JSON__': 'tw_towns.json',
         '__TDAT_JSON__': 'tw_town_data.json',
     }),
+    'metro.html': ('metro.template.html', {
+        '__TGEO_JSON__': 'tw_towns.json',
+        '__TDAT_JSON__': 'tw_town_data.json',
+    }),
 }
 
 

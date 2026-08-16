@@ -51,6 +51,9 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 |---|---|---|
 | `index.html` | 臺灣住宅供需圖：人口與住宅供給對照 | 22 縣市 |
 | `town.html` | 臺灣空屋地圖：空屋在哪裡、能不能用 | 368 鄉鎮市區 |
+| `metro.html` | 六都與新竹的內部落差：縣市平均掩蓋了什麼 | 174 鄉鎮市區 |
+| `docs/architecture.html` | 資料站架構草案 | — |
+| `docs/verification.html` | 空屋數字對帳單：與內政部官方文件核對 | — |
 
 ### 2a. 臺灣住宅供需圖（P1）
 
@@ -95,6 +98,27 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 普查有 368 個鄉鎮市區，地圖畫得出 366 個：高雄市那瑪夏區與金門縣烏坵鄉在可取得的
 圖資中沒有對應範圍，已於圖上與說明中標示，其資料仍保留在表格與散布圖。
 
+### 2c. 六都與新竹的內部落差
+
+只看六都加新竹縣市這 174 個鄉鎮市區，它們裝了全國 75.4% 的住宅。主題是
+**縣市平均值會騙人**：高雄市內部最高區是最低區的 6.8 倍（茂林 3.8% → 前金 26.1%），
+新北市 5.2 倍（蘆洲 6.1% → 石碇 31.5%），而桃園市只有 1.9 倍。
+
+- 點狀分布圖：一縣市一列，每個點是一個區，可直接看出內部離散程度
+- 八張小地圖（small multiples），各自比例尺
+- 四種分型的組成比例，用單一色相漸層而非四個類別色——四型本來就依
+  「新建社宅優先度」排序，且四個獨立顏色在深色模式下未通過色彩辨識檢核
+
+臺北市 12 區有 11 區被歸為「真的不夠住」，但常住人口在減少：分型橫軸是遷入率，
+只計流入不計流出。頁面上有專節說明這個讀法。
+
+### 與內政部用電統計的對帳
+
+`scripts/verify_vacancy.py` 把普查空屋率與內政部低度使用（用電）住宅率逐縣市比對。
+結論寫在 `docs/verification.html`：方向一致（屋齡 U 型、小坪數最高、臺北最低），
+但等級相關僅 0.50，且官方公布的「一致率 84.08%」其中 77.37% 來自「兩者都認定
+不是空屋」，真正被認定為空屋的部分交集不大。
+
 ### 資料來源
 
 | 檔案 | 內容 |
@@ -123,7 +147,8 @@ python3 scripts/prep_geo.py      # 簡化縣市界圖資     -> data/tw_counties
 python3 scripts/prep_housing.py  # 普查住宅表與分型   -> data/tw_housing.json
 python3 scripts/prep_town_geo.py  # 簡化鄉鎮市區界    -> data/tw_towns.json
 python3 scripts/prep_town_data.py # 鄉鎮市區住宅資料  -> data/tw_town_data.json
-python3 scripts/build.py         # 內嵌並產出兩頁     -> dist/*.html
+python3 scripts/build.py         # 內嵌並產出三頁     -> dist/*.html
+python3 scripts/verify_vacancy.py # 與內政部用電統計對帳
 ```
 
 `prep_data.py` 與 `prep_geo.py` 預期在含有原始檔的目錄下執行，路徑寫在各檔開頭。

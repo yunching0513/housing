@@ -1,0 +1,241 @@
+<title>空屋數字對帳單</title>
+
+<style>
+:root {
+  color-scheme: light dark;
+  --page:#F4F7F7; --card:#FDFEFE; --sunk:#EDF1F1;
+  --ink:#12201F; --ink-2:#435657; --ink-3:#718485;
+  --rule:#CBD8D9; --rule-soft:#E0E8E9;
+  --accent:#245D5C; --accent-bg:#DDE9E8;
+  --ok:#245d5c; --warn:#c46834; --bad:#7c401d;
+  --shadow:0 1px 2px rgba(18,32,31,.05), 0 8px 24px -12px rgba(18,32,31,.16);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#0B1314; --card:#131E20; --sunk:#0F1A1B;
+  --ink:#E3EDEC; --ink-2:#A2B5B5; --ink-3:#74898A;
+  --rule:#2A3839; --rule-soft:#1D2A2C;
+  --accent:#64CBC9; --accent-bg:#1B2E2E;
+  --ok:#64cbc9; --warn:#d37139; --bad:#f2a177;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);}}
+:root[data-theme="dark"]{
+  --page:#0B1314; --card:#131E20; --sunk:#0F1A1B;
+  --ink:#E3EDEC; --ink-2:#A2B5B5; --ink-3:#74898A;
+  --rule:#2A3839; --rule-soft:#1D2A2C;
+  --accent:#64CBC9; --accent-bg:#1B2E2E;
+  --ok:#64cbc9; --warn:#d37139; --bad:#f2a177;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);}
+:root{
+  --f-display:"Iowan Old Style","Palatino Linotype",Palatino,"Songti TC","Noto Serif CJK TC",PMingLiU,serif;
+  --f-body:ui-sans-serif,system-ui,-apple-system,"PingFang TC","Noto Sans CJK TC","Microsoft JhengHei",sans-serif;
+  --f-mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,3vw,32px) 90px;display:flex;flex-direction:column;gap:clamp(26px,3.2vw,42px)}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;text-wrap:balance;margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+header h1{font-size:clamp(29px,4.2vw,44px);line-height:1.16;margin-top:10px}
+header .dek{max-width:64ch;color:var(--ink-2);font-size:clamp(15px,1.5vw,17px);margin:14px 0 0}
+header .dek b{color:var(--ink)}
+section{display:flex;flex-direction:column;gap:14px}
+section>h2{font-size:clamp(19px,2.3vw,24px);display:flex;align-items:baseline;gap:12px}
+section>h2 .n{font-family:var(--f-mono);font-size:13px;font-weight:400;color:var(--accent);letter-spacing:.06em}
+section p{margin:0;max-width:72ch;color:var(--ink-2)}
+section p b,li b,td b{color:var(--ink);font-weight:600}
+hr.rule{border:0;border-top:1px solid var(--rule);margin:0}
+.tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--rule);border-radius:3px}
+table{width:100%;border-collapse:collapse;font-size:13.2px}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule-soft)}
+thead th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink-3);font-weight:500;border-bottom:1px solid var(--rule);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.v{font-family:var(--f-mono);font-size:11px;font-weight:600;white-space:nowrap}
+.v.ok{color:var(--ok)} .v.warn{color:var(--warn)} .v.bad{color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:3px;box-shadow:var(--shadow);padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.card.flag{border-left:3px solid var(--warn)}
+.card.good{border-left:3px solid var(--ok)}
+.card h3{font-size:15.5px}
+.card p{font-size:13.4px;margin:0}
+ul,ol{margin:0;padding-left:1.25em;display:flex;flex-direction:column;gap:7px;color:var(--ink-2);max-width:72ch}
+li::marker{color:var(--ink-3)}
+code{font-family:var(--f-mono);font-size:11.8px;background:var(--sunk);padding:1px 5px;border-radius:2px}
+.matrix{display:grid;grid-template-columns:auto 1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden;font-size:13px;max-width:640px}
+.matrix>div{background:var(--card);padding:11px 13px}
+.matrix .hd{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.05em}
+.matrix .big{font-family:var(--f-mono);font-size:15px;font-weight:600}
+.matrix .agree{background:var(--accent-bg)}
+.src{font-size:12.4px;color:var(--ink-3)}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">對帳結果 ・ 依內政部四份官方文件 ・ 2026-08</p>
+  <h1>空屋數字對帳單</h1>
+  <p class="dek">
+    拿你給的四份內政部文件，把我先前做的兩張圖與說法逐項核對。
+    結論是<b>核心發現站得住</b>，但有<b>四處要修正</b>，其中兩處已經改進頁面。
+    最值得注意的一項：<b>兩種空屋定義的交集，比官方公布的「一致率 84%」聽起來小很多</b>。
+  </p>
+</header>
+
+<div class="card good">
+  <h3>核對的來源</h3>
+  <ul style="font-size:13.2px">
+    <li>《低度使用(用電)住宅、新建餘屋(待售)住宅統計資訊簡冊》<b>104 年 11 月</b>，內政部營建署</li>
+    <li>同上，<b>109 年 12 月</b>（資料期 98–108 年）</li>
+    <li>《低度使用(用電)住宅、待售新成屋統計資訊簡冊》<b>115 年 7 月出刊</b>，資料期 114 年下半年</li>
+    <li>《低度使用(用電)住宅、待售新成屋 名詞定義及資料操作過程說明》<b>112 年 7 月</b></li>
+  </ul>
+</div>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">01</span>逐項對帳</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>我先前的說法</th><th>官方文件</th><th>結果</th></tr></thead>
+    <tbody>
+      <tr><td>低度使用住宅＝月平均用電 ≤ 60 度</td>
+        <td>「平均每月用電度數小於或等於 60 度之住宅」</td><td><span class="v ok">相符</span></td></tr>
+      <tr><td>109 年起每半年統計一次，上半年採 5、6 月，下半年採 11、12 月</td>
+        <td>逐字相同</td><td><span class="v ok">相符</span></td></tr>
+      <tr><td>114 年上半年約 10.4%</td>
+        <td>114 年下半年 9.44%，較上期減 0.99 個百分點 → 上期 10.43%</td><td><span class="v ok">相符</span></td></tr>
+      <tr><td>空閒住宅＝偶爾自住＋目前沒有使用（我從普查表推出來的）</td>
+        <td>「該住宅無人經常居住但包括於假日或偶爾自住，以及因其他原因而目前未使用」</td>
+        <td><span class="v ok">相符</span></td></tr>
+      <tr><td>空屋率呈 U 型，屋齡兩端最高</td>
+        <td>「存在屋齡較新或較老之住宅有低度使用住宅比率較高的現象」</td><td><span class="v ok">相符</span></td></tr>
+      <tr><td>小坪數空屋率最高</td>
+        <td>「20 坪以下」16.77% 為各面積級距最高</td><td><span class="v ok">相符</span></td></tr>
+      <tr><td>臺北市空屋率全國最低</td>
+        <td>臺北市 6.39%，全國最低；新北市 6.84% 次低</td><td><span class="v ok">相符</span></td></tr>
+      <tr><td>待售新成屋 114 年第 2 季 11.2 萬宅</td>
+        <td>112,086 宅；第 4 季 112,501 宅為統計以來最高</td><td><span class="v ok">相符</span></td></tr>
+      <tr><td>兩種定義「問的問題不同」</td>
+        <td>方向正確，但官方有逐筆比對數據可以講得更精確</td><td><span class="v warn">需補強</span></td></tr>
+      <tr><td>頁面標示「114 年上半年 10.4%」為最新</td>
+        <td>114 年下半年 9.44% 已於 115 年 7 月出刊</td><td><span class="v warn">已過期</span></td></tr>
+      <tr><td>架構草案引用「5 年以下新屋空置率 21.91%」</td>
+        <td>114 年下半年為 12.39%；該數字屬更早期別</td><td><span class="v warn">需標期別</span></td></tr>
+      <tr><td>（先前未察覺）用電統計的歷史數列曾被回溯修訂</td>
+        <td>98 年比率 11.49%（109 年報告）→ 10.68%（114 年報告重估）</td><td><span class="v bad">新發現</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">02</span>最重要的一項：「84% 一致」其實會誤導</h2>
+  <p>內政部拿 109 年的原始樣本，把普查的空閒住宅與用電的低度使用住宅<b>逐筆比對</b>過，
+  公布兩者判斷相同的一致率為 <b>84.08%</b>。這個數字聽起來很高，但拆開來看不是那個意思。</p>
+
+  <div class="matrix">
+    <div class="hd"></div>
+    <div class="hd">是低度使用（用電）</div>
+    <div class="hd">不是低度使用</div>
+    <div class="hd">是空閒住宅（普查）</div>
+    <div class="agree"><span class="big">6.71%</span><br><span class="src">6 萬 6 筆・兩者都認定</span></div>
+    <div><span class="big">13.13%</span><br><span class="src">11 萬 7,414 筆・只有普查認定</span></div>
+    <div class="hd">不是空閒住宅</div>
+    <div><span class="big">2.80%</span><br><span class="src">2 萬 5,034 筆・只有用電認定</span></div>
+    <div class="agree"><span class="big">77.37%</span><br><span class="src">69 萬 2,114 筆・兩者都不認定</span></div>
+  </div>
+  <p class="src">資料來源：內政部《統計資訊簡冊》115 年 7 月出刊，附錄二。僅就比對成功者統計。</p>
+
+  <p><b>那 84% 的絕大部分，來自「兩者都認定不是空屋」的 77.37%。</b>真正被認定為空屋的部分，
+  兩者其實對不太起來：</p>
+  <ul>
+    <li>普查認定的空閒住宅（6.71＋13.13＝19.84%）當中，只有 <b>約三分之一</b>（6.71÷19.84）
+    同時被電表法認定為低度使用。</li>
+    <li>電表法認定的低度使用（6.71＋2.80＝9.51%）當中，有 <b>約七成</b> 同時是普查的空閒住宅。</li>
+  </ul>
+  <p>換句話說，普查認定的空屋是電表法的兩倍多，而且多出來的那些，電表法完全沒抓到。
+  你選的「兩個並列」是對的作法：任何拿兩個數字互相驗證、或混用的分析，都會出問題。</p>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">03</span>縣市排序：兩者只有中度相關</h2>
+  <p>我把普查空屋率（109 年 11 月，目前沒有使用）與用電低度使用率（114 年下半年）
+  逐縣市排序比較。<b>等級相關只有 0.50</b>，比我原先想的低。極端一致，中段分歧不小。</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>縣市</th><th class="num">普查 109</th><th class="num">用電 114 下</th>
+      <th class="num">差</th><th>普查排名</th><th>用電排名</th></tr></thead>
+    <tbody>
+      <tr><td>金門縣</td><td class="num">19.8%</td><td class="num">16.23%</td><td class="num">+3.6</td><td>2</td><td>1</td></tr>
+      <tr><td>臺東縣</td><td class="num">18.1%</td><td class="num">15.47%</td><td class="num">+2.7</td><td>3</td><td>2</td></tr>
+      <tr><td>澎湖縣</td><td class="num">13.4%</td><td class="num">14.62%</td><td class="num">−1.3</td><td>13</td><td>3</td></tr>
+      <tr><td>宜蘭縣</td><td class="num">20.2%</td><td class="num">14.50%</td><td class="num">+5.7</td><td>1</td><td>4</td></tr>
+      <tr><td><b>新竹縣</b></td><td class="num">14.6%</td><td class="num">8.70%</td><td class="num"><b>+5.9</b></td><td>7</td><td>17</td></tr>
+      <tr><td><b>新竹市</b></td><td class="num">13.9%</td><td class="num">7.79%</td><td class="num"><b>+6.1</b></td><td>10</td><td>20</td></tr>
+      <tr><td><b>新北市</b></td><td class="num">13.1%</td><td class="num">6.84%</td><td class="num"><b>+6.2</b></td><td>16</td><td>21</td></tr>
+      <tr><td>臺中市</td><td class="num">13.8%</td><td class="num">8.58%</td><td class="num">+5.2</td><td>11</td><td>18</td></tr>
+      <tr><td>桃園市</td><td class="num">13.3%</td><td class="num">8.53%</td><td class="num">+4.7</td><td>14</td><td>19</td></tr>
+      <tr><td>臺北市</td><td class="num">9.9%</td><td class="num">6.39%</td><td class="num">+3.5</td><td>22</td><td>22</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="src">節選：分歧最大與最一致者。完整 22 縣市見 <code>scripts/verify_vacancy.py</code> 的輸出。</p>
+
+  <p><b>分歧集中在新竹與北部都會區。</b>新竹縣市、新北、臺中、桃園在普查排中段，在用電卻排最低段。
+  合理的解釋是：普查的「目前沒有使用」包含待租、待售、修繕中的房子，這些在熱門市場很多；
+  但它們往往還有些許用電，於是電表法不會認定為低度使用。這也表示<b>在房市熱區，
+  電表法會低估空屋</b>。</p>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">04</span>三件我先前不知道的事</h2>
+
+  <div class="card flag">
+    <h3>一、歷史數列被回溯修訂過</h3>
+    <p>109 年報告寫 98 年低度使用住宅比率是 <b>11.49%</b>；114 年報告寫的是 <b>10.68%</b>。
+    原因是 110 年上半年起改良了地址比對方法，並回溯重算 108、109 年，
+    98 至 107 年因原始資料已無法取得，改以「比率推估法」推估。</p>
+    <p>後果：<b>拿舊報告和新報告的數字互相比較會出錯</b>。要看長期趨勢，只能用同一份報告裡的數列。</p>
+  </div>
+
+  <div class="card flag">
+    <h3>二、這個統計只涵蓋八成的房子</h3>
+    <p>114 年下半年，房屋稅籍住宅類資料與台電資料的<b>勾稽成功率是 81.67%</b>，
+    比率是就勾稽成功者計算的。剩下近兩成不在分母也不在分子裡。</p>
+    <p>後果：這是<b>樣本統計不是普查</b>。跟普查的全查數字放在一起看時要記得這件事。</p>
+  </div>
+
+  <div class="card flag">
+    <h3>三、新屋空屋率正在急速下降</h3>
+    <p>用電定義下屋齡「5 年以下」的低度使用比率：113 年下半年約 <b>22.9%</b> →
+    114 年上半年約 <b>18.1%</b> → 114 年下半年 <b>12.39%</b>，一年降了超過 10 個百分點。
+    交屋潮正在被消化。</p>
+    <p>後果：我的兩張圖都是 109 年 11 月的<b>單一時點</b>，看不到這個變化。
+    「新屋空屋率最高」這個結論在 109 年成立，但幅度已經明顯縮小。
+    要講當前狀況，必須用內政部的半年資料。</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">05</span>已經改的與還沒改的</h2>
+  <ul>
+    <li><b>已改：</b>兩張圖的說明都把「114 年上半年 10.4%」更新為「114 年下半年 9.44%」，
+    並補上「84% 一致率其實被兩者都不認定的 77.37% 撐起來」這段。</li>
+    <li><b>已改：</b>鄉鎮市區頁新增一節，說明本頁的屋齡與坪數結論與內政部用電統計方向一致，
+    但水準與縣市排序都不一樣（等級相關 0.50），並註明新屋空屋率正在快速下降。</li>
+    <li><b>還沒改：</b>架構草案裡引用的「5 年以下新屋空置率 21.91%」沒有標期別。
+    對照官方數列，那應該是 113 年上半年前後的數字，不是現況。</li>
+    <li><b>建議下一步：</b>把內政部的半年數列接進來，就能把兩張圖從單一時點變成可追蹤趨勢。
+    這批 PDF 裡有 98 年至 114 年的完整縣市序列，可以直接抽出來用。</li>
+  </ul>
+</section>
+
+</div>
