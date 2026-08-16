@@ -209,6 +209,7 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
 <script type="application/json" id="tdat">__TDAT_JSON__</script>
 
 <script>
+__MAP_ZOOM_JS__
 (() => {
   'use strict';
   const GEO = JSON.parse(document.getElementById('tgeo').textContent);
@@ -576,5 +577,8 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
 
   drawScatter();
   paint();
+
+  // 368 townships, some only a few pixels across, so this one goes deeper.
+  enableMapZoom(svg, { max: 14 });
 })();
 </script>

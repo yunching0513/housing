@@ -187,6 +187,7 @@ __SHARED_CSS__
 <script type="application/json" id="hou">__HOU_JSON__</script>
 
 <script>
+__MAP_ZOOM_JS__
 (() => {
   'use strict';
   const GEO = JSON.parse(document.getElementById('geo').textContent);
@@ -550,5 +551,6 @@ __SHARED_CSS__
   });
 
   paint();
+  enableMapZoom(svg, { max: 10 });
 })();
 </script>

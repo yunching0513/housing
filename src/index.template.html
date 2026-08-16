@@ -153,6 +153,7 @@ __SHARED_CSS__
 <script type="application/json" id="hou">__HOU_JSON__</script>
 
 <script>
+__MAP_ZOOM_JS__
 (() => {
   'use strict';
   const GEO = JSON.parse(document.getElementById('geo').textContent);
@@ -661,5 +662,8 @@ __SHARED_CSS__
 
   paint();
   drawScatter();
+
+  // 22 counties on a 990×1000 frame: ×10 is enough to read 嘉義市 comfortably.
+  enableMapZoom(svg, { max: 10 });
 })();
 </script>

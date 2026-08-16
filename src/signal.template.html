@@ -239,6 +239,7 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
 <script type="application/json" id="sig">__SIG_JSON__</script>
 
 <script>
+__MAP_ZOOM_JS__
 (() => {
   'use strict';
   const GEO = JSON.parse(document.getElementById('tgeo').textContent);
@@ -589,5 +590,6 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
     .forEach(n => n.addEventListener('input', () => { drawTable(); mark(); }));
 
   paint();
+  enableMapZoom(svg, { max: 14 });
 })();
 </script>

@@ -47,6 +47,9 @@ PAGES = {
 def build(out_name, template_name, tokens):
     html = (ROOT / 'src' / template_name).read_text(encoding='utf-8')
     html = html.replace('__SHARED_CSS__', (ROOT / 'src' / 'shared.css').read_text(encoding='utf-8'))
+    # Only the pages that draw a map ask for it, so this is a plain replace with
+    # no error if the token is absent.
+    html = html.replace('__MAP_ZOOM_JS__', (ROOT / 'src' / 'mapzoom.js').read_text(encoding='utf-8'))
     for token, filename in tokens.items():
         if token not in html:
             sys.exit(f'{template_name} is missing {token}')
