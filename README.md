@@ -43,7 +43,16 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 放進 git 會讓每次 clone 都付出不成比例的代價；在本機執行一次
 `fetch_sources.py` 即可取得，且拿到的會是最新一期。
 
-## 二、臺灣住宅供需圖（P1）
+## 二、頁面
+
+`dist/` 下有兩頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
+
+| 檔案 | 內容 | 空間單元 |
+|---|---|---|
+| `index.html` | 臺灣住宅供需圖：人口與住宅供給對照 | 22 縣市 |
+| `town.html` | 臺灣空屋地圖：空屋在哪裡、能不能用 | 368 鄉鎮市區 |
+
+### 2a. 臺灣住宅供需圖（P1）
 
 把人口與住宅供給放在同一頁：民國 109 年 11 月的普查基準，加上 99 → 109 年的十年變化。
 
@@ -69,6 +78,23 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 讀者看得到誰接近邊緣。四色分型另外也未通過色彩檢核：深藍綠與深赭在正常視覺下的
 ΔE 僅 14.8，低於 15 的門檻。
 
+### 2b. 臺灣空屋地圖（P2）
+
+368 個鄉鎮市區，正面回答「空屋這麼多為什麼還要蓋社宅」。
+
+- 空屋率地圖（可切換遷入率、宅戶比、住宅存量），縣市界線疊在鄉鎮市區之上作為地標
+- **空屋的屋齡與坪數結構**：這是全頁的核心。空屋率最高的是屋齡未滿 10 年的新屋
+  （26.0%）與未滿 60 m² 的小宅（32.6%），都高於全體平均 18.5%
+- 遷入率 × 空屋率散布圖（368 點），橫軸採平方根刻度
+- 可依縣市、分型篩選並搜尋的完整資料表
+
+橫軸改用**近 5 年遷入率**而非十年人口變化，因為 99 年的鄉鎮市區資料被 Cloudflare
+擋住取不到，而遷入率與住宅資料同期，對社宅而言也更貼題。代價是它只計流入、
+不計流出，且離島駐軍輪調與大學城會造成極端值，頁面上都有標註。
+
+普查有 368 個鄉鎮市區，地圖畫得出 366 個：高雄市那瑪夏區與金門縣烏坵鄉在可取得的
+圖資中沒有對應範圍，已於圖上與說明中標示，其資料仍保留在表格與散布圖。
+
 ### 資料來源
 
 | 檔案 | 內容 |
@@ -76,6 +102,8 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 | `data/sources/99年常住人口數及人口密度.csv` | 行政院主計總處，民國 99 年 |
 | `data/sources/109年常住人口數及人口密度.xml` | 行政院主計總處，民國 109 年 |
 | `data/sources/twCounty2010.geo.json` | g0v `twgeojson`，2010 年縣市界 |
+| `data/sources/twTown1982.geo.json` | g0v `twgeojson`，鄉鎮市區界 |
+| `data_TW/07_普查109年_統計表/縣市/` | 各縣市報告表，含鄉鎮市區細分 |
 
 #### 兩期行政區的對齊
 
@@ -93,7 +121,9 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 python3 scripts/prep_data.py     # 合併兩期人口資料   -> data/tw_population.json
 python3 scripts/prep_geo.py      # 簡化縣市界圖資     -> data/tw_counties.json
 python3 scripts/prep_housing.py  # 普查住宅表與分型   -> data/tw_housing.json
-python3 scripts/build.py         # 把資料內嵌進版型   -> dist/index.html
+python3 scripts/prep_town_geo.py  # 簡化鄉鎮市區界    -> data/tw_towns.json
+python3 scripts/prep_town_data.py # 鄉鎮市區住宅資料  -> data/tw_town_data.json
+python3 scripts/build.py         # 內嵌並產出兩頁     -> dist/*.html
 ```
 
 `prep_data.py` 與 `prep_geo.py` 預期在含有原始檔的目錄下執行，路徑寫在各檔開頭。
