@@ -1,0 +1,763 @@
+<title>臺灣人口十年遷徙圖</title>
+
+<style>
+/* ── tokens ───────────────────────────────────────────────────────────────
+   Light is the complete palette on bare :root. Dark redefines only tokens,
+   once behind prefers-color-scheme (guarded so an explicit light choice wins)
+   and once behind [data-theme="dark"] so the toggle wins the other way.
+   Every component reads tokens only — never a literal, never a colour whose
+   sole definition sits inside a media block.                                */
+:root {
+  color-scheme: light dark;
+
+  --page:      #F4F7F7;
+  --card:      #FDFEFE;
+  --sea:       #E9EEEF;
+  --ink:       #12201F;
+  --ink-2:     #435657;
+  --ink-3:     #718485;
+  --rule:      #CBD8D9;
+  --rule-soft: #E0E8E9;
+  --coast:     #12201F;
+  --coast-w:   0.6;
+  --accent:    #245D5C;
+  --accent-bg: #DDE9E8;
+  --neutral:   #DFE0DA;
+  --shadow:    0 1px 2px rgba(18,32,31,.05), 0 8px 24px -12px rgba(18,32,31,.16);
+
+  /* diverging: sienna arm (decline) → teal arm (growth), 4 equal steps each,
+     midpoint at 0. Derived at fixed OKLCH lightnesses, not eyeballed.        */
+  --div-0: #7c401d;  --div-1: #a05429;  --div-2: #c46834;  --div-3: #e97d40;
+  --div-4: #4cb1af;  --div-5: #3e9493;  --div-6: #317978;  --div-7: #245d5c;
+
+  /* sequential: one hue, light → dark, for 人口密度                          */
+  --seq-0: #4ab5b3;  --seq-1: #40a09e;  --seq-2: #378b8a;
+  --seq-3: #2e7776;  --seq-4: #256463;  --seq-5: #1d5150;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page:      #0B1314;
+    --card:      #131E20;
+    --sea:       #101A1C;
+    --ink:       #E3EDEC;
+    --ink-2:     #A2B5B5;
+    --ink-3:     #74898A;
+    --rule:      #2A3839;
+    --rule-soft: #1D2A2C;
+    --coast:     #0B1314;
+    --coast-w:   0.5;
+    --accent:    #64CBC9;
+    --accent-bg: #1B2E2E;
+    --neutral:   #3A4244;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+
+    /* anchor flips in dark: the extremes carry the light, the midpoint the ink */
+    --div-0: #f2a177;  --div-1: #d37139;  --div-2: #a9592b;  --div-3: #80421f;
+    --div-4: #2b5f5e;  --div-5: #3b7e7d;  --div-6: #4d9f9d;  --div-7: #64cbc9;
+
+    --seq-0: #285958;  --seq-1: #336e6d;  --seq-2: #3f8583;
+    --seq-3: #4b9b9a;  --seq-4: #57b3b1;  --seq-5: #64cbc9;
+  }
+}
+
+:root[data-theme="dark"] {
+  --page:      #0B1314;
+  --card:      #131E20;
+  --sea:       #101A1C;
+  --ink:       #E3EDEC;
+  --ink-2:     #A2B5B5;
+  --ink-3:     #74898A;
+  --rule:      #2A3839;
+  --rule-soft: #1D2A2C;
+  --coast:     #0B1314;
+  --coast-w:   0.5;
+  --accent:    #64CBC9;
+  --accent-bg: #1B2E2E;
+  --neutral:   #3A4244;
+  --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+
+  --div-0: #f2a177;  --div-1: #d37139;  --div-2: #a9592b;  --div-3: #80421f;
+  --div-4: #2b5f5e;  --div-5: #3b7e7d;  --div-6: #4d9f9d;  --div-7: #64cbc9;
+
+  --seq-0: #285958;  --seq-1: #336e6d;  --seq-2: #3f8583;
+  --seq-3: #4b9b9a;  --seq-4: #57b3b1;  --seq-5: #64cbc9;
+}
+
+/* ── type ─────────────────────────────────────────────────────────────────
+   No webfont: a CJK face is megabytes and the artifact CSP blocks font CDNs,
+   so a linked face would silently fall back. Three deliberate system roles
+   instead — 明體 for display (the register of a 統計年報), 黑體 for running
+   text, mono with tabular figures for every number on the page.             */
+:root {
+  --f-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti TC",
+               "Noto Serif CJK TC", "Source Han Serif TC", PMingLiU, serif;
+  --f-body:    ui-sans-serif, system-ui, -apple-system, "PingFang TC",
+               "Noto Sans CJK TC", "Microsoft JhengHei", "Hiragino Sans", sans-serif;
+  --f-mono:    ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 56px) clamp(16px, 3vw, 32px) 72px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3vw, 40px);
+}
+
+h1, h2, h3 { font-family: var(--f-display); font-weight: 600; text-wrap: balance; margin: 0; }
+
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ── header ───────────────────────────────────────────────────────────── */
+header { display: flex; flex-direction: column; gap: 12px; }
+header h1 { font-size: clamp(30px, 4.4vw, 46px); line-height: 1.15; letter-spacing: .01em; }
+header .dek { max-width: 62ch; color: var(--ink-2); font-size: clamp(15px, 1.5vw, 17px); }
+header .dek b { color: var(--ink); font-weight: 600; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.stat { background: var(--card); padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; }
+.stat dt { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; color: var(--ink-3); }
+.stat dd {
+  margin: 0;
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(21px, 2.4vw, 27px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.stat .sub { font-family: var(--f-body); font-size: 12.5px; color: var(--ink-2); letter-spacing: 0; }
+.stat dd.up   { color: var(--div-7); }
+.stat dd.down { color: var(--div-0); }
+
+/* ── controls ─────────────────────────────────────────────────────────── */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.seg { display: flex; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; background: var(--card); }
+.seg button {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  font-family: var(--f-body); font-size: 13.5px; color: var(--ink-2);
+  padding: 8px 15px; border-right: 1px solid var(--rule); transition: background .12s, color .12s;
+}
+.seg button:last-child { border-right: 0; }
+.seg button:hover { background: var(--rule-soft); color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--accent-bg); color: var(--ink); font-weight: 600; }
+.controls .hint { font-size: 12.5px; color: var(--ink-3); margin-left: auto; }
+
+:where(button, [tabindex], th[role="button"]):focus-visible,
+.county:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── figure grid ──────────────────────────────────────────────────────── */
+.figures { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); gap: clamp(16px, 2.2vw, 28px); align-items: start; }
+@media (max-width: 940px) { .figures { grid-template-columns: 1fr; } }
+
+.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 3px; box-shadow: var(--shadow); }
+.panel > header { padding: 14px 18px 12px; border-bottom: 1px solid var(--rule-soft); gap: 3px; }
+.panel > header h2 { font-size: 16px; }
+.panel > header p { margin: 0; font-size: 12.5px; color: var(--ink-3); }
+.panel .body { padding: 14px 18px 18px; }
+
+/* ── map ──────────────────────────────────────────────────────────────── */
+.mapwrap { position: relative; }
+svg.map { display: block; width: 100%; height: auto; background: var(--sea); border-radius: 2px; }
+.county { stroke: var(--coast); stroke-width: var(--coast-w); stroke-linejoin: round; cursor: pointer; }
+.county:hover { stroke-width: 2.4; stroke: var(--ink); }
+.county.active { stroke-width: 2.8; stroke: var(--ink); }
+.map.dimmed .county:not(.active) { opacity: .38; }
+.grat { stroke: var(--ink-3); stroke-width: .4; opacity: .3; fill: none; }
+.grat-tick { font-family: var(--f-mono); font-size: 9px; fill: var(--ink-3); opacity: .8; }
+.inset-frame { fill: none; stroke: var(--ink-3); stroke-width: .7; opacity: .5; stroke-dasharray: 3 3; }
+.inset-label { font-family: var(--f-mono); font-size: 10.5px; fill: var(--ink-3); }
+.scalebar { fill: none; stroke: var(--ink-3); stroke-width: .9; opacity: .75; }
+.lbl { font-family: var(--f-body); font-size: 12.5px; font-weight: 600; fill: var(--ink); paint-order: stroke;
+       stroke: var(--sea); stroke-width: 3.2px; stroke-linejoin: round; pointer-events: none; }
+.lbl.sm { font-size: 11px; }
+.leader { stroke: var(--ink-3); stroke-width: .6; opacity: .7; fill: none; pointer-events: none; }
+
+/* ── legend ───────────────────────────────────────────────────────────── */
+.legend { margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
+.legend .swatches { display: flex; gap: 2px; }
+.legend .sw { flex: 1; height: 15px; border-radius: 1px; position: relative; }
+.legend .ticks { display: flex; font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3);
+                 font-variant-numeric: tabular-nums; }
+.legend .ticks span { flex: 1; text-align: right; transform: translateX(50%); white-space: nowrap; }
+.legend .ticks span:last-child { transform: none; opacity: 0; }
+.legend .cap { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); }
+.legend .zero { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3); }
+
+/* ── ranked bars ──────────────────────────────────────────────────────── */
+.bars { display: flex; flex-direction: column; }
+.row { display: grid; grid-template-columns: 4.6em minmax(0, 1fr) 5.6em; align-items: center;
+       gap: 8px; padding: 1px 0; cursor: pointer; border-radius: 2px; }
+.row:hover, .row.active { background: var(--rule-soft); }
+.row .nm { font-size: 12.5px; text-align: right; color: var(--ink-2); white-space: nowrap; }
+.row.active .nm { color: var(--ink); font-weight: 600; }
+.row .val { font-family: var(--f-mono); font-size: 11.5px; font-variant-numeric: tabular-nums;
+            text-align: right; color: var(--ink-2); }
+.row.active .val { color: var(--ink); font-weight: 600; }
+.track { position: relative; height: 15px; }
+.track .zeroline { position: absolute; top: -1px; bottom: -1px; width: 1px; background: var(--rule); }
+.track .bar { position: absolute; top: 2px; bottom: 2px; border-radius: 1px; min-width: 1.5px; }
+
+/* ── table ────────────────────────────────────────────────────────────── */
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+caption { text-align: left; font-size: 12.5px; color: var(--ink-3); padding-bottom: 10px; }
+th, td { padding: 7px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--rule-soft); }
+th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+thead th { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .06em; color: var(--ink-3);
+           font-weight: 500; border-bottom: 1px solid var(--rule); cursor: pointer; user-select: none; }
+thead th:hover { color: var(--ink); }
+thead th[aria-sort] { color: var(--ink); }
+thead th[aria-sort="descending"]::after { content: " ↓"; }
+thead th[aria-sort="ascending"]::after  { content: " ↑"; }
+tbody tr:hover, tbody tr.active { background: var(--rule-soft); }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+td .chip { display: inline-block; width: 9px; height: 9px; border-radius: 1px; margin-right: 7px; vertical-align: -1px; }
+td.up   { color: var(--div-7); font-weight: 600; }
+td.down { color: var(--div-0); font-weight: 600; }
+tfoot td { font-weight: 600; border-top: 1px solid var(--rule); border-bottom: 0; padding-top: 10px; }
+
+/* ── tooltip ──────────────────────────────────────────────────────────── */
+#tip {
+  position: fixed; z-index: 40; pointer-events: none; opacity: 0; transform: translateY(3px);
+  transition: opacity .1s ease, transform .1s ease;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  box-shadow: var(--shadow); padding: 10px 12px; min-width: 196px;
+}
+#tip.on { opacity: 1; transform: none; }
+#tip .t-nm { font-family: var(--f-display); font-size: 15px; font-weight: 600; }
+#tip .t-en { font-family: var(--f-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .06em; }
+#tip dl { display: grid; grid-template-columns: auto auto; gap: 2px 14px; margin: 9px 0 0;
+          font-size: 12px; border-top: 1px solid var(--rule-soft); padding-top: 8px; }
+#tip dt { color: var(--ink-3); }
+#tip dd { margin: 0; text-align: right; font-family: var(--f-mono);
+          font-variant-numeric: tabular-nums; font-size: 12px; }
+#tip dd.up { color: var(--div-7); font-weight: 600; }
+#tip dd.down { color: var(--div-0); font-weight: 600; }
+
+/* ── notes ────────────────────────────────────────────────────────────── */
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px 32px; }
+.notes section { display: flex; flex-direction: column; gap: 6px; }
+.notes h3 { font-size: 13.5px; }
+.notes p, .notes li { font-size: 12.5px; color: var(--ink-2); line-height: 1.65; margin: 0; }
+.notes ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 4px; }
+.notes code { font-family: var(--f-mono); font-size: 11.5px; background: var(--rule-soft);
+              padding: 1px 4px; border-radius: 2px; }
+hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">民國 99 年 → 109 年 ・ 常住人口數 ・ 行政院主計總處</p>
+    <h1>臺灣人口十年遷徙圖</h1>
+    <p class="dek">
+      十年間全國常住人口增加 <b>70.6 萬人</b>，但 22 個縣市裡<b>只有 8 個在成長</b>。
+      增加的人口幾乎全數集中在西部走廊北段——桃園、臺中、新北與新竹次都會區；
+      臺北市本身反而流失 6 萬人。這張圖把「總量微增」底下的<b>重分配</b>攤開來看。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="選擇指標">
+      <button type="button" data-metric="pct"     aria-pressed="true">人口成長率</button>
+      <button type="button" data-metric="delta"   aria-pressed="false">人口增減數</button>
+      <button type="button" data-metric="density" aria-pressed="false">人口密度</button>
+    </div>
+    <p class="hint">點選縣市可固定；再點一次取消</p>
+  </div>
+
+  <div class="figures">
+    <div class="panel">
+      <header>
+        <h2 id="map-title">縣市分布圖</h2>
+        <p id="map-sub"></p>
+      </header>
+      <div class="body">
+        <div class="mapwrap"><svg class="map" id="map" viewBox="0 0 990 1000"
+             role="img" aria-labelledby="map-title" aria-describedby="map-desc"></svg></div>
+        <p id="map-desc" hidden></p>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <header>
+        <h2 id="bars-title">22 縣市排序</h2>
+        <p id="bars-sub"></p>
+      </header>
+      <div class="body"><div class="bars" id="bars"></div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="body">
+      <div class="tablewrap">
+        <table id="tbl">
+          <caption>常住人口數（人）與人口密度（人／平方公里）。點欄位標題可換排序。</caption>
+          <thead><tr>
+            <th data-sort="name"       scope="col">縣市</th>
+            <th data-sort="region"     scope="col">區域</th>
+            <th data-sort="p99"        scope="col">99 年</th>
+            <th data-sort="p109"       scope="col">109 年</th>
+            <th data-sort="delta"      scope="col">增減</th>
+            <th data-sort="pct"        scope="col" aria-sort="descending">成長率</th>
+            <th data-sort="density109" scope="col">密度 109</th>
+            <th data-sort="area"       scope="col">面積 km²</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>資料與定義</h3>
+      <p>兩期皆為<b>常住人口數</b>——在該地實際居住達一定期間者，與戶籍登記人口不同。人口密度為當期常住人口除以土地面積。</p>
+      <p>來源：行政院主計總處「常住人口數及人口密度」，99 年 (CSV) 與 109 年 (XML) 兩份原始檔。</p>
+    </section>
+    <section>
+      <h3>行政區對照</h3>
+      <p>99 年資料早於 <b>99 年 12 月 25 日五都改制</b>，因此做了三處對齊：</p>
+      <ul>
+        <li><code>桃園縣</code> 對應 109 年 <code>桃園市</code></li>
+        <li>臺中、臺南、高雄取原表中「縣市合計」的母列，而非合併前的市／縣子列</li>
+        <li><code>臺北縣</code> 對應 <code>新北市</code></li>
+      </ul>
+      <p>兩期加總後分別為 23,123,866 與 23,829,897 人，與原始檔的總計列完全一致。</p>
+    </section>
+    <section>
+      <h3>判讀提醒</h3>
+      <ul>
+        <li><b>連江縣 −19.1%</b> 主要來自駐軍精簡：男性由 11,770 降至 7,892 人，女性反而增加。以常住人口衡量的離島小基數變動須謹慎解讀。</li>
+        <li><b>新竹縣 +21.3%</b> 為竹北一地帶動；新竹市與新竹縣宜合看為同一次都會區（合計 +13.4 萬人）。</li>
+        <li>成長率為十年累計，非年增率。</li>
+      </ul>
+    </section>
+    <section>
+      <h3>製圖說明</h3>
+      <ul>
+        <li>縣市界圖資：g0v <code>twgeojson</code>（2010 年界線），已做 Douglas–Peucker 簡化並移除 0.15 km² 以下島礁。</li>
+        <li>金門與馬祖為<b>插圖</b>，比例尺與本島不同，已於框上標示放大倍率。</li>
+        <li>色階為發散式（衰退／成長各四階、以 0 為中點）與循序式（密度），皆通過明度單調與對比檢核。</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="geo">__GEO_JSON__</script>
+<script type="application/json" id="pop">__POP_JSON__</script>
+
+<script>
+(() => {
+  'use strict';
+  const GEO = JSON.parse(document.getElementById('geo').textContent);
+  const POP = JSON.parse(document.getElementById('pop').textContent);
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]); return n; };
+  const byName = new Map(POP.counties.map(c => [c.name, c]));
+
+  // ── projection ────────────────────────────────────────────────────────
+  // Equirectangular with longitude shrunk by cos(mean latitude) so the island
+  // keeps its proportions. Kinmen and Matsu are ~200 km offshore and would be
+  // invisible specks at the main scale, so each gets a labelled inset at a
+  // stated magnification. Kept low on purpose: at ×3+ Kinmen's 152 km² reads
+  // bigger than a real west-coast county.
+  const MAIN = [258, 8, 724, 984];
+  const INSETS = { matsu: { mag: 1.5, x: 14, y: 40 }, kinmen: { mag: 2.0, x: 14, y: 292 } };
+  const RECTS = { main: MAIN };
+  const proj = {};
+  const cosOf = (b) => Math.cos((b[1] + b[3]) / 2 * Math.PI / 180);
+  {
+    const b = GEO.bounds.main, k = cosOf(b), [x, y, w, h] = MAIN;
+    const s = Math.min(w / ((b[2] - b[0]) * k), h / (b[3] - b[1]));
+    proj.main = { b, k, s,
+      dx: x + (w - (b[2] - b[0]) * k * s) / 2,
+      dy: y + (h - (b[3] - b[1]) * s) / 2 };
+  }
+  // Each inset frame is sized to its own content, so no frame carries dead sea.
+  for (const [g, cfg] of Object.entries(INSETS)) {
+    const b = GEO.bounds[g], k = cosOf(b), s = proj.main.s * cfg.mag;
+    const w = (b[2] - b[0]) * k * s, h = (b[3] - b[1]) * s;
+    RECTS[g] = [cfg.x, cfg.y, w, h];
+    proj[g] = { b, k, s, dx: cfg.x, dy: cfg.y };
+  }
+  const px = (g, lon) => proj[g].dx + (lon - proj[g].b[0]) * proj[g].k * proj[g].s;
+  const py = (g, lat) => proj[g].dy + (proj[g].b[3] - lat) * proj[g].s;
+
+  const pathOf = (c) => c.rings.map(r =>
+    'M' + r.map(([lo, la]) => `${px(c.group, lo).toFixed(1)} ${py(c.group, la).toFixed(1)}`).join('L') + 'Z'
+  ).join('');
+
+  /** Area-weighted centroid of a county's largest ring — where its label goes. */
+  const centroid = (c) => {
+    const r = c.rings[0]; let a = 0, cx = 0, cy = 0;
+    for (let i = 0; i < r.length - 1; i++) {
+      const x1 = px(c.group, r[i][0]),     y1 = py(c.group, r[i][1]);
+      const x2 = px(c.group, r[i + 1][0]), y2 = py(c.group, r[i + 1][1]);
+      const f = x1 * y2 - x2 * y1;
+      a += f; cx += (x1 + x2) * f; cy += (y1 + y2) * f;
+    }
+    return a ? [cx / (3 * a), cy / (3 * a)] : [px(c.group, r[0][0]), py(c.group, r[0][1])];
+  };
+
+  // Short map labels. dx/dy nudge the crowded west-coast cities off their
+  // centroids; `lead` draws a hairline back to the polygon.
+  // Kinmen and Matsu are named on their inset frames instead, so they are absent here.
+  const LBL = {
+    新北市: ['新北', -46, 26], 臺北市: ['臺北', 56, -34, 1], 桃園市: ['桃園', -18, 8],
+    基隆市: ['基隆', 42, -24, 1], 新竹市: ['竹市', -52, 4, 1], 新竹縣: ['竹縣', 18, 6],
+    宜蘭縣: ['宜蘭', 6, 12], 苗栗縣: ['苗栗', -6, 2], 臺中市: ['臺中', 24, 2],
+    彰化縣: ['彰化', -36, 6, 1], 南投縣: ['南投', 8, 10], 雲林縣: ['雲林', -28, 4, 1],
+    嘉義市: ['嘉市', -52, -8, 1], 嘉義縣: ['嘉縣', 10, 8], 臺南市: ['臺南', -4, 6],
+    高雄市: ['高雄', 2, 26], 屏東縣: ['屏東', 2, 30], 花蓮縣: ['花蓮', 0, 20],
+    臺東縣: ['臺東', -4, 12], 澎湖縣: ['澎湖', 0, 42],
+  };
+
+  // ── metrics ───────────────────────────────────────────────────────────
+  const int = (v) => Math.round(Math.abs(v)).toLocaleString('en-US');
+  const sign = (v) => (v > 0 ? '+' : v < 0 ? '−' : '');
+  const METRICS = {
+    pct: {
+      label: '十年人口成長率', unit: '%', kind: 'div',
+      breaks: [-10, -5, -2, 0, 2, 5, 10],
+      tick: (v) => (v ? (v > 0 ? '+' : '−') + Math.abs(v) : '0') + '%',
+      get: (c) => c.pct,
+      fmt: (v) => sign(v) + Math.abs(v).toFixed(1) + '%',
+      sub: '以 99 年為基期的十年累計增減率，0% 為色階中點',
+      lo: '衰退', hi: '成長',
+    },
+    delta: {
+      label: '十年人口增減數', unit: '人', kind: 'div',
+      breaks: [-150000, -40000, -10000, 0, 10000, 40000, 150000],
+      tick: (v) => v ? (v > 0 ? '+' : '−') + Math.abs(v / 10000) + '萬' : '0',
+      get: (c) => c.delta,
+      fmt: (v) => sign(v) + int(v),
+      sub: '實際增減人數。級距對稱，最外側衰退級距無縣市落入',
+      lo: '減少', hi: '增加',
+    },
+    density: {
+      label: '人口密度（109 年）', unit: '人/km²', kind: 'seq',
+      breaks: [150, 400, 1000, 2500, 5000],
+      tick: (v) => int(v),
+      get: (c) => c.density109,
+      fmt: (v) => int(v),
+      sub: '每平方公里常住人口，反映人口實際分布的疏密',
+      lo: '低', hi: '高',
+    },
+  };
+  const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
+    return i === -1 ? m.breaks.length : i; };
+  const fillOf = (m, v) => `var(--${m.kind === 'div' ? 'div' : 'seq'}-${classOf(m, v)})`;
+
+  let metric = 'pct', pinned = null, hovered = null;
+
+  // ── build the map once; only fills change on metric switch ────────────
+  const svg = document.getElementById('map');
+  const gGrat = el('g', { class: 'grat' });
+  const gTick = el('g');
+  const gLand = el('g');
+  const gDeco = el('g');
+  const gLbl  = el('g');
+  svg.append(gGrat, gTick, gLand, gDeco, gLbl);
+
+  { // graticule + degree ticks over the main map only
+    const [rx, ry, rw, rh] = RECTS.main;
+    for (let lon = 120; lon <= 122; lon++) {
+      const x = px('main', lon); if (x < rx || x > rx + rw) continue;
+      gGrat.append(el('line', { x1: x, y1: ry, x2: x, y2: ry + rh }));
+      if (x + 34 > 990) continue;  // would run off the right edge
+      gTick.append(Object.assign(el('text', { class: 'grat-tick', x: x + 3, y: ry + rh - 6 }),
+        { textContent: lon + '°E' }));
+    }
+    for (let lat = 22; lat <= 25; lat++) {
+      const y = py('main', lat); if (y < ry || y > ry + rh) continue;
+      gGrat.append(el('line', { x1: rx, y1: y, x2: rx + rw, y2: y }));
+      gTick.append(Object.assign(el('text', { class: 'grat-tick', x: rx + 4, y: y - 4 }),
+        { textContent: lat + '°N' }));
+    }
+  }
+
+  for (const c of GEO.counties) {
+    const p = el('path', {
+      class: 'county', d: pathOf(c), 'data-name': c.name,
+      tabindex: '0', role: 'button', 'aria-label': c.name,
+    });
+    gLand.append(p);
+  }
+
+  { // inset frames, labelled with their magnification against the main scale
+    const mk = (g, text) => {
+      const [x, y, w, h] = RECTS[g];
+      gDeco.append(el('rect', { class: 'inset-frame', x, y, width: w, height: h, rx: 2 }));
+      gDeco.append(Object.assign(el('text', { class: 'inset-label', x: x + 2, y: y - 6 }),
+        { textContent: `${text} ×${(proj[g].s / proj.main.s).toFixed(1)}` }));
+    };
+    mk('matsu', '連江縣（馬祖）');
+    mk('kinmen', '金門縣');
+  }
+
+  { // scale bar — main map only; the insets carry their own magnification
+    const KM = 50, x0 = 26, y0 = 946;
+    const w = KM * proj.main.s / 111.32;
+    gDeco.append(el('path', { class: 'scalebar',
+      d: `M${x0} ${y0 - 5}V${y0}H${x0 + w}V${y0 - 5}M${x0 + w / 2} ${y0}v-4` }));
+    for (const [v, x] of [[0, x0], [KM / 2, x0 + w / 2], [KM, x0 + w]]) {
+      gDeco.append(Object.assign(el('text', {
+        class: 'inset-label', x, y: y0 + 13,
+        'text-anchor': v === 0 ? 'start' : v === KM ? 'end' : 'middle',
+      }), { textContent: v === KM ? `${v} km` : String(v) }));
+    }
+  }
+
+  for (const c of GEO.counties) {
+    if (!LBL[c.name]) continue;
+    const [nm, dx = 0, dy = 0, lead = 0] = LBL[c.name];
+    const [cx, cy] = centroid(c);
+    if (lead) gLbl.append(el('path', { class: 'leader',
+      d: `M${cx.toFixed(1)} ${cy.toFixed(1)}L${(cx + dx * .82).toFixed(1)} ${(cy + dy * .82 - 4).toFixed(1)}` }));
+    gLbl.append(Object.assign(el('text', {
+      class: 'lbl' + (['基隆市','新竹市','嘉義市','澎湖縣'].includes(c.name) ? ' sm' : ''),
+      x: (cx + dx).toFixed(1), y: (cy + dy).toFixed(1), 'text-anchor': 'middle',
+    }), { textContent: nm }));
+  }
+
+  // ── panels ────────────────────────────────────────────────────────────
+  const barsEl = document.getElementById('bars');
+  const legendEl = document.getElementById('legend');
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  const tip = document.getElementById('tip');
+  let sortKey = 'pct', sortDir = -1;
+
+  function paint() {
+    const m = METRICS[metric];
+    document.getElementById('map-sub').textContent = m.sub;
+    document.getElementById('bars-sub').textContent = `依${m.label}排序 ・ 單位 ${m.unit}`;
+    document.getElementById('map-desc').textContent =
+      `臺灣 22 縣市${m.label}分布圖。` +
+      POP.counties.map(c => `${c.name} ${m.fmt(m.get(c))}`).join('、') + '。';
+
+    for (const p of gLand.children) {
+      p.style.fill = fillOf(m, m.get(byName.get(p.dataset.name)));
+    }
+    drawLegend(m);
+    drawBars(m);
+    drawTable();
+    mark();
+  }
+
+  function drawLegend(m) {
+    const n = m.breaks.length + 1;
+    const pre = m.kind === 'div' ? 'div' : 'seq';
+    legendEl.innerHTML = '';
+    const cap = document.createElement('div'); cap.className = 'cap';
+    cap.innerHTML = `<span>← ${m.lo}</span>` +
+      (m.kind === 'div' ? `<span class="zero">0 為中點</span>` : '') +
+      `<span>${m.hi} →</span>`;
+    const sws = document.createElement('div'); sws.className = 'swatches';
+    for (let i = 0; i < n; i++) {
+      const d = document.createElement('div');
+      d.className = 'sw'; d.style.background = `var(--${pre}-${i})`;
+      const cnt = POP.counties.filter(c => classOf(m, m.get(c)) === i).length;
+      d.title = `${cnt} 個縣市`;
+      if (!cnt) d.style.opacity = '.34';
+      sws.append(d);
+    }
+    const tk = document.createElement('div'); tk.className = 'ticks';
+    for (const b of m.breaks) { const s = document.createElement('span');
+      s.textContent = m.tick(b); tk.append(s); }
+    tk.append(document.createElement('span'));
+    legendEl.append(cap, sws, tk);
+  }
+
+  function drawBars(m) {
+    const vals = POP.counties.map(c => m.get(c));
+    const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+    const span = hi - lo || 1;
+    const zero = (0 - lo) / span * 100;
+    const rows = [...POP.counties].sort((a, b) => m.get(b) - m.get(a));
+    barsEl.innerHTML = '';
+    for (const c of rows) {
+      const v = m.get(c);
+      const a = (Math.min(0, v) - lo) / span * 100;
+      const w = Math.abs(v) / span * 100;
+      const r = document.createElement('div');
+      r.className = 'row'; r.dataset.name = c.name; r.tabIndex = 0;
+      r.innerHTML =
+        `<span class="nm">${c.name.slice(0, 3)}</span>` +
+        `<span class="track"><i class="zeroline" style="left:${zero}%"></i>` +
+        `<i class="bar" style="left:${a}%;width:${w}%;background:${fillOf(m, v)}"></i></span>` +
+        `<span class="val">${m.fmt(v)}</span>`;
+      barsEl.append(r);
+    }
+  }
+
+  function drawTable() {
+    const m = METRICS[metric];
+    const rows = [...POP.counties].sort((a, b) => {
+      const x = a[sortKey], y = b[sortKey];
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    tbody.innerHTML = rows.map(c => `
+      <tr data-name="${c.name}">
+        <td><i class="chip" style="background:${fillOf(m, m.get(c))}"></i>${c.name}</td>
+        <td>${c.region}</td>
+        <td class="num">${int(c.p99)}</td>
+        <td class="num">${int(c.p109)}</td>
+        <td class="num ${c.delta > 0 ? 'up' : 'down'}">${sign(c.delta)}${int(c.delta)}</td>
+        <td class="num ${c.pct > 0 ? 'up' : 'down'}">${sign(c.pct)}${Math.abs(c.pct).toFixed(2)}%</td>
+        <td class="num">${int(c.density109)}</td>
+        <td class="num">${c.area.toLocaleString('en-US', { minimumFractionDigits: 1 })}</td>
+      </tr>`).join('');
+    const t = POP.totals;
+    tfoot.innerHTML = `<tr>
+      <td>總計</td><td>22 縣市</td>
+      <td class="num">${int(t.p99)}</td><td class="num">${int(t.p109)}</td>
+      <td class="num up">${sign(t.delta)}${int(t.delta)}</td>
+      <td class="num up">${sign(t.pct)}${Math.abs(t.pct).toFixed(2)}%</td>
+      <td class="num">638.9 → 658.3</td><td class="num">36,197.1</td></tr>`;
+  }
+
+  // ── linked highlight ──────────────────────────────────────────────────
+  const active = () => pinned || hovered;
+  function mark() {
+    const a = active();
+    svg.classList.toggle('dimmed', !!a);
+    for (const p of gLand.children) p.classList.toggle('active', p.dataset.name === a);
+    for (const r of barsEl.children) r.classList.toggle('active', r.dataset.name === a);
+    for (const r of tbody.children) r.classList.toggle('active', r.dataset.name === a);
+  }
+
+  function showTip(name, x, y) {
+    const c = byName.get(name); if (!c) return;
+    tip.innerHTML =
+      `<div class="t-nm">${c.name}</div><div class="t-en">${c.en.toUpperCase()} ・ ${c.region}</div>
+       <dl>
+         <dt>99 年常住人口</dt><dd>${int(c.p99)}</dd>
+         <dt>109 年常住人口</dt><dd>${int(c.p109)}</dd>
+         <dt>十年增減</dt><dd class="${c.delta > 0 ? 'up' : 'down'}">${sign(c.delta)}${int(c.delta)}</dd>
+         <dt>成長率</dt><dd class="${c.pct > 0 ? 'up' : 'down'}">${sign(c.pct)}${Math.abs(c.pct).toFixed(2)}%</dd>
+         <dt>人口密度 109</dt><dd>${int(c.density109)}</dd>
+         <dt>土地面積</dt><dd>${c.area.toLocaleString('en-US', { minimumFractionDigits: 1 })} km²</dd>
+       </dl>`;
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(x + 16, innerWidth - r.width - 12) + 'px';
+    tip.style.top = Math.min(Math.max(12, y - r.height / 2), innerHeight - r.height - 12) + 'px';
+  }
+  const hideTip = () => { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); };
+
+  function bind(root, getName) {
+    root.addEventListener('pointerover', (e) => {
+      const n = getName(e.target); if (!n) return;
+      hovered = n; mark(); showTip(n, e.clientX, e.clientY);
+    });
+    root.addEventListener('pointermove', (e) => {
+      const n = getName(e.target); if (n) showTip(n, e.clientX, e.clientY);
+    });
+    root.addEventListener('pointerout', (e) => {
+      if (!getName(e.target)) return;
+      hovered = null; mark(); if (!pinned) hideTip();
+    });
+    root.addEventListener('click', (e) => {
+      const n = getName(e.target); if (!n) return;
+      pinned = pinned === n ? null : n; mark();
+      if (!pinned) hideTip(); else showTip(n, e.clientX, e.clientY);
+    });
+    root.addEventListener('focusin', (e) => {
+      const n = getName(e.target); if (!n) return;
+      hovered = n; mark();
+      const b = e.target.getBoundingClientRect();
+      showTip(n, b.right, b.top + b.height / 2);
+    });
+    root.addEventListener('focusout', () => { hovered = null; mark(); if (!pinned) hideTip(); });
+    root.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const n = getName(e.target); if (!n) return;
+      e.preventDefault(); pinned = pinned === n ? null : n; mark();
+    });
+  }
+  bind(svg, (t) => t.closest?.('.county')?.dataset.name);
+  bind(barsEl, (t) => t.closest?.('.row')?.dataset.name);
+  bind(tbody, (t) => t.closest?.('tr')?.dataset.name);
+
+  // ── controls ──────────────────────────────────────────────────────────
+  for (const b of document.querySelectorAll('.seg button')) {
+    b.addEventListener('click', () => {
+      metric = b.dataset.metric;
+      for (const o of document.querySelectorAll('.seg button'))
+        o.setAttribute('aria-pressed', String(o === b));
+      paint();
+    });
+  }
+  for (const th of document.querySelectorAll('#tbl thead th')) {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      sortDir = sortKey === k ? -sortDir : (k === 'name' || k === 'region' ? 1 : -1);
+      sortKey = k;
+      for (const o of document.querySelectorAll('#tbl thead th')) o.removeAttribute('aria-sort');
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable(); mark();
+    });
+  }
+
+  // ── headline stats ────────────────────────────────────────────────────
+  {
+    const t = POP.totals;
+    const SIX = ['新北市', '臺北市', '桃園市', '臺中市', '臺南市', '高雄市'];
+    const six = SIX.reduce((s, n) => s + byName.get(n).p109, 0);
+    document.getElementById('stats').innerHTML = [
+      ['全國常住人口 109 年', int(t.p109), `99 年 ${int(t.p99)}`, ''],
+      ['十年增減', `${sign(t.delta)}${int(t.delta)}`, `${sign(t.pct)}${Math.abs(t.pct).toFixed(2)}%`, 'up'],
+      ['人口成長的縣市', `${t.grew} / 22`, `其餘 ${t.shrank} 個縣市人口減少`, ''],
+      ['六都人口占比', `${(six / t.p109 * 100).toFixed(1)}%`,
+        `${(six / 10000).toFixed(0)} 萬人集中於六個直轄市`, ''],
+    ].map(([k, v, s, cls]) =>
+      `<div class="stat"><dt>${k}</dt><dd class="${cls}">${v}</dd><dd class="sub">${s}</dd></div>`
+    ).join('');
+  }
+
+  paint();
+})();
+</script>
