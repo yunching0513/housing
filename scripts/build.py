@@ -31,6 +31,12 @@ PAGES = {
         '__SOC_JSON__': 'tw_social_housing.json',
         '__HOU_JSON__': 'tw_housing.json',
     }),
+    'priority.html': ('priority.template.html', {
+        '__AFF_JSON__': 'tw_affordability.json',
+        '__HOU_JSON__': 'tw_housing.json',
+        '__POP_JSON__': 'tw_population.json',
+        '__PSER_JSON__': 'tw_pop_series.json',
+    }),
 }
 
 

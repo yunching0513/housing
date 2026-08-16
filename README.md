@@ -45,7 +45,7 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 
 ## 二、頁面
 
-`dist/` 下有五頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
+`dist/` 下有六頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
 
 | 檔案 | 內容 | 空間單元 |
 |---|---|---|
@@ -54,6 +54,7 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 | `metro.html` | 六都與新竹的內部落差：縣市平均掩蓋了什麼 | 174 鄉鎮市區 |
 | `trend.html` | 空屋率的十六年：內政部半年數列 | 22 縣市 ＋ 174 行政區 |
 | `social.html` | 包租代管在哪裡：社宅政策實際落點 | 22 縣市（19 有辦） |
+| `priority.html` | 先蓋在哪裡：三種優先序標準的比較 | 22 縣市（21 有負擔能力資料） |
 | `docs/architecture.html` | 資料站架構草案 | — |
 | `docs/verification.html` | 空屋數字對帳單：與內政部官方文件核對 | — |
 
@@ -153,6 +154,30 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 擋掉機房 IP（回 `Request Rejected`），也沒有上架到政府資料開放平臺，
 只能在一般網路環境下載。
 
+### 2f. 先蓋在哪裡
+
+前面幾頁用空屋率把縣市分四型，「真的不夠住」是新建第一順位。這一頁檢查那個
+分界撐不撐得住：把同樣 22 個縣市在三種標準下的名次畫在一起。
+
+- **名次變化圖（bump chart）**：房子夠不夠（空屋率低者優先）、買不買得起
+  （房價所得比高者優先）、人有沒有在進來（109→115 成長高者優先）
+- 差距最大的五個縣市，以及方向為什麼不是隨機的
+- 新北市與臺南市的逐項對照
+- 完整資料表，含兩組名次與名次差
+
+結果是三種標準交叉得很厲害：**屏東縣在「房子夠不夠」排第 2、在「買不買得起」
+排第 19，差 17 個名次**。新竹縣、雲林縣、金門縣、臺中市的名次差也都在 8 以上。
+最要緊的一組是新北對臺南：現行分型把臺南列為新建第一順位、新北不是，
+差別只來自空屋率 1.04 個百分點（新北離分界僅 0.04），但房價所得比是
+12.63 倍對 8.76 倍，房貸負擔率 55.30%（過低）對 38.33%（略低）。
+
+頁面給的建議是三個標準各就各位，不是三選一：**人口變化當門檻、負擔能力當排序、
+空屋率當工具選擇**。
+
+兩件事寫在頁面上：房價所得比與房貸負擔率衡量的是**買**不是**租**，社宅是租賃
+政策，真正貼題的租金所得比內政部沒有按縣市公布；另外全國常住人口的高點
+**就是 109 年**，也就是所有結構分析鎖定的基準年，之後六年減少約 12 萬人。
+
 ### 與內政部用電統計的對帳
 
 `scripts/verify_vacancy.py` 把普查空屋率與內政部低度使用（用電）住宅率逐縣市比對。
@@ -171,6 +196,9 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 | `data_TW/07_普查109年_統計表/縣市/` | 各縣市報告表，含鄉鎮市區細分 |
 | `data/sources/114年低度使用住宅統計資訊簡冊.pdf` | 內政部不動產資訊平台，115 年 7 月出刊 |
 | `data/sources/社會住宅包租代管計畫執行情形_1150731.pdf` | 內政部國土管理署，115 年 7 月 31 日 |
+| `data/sources/115Q1房價負擔能力指標_縣市.csv` | 內政部不動產資訊平台，115 年第 1 季 |
+| `data/sources/歷次各市縣常住人口_表3.xlsx` | 主計總處，45–115 年 |
+| `data/sources/112年11月行政區電信信令人口統計_鄉鎮市區.csv` | SEGIS，112 年 11 月 |
 
 #### 兩期行政區的對齊
 
@@ -192,7 +220,10 @@ python3 scripts/prep_town_geo.py  # 簡化鄉鎮市區界    -> data/tw_towns.js
 python3 scripts/prep_town_data.py # 鄉鎮市區住宅資料  -> data/tw_town_data.json
 python3 scripts/prep_moi_series.py # 內政部半年數列   -> data/tw_moi_series.json
 python3 scripts/prep_social_housing.py # 包租代管執行情形 -> data/tw_social_housing.json
-python3 scripts/build.py         # 內嵌並產出五頁     -> dist/*.html
+python3 scripts/prep_affordability.py # 房價負擔能力     -> data/tw_affordability.json
+python3 scripts/prep_pop_series.py    # 歷次常住人口     -> data/tw_pop_series.json
+python3 scripts/prep_signal.py        # 電信信令日夜人口 -> data/tw_signal.json
+python3 scripts/build.py         # 內嵌並產出六頁     -> dist/*.html
 python3 scripts/verify_vacancy.py # 與內政部用電統計對帳
 ```
 

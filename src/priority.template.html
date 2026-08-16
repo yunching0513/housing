@@ -1,0 +1,500 @@
+<title>先蓋在哪裡</title>
+
+<style>
+__SHARED_CSS__
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.lede { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+        border-radius: 3px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.lede h2 { font-size: 17px; }
+.lede p { margin: 0; font-size: 13.6px; color: var(--ink-2); max-width: 74ch; }
+.lede p b { color: var(--ink); }
+
+svg.chart { display: block; width: 100%; height: auto; }
+.bump { fill: none; stroke: var(--ink-3); stroke-width: 1.4; opacity: .32; }
+.bump.hot { stroke: var(--sq2-1); stroke-width: 2.4; opacity: 1; }
+.bump.on  { stroke: var(--accent); stroke-width: 2.8; opacity: 1; }
+.bdot { fill: var(--ink-3); opacity: .38; }
+.bdot.hot { fill: var(--sq2-1); opacity: 1; }
+.bdot.on  { fill: var(--accent); opacity: 1; }
+.blbl { font-family: var(--f-body); font-size: 11px; fill: var(--ink-3); }
+.blbl.hot { fill: var(--ink); font-weight: 600; }
+.blbl.on  { fill: var(--ink); font-weight: 600; }
+.bhead { font-family: var(--f-body); font-size: 12.5px; font-weight: 600; fill: var(--ink); }
+.bsub  { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-3); }
+.bhit { fill: transparent; cursor: pointer; }
+.bumpwrap.dimmed .bump:not(.on) { opacity: .12; }
+.bumpwrap.dimmed .bdot:not(.on) { opacity: .12; }
+.bumpwrap.dimmed .blbl:not(.on) { opacity: .25; }
+
+.gaps { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 12px; }
+.gap { border: 1px solid var(--rule); border-left: 3px solid var(--sq2-1); border-radius: 3px;
+       background: var(--card); padding: 12px 14px; display: flex; flex-direction: column; gap: 5px; }
+.gap h4 { margin: 0; font-family: var(--f-display); font-size: 15px; font-weight: 600; }
+.gap .n { font-family: var(--f-mono); font-size: 21px; font-weight: 600; color: var(--ink); line-height: 1; }
+.gap .n small { font-family: var(--f-body); font-size: 11.5px; font-weight: 400; color: var(--ink-3); }
+.gap .d { font-size: 12px; color: var(--ink-2); }
+
+.vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: stretch; }
+@media (max-width: 720px) { .vs { grid-template-columns: 1fr; } }
+.vs .side { border: 1px solid var(--rule); border-radius: 3px; background: var(--card);
+            padding: 14px 16px; display: flex; flex-direction: column; gap: 7px; }
+.vs .side h4 { margin: 0; font-family: var(--f-display); font-size: 15.5px; font-weight: 600;
+               display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.vs .side h4 em { font-style: normal; font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); }
+.vs .mid { display: flex; align-items: center; justify-content: center;
+           font-family: var(--f-mono); font-size: 12px; color: var(--ink-3); }
+.vs dl { display: grid; grid-template-columns: auto auto; gap: 3px 12px; margin: 0; font-size: 12.5px; }
+.vs dt { color: var(--ink-3); }
+.vs dd { margin: 0; text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums;
+         color: var(--ink); }
+.vs dd.bad { color: var(--div-0); font-weight: 600; }
+
+.steps { display: flex; flex-direction: column; gap: 10px; counter-reset: s; }
+.step { display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start;
+        border: 1px solid var(--rule-soft); border-radius: 3px; padding: 12px 14px; background: var(--card); }
+.step::before { counter-increment: s; content: counter(s); font-family: var(--f-mono); font-size: 13px;
+                font-weight: 600; color: var(--card); background: var(--accent); width: 24px; height: 24px;
+                border-radius: 50%; display: grid; place-items: center; }
+.step h4 { margin: 0 0 3px; font-family: var(--f-display); font-size: 14.5px; font-weight: 600; }
+.step p { margin: 0; font-size: 12.8px; color: var(--ink-2); }
+.step .why { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+.thin { font-family: var(--f-mono); font-size: 10px; color: var(--ink-3); }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">115 年第 1 季 ・ 房價負擔能力 ・ 21 縣市</p>
+    <h1>先蓋在哪裡</h1>
+    <p class="dek">
+      前面幾頁用<b>空屋率</b>把縣市分成四型，其中「真的不夠住」是新建社宅的第一順位。
+      但那條分界只是全國空屋率13.05%，新北市離它<b>0.04個百分點</b>。
+      現在有了房價所得比與房貸負擔率，可以直接檢查：<b>照空屋率排，和照買不買得起排，
+      是不是同一個順序？</b>答案是不是。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="lede">
+    <h2>三個標準，三個答案</h2>
+    <p>要決定社宅先蓋在哪，至少有三種排法：<b>房子夠不夠</b>（空屋率低的優先）、
+    <b>買不買得起</b>（房價所得比高的優先）、<b>人有沒有在進來</b>（人口成長的優先）。
+    這一頁把22個縣市在三種排法下的名次畫在一起。線如果是平的，代表三個標準指向同一個地方；
+    線如果交叉得厲害，代表<b>你選哪個標準會決定蓋在哪裡</b>。</p>
+    <p>先講結論：交叉得很厲害。<b id="k-worst"></b>在「房子夠不夠」排第
+    <b id="k-worst-a"></b>名，在「買不買得起」排第<b id="k-worst-b"></b>名，
+    差<b id="k-worst-gap"></b>個名次。</p>
+  </div>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>同樣22個縣市，三種排法</h2>
+      <p>名次1為最優先。點任一縣市看它自己的線；橘線是三種排法差距最大的五個</p>
+    </header>
+    <div class="body">
+      <div class="bumpwrap" id="bumpwrap">
+        <svg class="chart" id="bump" viewBox="0 0 820 660" role="img"
+             aria-label="22 縣市在三種優先序標準下的名次變化圖"></svg>
+      </div>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:12px;max-width:80ch">
+        連江縣沒有房價負擔能力資料，不在這張圖上。澎湖縣、金門縣的房價資料
+        被來源標為「樣本數未達100戶」，名次僅供參考。
+      </p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2>差最多的五個縣市</h2>
+      <p>「房子夠不夠」的名次減「買不買得起」的名次，差距愈大代表兩個標準愈不同意</p>
+    </header>
+    <div class="body">
+      <div class="gaps" id="gaps"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:78ch">
+        方向不是隨機的。<b>空屋率低但買得起</b>的是屏東、雲林、嘉義縣這類農業縣：
+        房子沒空著，是因為當地房子本來就便宜、多是自有透天，不是因為搶不到。
+        <b>空屋率高但買不起</b>的是新竹縣、金門這類地方：空屋多，但空的那些跟
+        買不起的人要的不是同一批房子。空屋率量的是<b>存量鬆緊</b>，
+        房價所得比量的是<b>價格對所得</b>，這是兩件事。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>最要緊的一組對照</h2>
+      <p>現行分型把臺南市列為新建社宅第一順位，新北市不是</p>
+    </header>
+    <div class="body">
+      <div class="vs" id="vs"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:78ch">
+        兩者的分型差別只來自空屋率：臺南12.05%低於全國13.05%，新北13.09%高於，
+        差<b>1.04個百分點</b>，其中新北離分界只有<b>0.04個百分點</b>。
+        但在買不買得起上，新北12.63倍對臺南8.76倍，差<b>3.87倍</b>；
+        房貸負擔率新北55.30%（內政部分級：過低）對臺南38.33%（略低）。
+        <b>用空屋率排，臺南贏；用負擔能力排，新北贏得很明顯。</b>
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>那要用哪個</h2>
+      <p>不是三選一，是三個放在不同的位置</p>
+    </header>
+    <div class="body">
+      <div class="steps">
+        <div class="step">
+          <div>
+            <h4>人口變化當「門檻」，不當排序</h4>
+            <p>人還在進來的縣市才需要增加總量。這一軸最穩：新竹縣、桃園、臺中、新北
+            不管換哪個定義都是成長，不會翻面。</p>
+            <p class="why">但門檻要用新資料。全國常住人口<b>在109年見頂</b>（<span id="k-peak"></span> 人），
+            到115年已降到 <span id="k-now"></span> 人。前面幾頁用的99→109成長率，
+            量的是一個已經結束的階段。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h4>負擔能力當「排序」</h4>
+            <p>社宅解決的是租不起，不是房子不存在。所以門檻之內該照房價所得比或
+            房貸負擔率排，而不是照空屋率排。</p>
+            <p class="why">代價：這兩個指標衡量的是<b>買</b>不是<b>租</b>。真正貼題的是租金所得比，
+            內政部沒有按縣市公布。在拿到之前，房價所得比是最接近的官方數列。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h4>空屋率當「選工具」，不當排優先序</h4>
+            <p>同樣是要增加可負擔住宅，空屋多的地方先做包租代管與空屋活化，
+            空屋少的地方才需要新建。空屋率回答的是「用既有的還是蓋新的」，
+            不是「誰比較急」。</p>
+            <p class="why">而且要用連續值不用標籤：離分界0.04個百分點跟離7.13個百分點，
+            不該塗成同一種顏色。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header><h2>完整資料</h2><p>點欄位標題排序</p></header>
+    <div class="body">
+      <div class="tablewrap">
+        <table id="tbl">
+          <thead><tr>
+            <th data-k="name">縣市</th>
+            <th data-k="pir">房價所得比</th>
+            <th data-k="burden">房貸負擔率</th>
+            <th data-k="band">負擔分級</th>
+            <th data-k="vacancy">空屋率</th>
+            <th data-k="pct">99→109 人口</th>
+            <th data-k="since109">109→115 人口</th>
+            <th data-k="rPir">負擔名次</th>
+            <th data-k="rVac">缺房名次</th>
+            <th data-k="gap">名次差</th>
+            <th data-k="quadrant">現行分型</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>買不等於租</h3>
+      <p>房價所得比與房貸負擔率算的都是<b>購屋</b>：前者是中位數住宅總價除以家戶年
+      可支配所得中位數，後者是月攤還額除以月可支配所得。社宅是租賃政策，
+      這兩個是代理指標不是直接指標。會用它們，是因為它們是目前唯一有縣市別、
+      逐季更新的官方負擔能力數列。</p>
+    </section>
+    <section>
+      <h3>內政部自己的分級</h3>
+      <p>房貸負擔率30%以下為「可合理負擔」，30–40%「略低」，40–50%「偏低」，
+      50%以上「過低」。這是來源本身的分級，不是本專案自訂的門檻。
+      全國41.46%落在「偏低」，臺北市64.41%與新北市55.30%落在「過低」。</p>
+    </section>
+    <section>
+      <h3>三個縣市要小心</h3>
+      <p>連江縣不在這期發布裡。澎湖縣、金門縣被來源標註「樣本數未達100戶」：
+      中位數背後只有不到100筆交易，名次不宜當真。三者在圖上都有標示。</p>
+    </section>
+    <section>
+      <h3>人口高點就是基準年</h3>
+      <p>全國常住人口的高點是<b>109年</b>，也就是普查年、也就是這個專案所有結構分析
+      鎖定的基準。之後六年全國減少約12萬人。這代表用109年當分母算出來的比率會
+      <b>略為低估現在的緊張程度</b>（分母偏大），但各縣市方向不同：新竹縣還在
+      +6.6%，臺北市已經 −5.9%。</p>
+    </section>
+    <section>
+      <h3>名次差不是誤差</h3>
+      <p>兩個名次差很多，不代表其中一個算錯。它們量的本來就是不同的東西：
+      空屋率是存量鬆緊，房價所得比是價格對所得。這一頁的用途不是選出唯一正確的
+      排序，是讓「換一個標準會換一批縣市」這件事變成看得見的。</p>
+    </section>
+    <section>
+      <h3>資料來源</h3>
+      <p>內政部不動產資訊平台《房價負擔能力指標》115年第1季；行政院主計總處
+      表3歷次各市縣常住人口（45–115年，115年為初步統計）。解析程式為
+      <code>scripts/prep_affordability.py</code> 與 <code>scripts/prep_pop_series.py</code>。</p>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="aff">__AFF_JSON__</script>
+<script type="application/json" id="hou">__HOU_JSON__</script>
+<script type="application/json" id="pop">__POP_JSON__</script>
+<script type="application/json" id="ser">__PSER_JSON__</script>
+
+<script>
+(() => {
+  'use strict';
+  const AFF = JSON.parse(document.getElementById('aff').textContent);
+  const HOU = JSON.parse(document.getElementById('hou').textContent);
+  const POP = JSON.parse(document.getElementById('pop').textContent);
+  const PS  = JSON.parse(document.getElementById('ser').textContent);
+  const A = Object.fromEntries(AFF.counties.map(c => [c.name, c]));
+  const H = Object.fromEntries(HOU.counties.map(c => [c.name, c]));
+  const P = Object.fromEntries(POP.counties.map(c => [c.name, c]));
+  const S = Object.fromEntries(PS.counties.map(c => [c.name, c]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}, txt) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]);
+    if (txt != null) n.textContent = txt; return n; };
+  const int = v => Math.round(v).toLocaleString('en-US');
+  const sign = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v).toFixed(1);
+
+  // Only counties the affordability release actually covers can be ranked.
+  const LIVE = AFF.counties.filter(c => c.listed).map(c => c.name);
+
+  // Three orderings of the same 21 counties. Rank 1 = "should come first" under
+  // that criterion, so the vacancy rank is ascending (low vacancy = tight) while
+  // the other two are descending.
+  const CRIT = [
+    { key: 'vac',  head: '房子夠不夠',   sub: '空屋率低者優先',
+      val: n => H[n].vacancy,          asc: true,
+      fmt: n => H[n].vacancy.toFixed(2) + '%' },
+    { key: 'pir',  head: '買不買得起',   sub: '房價所得比高者優先',
+      val: n => A[n].pir,              asc: false,
+      fmt: n => A[n].pir.toFixed(2) + ' 倍' },
+    { key: 'pop',  head: '人有沒有在進來', sub: '109→115 成長高者優先',
+      val: n => S[n].since109Pct,      asc: false,
+      fmt: n => sign(S[n].since109Pct) + '%' },
+  ];
+  for (const c of CRIT) {
+    const s = [...LIVE].sort((a, b) => c.asc ? c.val(a) - c.val(b) : c.val(b) - c.val(a));
+    c.rank = Object.fromEntries(s.map((n, i) => [n, i + 1]));
+  }
+  const rVac = CRIT[0].rank, rPir = CRIT[1].rank;
+  const gapOf = n => rVac[n] - rPir[n];
+  const HOT = [...LIVE].sort((a, b) => Math.abs(gapOf(b)) - Math.abs(gapOf(a))).slice(0, 5);
+  const isHot = n => HOT.includes(n);
+
+  /* ── stats ─────────────────────────────────────────────────────────── */
+  {
+    const n = AFF.national;
+    const top = [...LIVE].sort((a, b) => A[b].pir - A[a].pir)[0];
+    const peak = PS.national[PS.baseIndex], now = PS.national[PS.national.length - 1];
+    const stat = (k, v, sub, cls) =>
+      `<div class="stat"><dt>${k}</dt><dd class="${cls || ''}">${v}</dd><span class="sub">${sub}</span></div>`;
+    document.getElementById('stats').innerHTML =
+      stat('全國房價所得比', n.pir.toFixed(2) + ' 倍', `較上年 ${sign(n.pirY)} 倍`) +
+      stat('全國房貸負擔率', n.burden.toFixed(2) + '%', `內政部分級：${n.band}`, 'down') +
+      stat('最買不起', `${top.slice(0, 3)} ${A[top].pir.toFixed(2)} 倍`,
+           `房貸負擔率 ${A[top].burden.toFixed(2)}%（${A[top].band}）`, 'down') +
+      stat('全國人口高點', `${PS.years[PS.baseIndex]} 年`,
+           `${int(peak)} 人，115 年 ${int(now)} 人`);
+    document.getElementById('k-peak').textContent = int(peak);
+    document.getElementById('k-now').textContent = int(now);
+    const w = HOT[0];
+    document.getElementById('k-worst').textContent = w;
+    document.getElementById('k-worst-a').textContent = rVac[w];
+    document.getElementById('k-worst-b').textContent = rPir[w];
+    document.getElementById('k-worst-gap').textContent = Math.abs(gapOf(w));
+  }
+
+  /* ── bump chart ────────────────────────────────────────────────────── */
+  const svg = document.getElementById('bump');
+  const wrap = document.getElementById('bumpwrap');
+  let pinned = null;
+  {
+    const W = 820, H = 660, TP = 52, B = 18, L = 96, R = 96;
+    const cols = [L, W / 2, W - R];
+    const N = LIVE.length;
+    const Y = r => TP + (r - 1) / (N - 1) * (H - TP - B);
+    // Layers, not interleaved: every visible mark must sit below every hit line,
+    // otherwise one county's stroke swallows the next county's click target.
+    const gLine = el('g'), gDot = el('g'), gLbl = el('g'), gHit = el('g');
+    svg.append(gLine, gDot, gLbl, gHit);
+    CRIT.forEach((c, i) => {
+      const anchor = i === 0 ? 'start' : i === 2 ? 'end' : 'middle';
+      const x = i === 0 ? cols[0] - 84 : i === 2 ? cols[2] + 84 : cols[1];
+      svg.appendChild(el('text', { class: 'bhead', x, y: 20, 'text-anchor': anchor }, c.head));
+      svg.appendChild(el('text', { class: 'bsub', x, y: 35, 'text-anchor': anchor }, c.sub));
+    });
+    for (const n of LIVE) {
+      const pts = CRIT.map((c, i) => [cols[i], Y(c.rank[n])]);
+      const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ');
+      const cls = isHot(n) ? ' hot' : '';
+      gLine.appendChild(el('path', { class: 'bump' + cls, 'data-n': n, d }));
+      pts.forEach(p => gDot.appendChild(el('circle', {
+        class: 'bdot' + cls, 'data-n': n, cx: p[0], cy: p[1], r: isHot(n) ? 3.6 : 2.6 })));
+      const thin = A[n].thin ? ' *' : '';
+      gLbl.appendChild(el('text', { class: 'blbl' + cls, 'data-n': n,
+        x: cols[0] - 9, y: Y(CRIT[0].rank[n]) + 3.5, 'text-anchor': 'end' },
+        `${CRIT[0].rank[n]}. ${n}${thin}`));
+      gLbl.appendChild(el('text', { class: 'blbl' + cls, 'data-n': n,
+        x: cols[2] + 9, y: Y(CRIT[2].rank[n]) + 3.5 }, `${n}${thin} ${CRIT[2].rank[n]}`));
+      // Invisible fat line so a 1.4px stroke is still easy to hit. 8px keeps
+      // adjacent ranks (29.5px apart) from stealing each other's endpoints;
+      // at crossings the overlap is inherent to the chart form.
+      gHit.appendChild(el('path', { class: 'bhit', 'data-n': n, 'stroke-width': 8,
+        stroke: 'transparent', d }));
+    }
+    gLbl.appendChild(el('text', { class: 'bsub', x: cols[0] - 84, y: H - 2 },
+      '* 樣本數未達 100 戶'));
+  }
+
+  function markBump() {
+    wrap.classList.toggle('dimmed', !!pinned);
+    for (const n of svg.querySelectorAll('[data-n]'))
+      n.classList.toggle('on', n.dataset.n === pinned);
+  }
+  svg.addEventListener('pointerover', e => {
+    const t = e.target.closest('[data-n]'); if (!t) return;
+    showTip(e, t.dataset.n);
+  });
+  svg.addEventListener('pointermove', e => {
+    const t = e.target.closest('[data-n]'); if (t) showTip(e, t.dataset.n);
+  });
+  svg.addEventListener('pointerout', hideTip);
+  svg.addEventListener('click', e => {
+    const t = e.target.closest('[data-n]');
+    pinned = t && pinned !== t.dataset.n ? t.dataset.n : null;
+    markBump();
+  });
+
+  /* ── gap cards ─────────────────────────────────────────────────────── */
+  document.getElementById('gaps').innerHTML = HOT.map(n => {
+    const g = gapOf(n);
+    const dir = g > 0 ? '空屋率說不急，價格說很急' : '空屋率說很急，價格說還好';
+    return `<div class="gap">
+      <h4>${n}${A[n].thin ? '<span class="thin"> 樣本不足</span>' : ''}</h4>
+      <div class="n">${Math.abs(g)} <small>個名次差</small></div>
+      <div class="d">房子夠不夠 第 ${rVac[n]} 名（空屋率 ${H[n].vacancy.toFixed(2)}%）</div>
+      <div class="d">買不買得起 第 ${rPir[n]} 名（${A[n].pir.toFixed(2)} 倍）</div>
+      <div class="d" style="color:var(--ink-3);font-size:11.8px">${dir}</div>
+    </div>`;
+  }).join('');
+
+  /* ── 新北 vs 臺南 ──────────────────────────────────────────────────── */
+  {
+    const side = n => {
+      const a = A[n], h = H[n];
+      return `<div class="side">
+        <h4>${n}<em>${HOU.quadrants[h.quadrant].label}</em></h4>
+        <dl>
+          <dt>房價所得比</dt><dd${a.pir >= 10 ? ' class="bad"' : ''}>${a.pir.toFixed(2)} 倍</dd>
+          <dt>房貸負擔率</dt><dd${a.burden >= 50 ? ' class="bad"' : ''}>${a.burden.toFixed(2)}%</dd>
+          <dt>內政部分級</dt><dd style="font-family:var(--f-body)">${a.band}</dd>
+          <dt>空屋率</dt><dd>${h.vacancy.toFixed(2)}%</dd>
+          <dt>距全國分界</dt><dd>${sign(h.vacancy - HOU.vacancyCut)}</dd>
+          <dt>109→115 人口</dt><dd>${sign(S[n].since109Pct)}%</dd>
+          <dt>負擔名次</dt><dd>第 ${rPir[n]} 名</dd>
+          <dt>缺房名次</dt><dd>第 ${rVac[n]} 名</dd>
+        </dl></div>`;
+    };
+    document.getElementById('vs').innerHTML =
+      side('新北市') + '<div class="mid">對照</div>' + side('臺南市');
+  }
+
+  /* ── table ─────────────────────────────────────────────────────────── */
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  let sortKey = 'pir', sortDir = -1;
+  const ROWS = HOU.counties.map(c => {
+    const n = c.name, a = A[n], listed = a.listed;
+    return {
+      name: n, listed, pir: listed ? a.pir : null, burden: listed ? a.burden : null,
+      band: listed ? a.band : '－', thin: listed && a.thin,
+      vacancy: c.vacancy, pct: P[n].pct, since109: S[n].since109Pct,
+      rPir: listed ? rPir[n] : null, rVac: listed ? rVac[n] : null,
+      gap: listed ? gapOf(n) : null,
+      quadrant: HOU.quadrants[c.quadrant].label,
+    };
+  });
+
+  function drawTable() {
+    const rows = [...ROWS].sort((a, b) => {
+      const x = a[sortKey], y = b[sortKey];
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    tbody.innerHTML = rows.map(r => `<tr>
+      <td>${r.name}${r.thin ? '<span class="thin"> *</span>' : ''}</td>
+      <td class="num">${r.pir == null ? '－' : r.pir.toFixed(2)}</td>
+      <td class="num">${r.burden == null ? '－' : r.burden.toFixed(2) + '%'}</td>
+      <td>${r.band}</td>
+      <td class="num">${r.vacancy.toFixed(2)}%</td>
+      <td class="num ${r.pct > 0 ? 'up' : 'down'}">${sign(r.pct)}%</td>
+      <td class="num ${r.since109 > 0 ? 'up' : 'down'}">${sign(r.since109)}%</td>
+      <td class="num">${r.rPir ?? '－'}</td>
+      <td class="num">${r.rVac ?? '－'}</td>
+      <td class="num">${r.gap == null ? '－' : (r.gap > 0 ? '+' : r.gap < 0 ? '−' : '±') + Math.abs(r.gap)}</td>
+      <td>${r.quadrant}</td>
+    </tr>`).join('');
+    const n = AFF.national;
+    tfoot.innerHTML = `<tr>
+      <td>全國</td><td class="num">${n.pir.toFixed(2)}</td>
+      <td class="num">${n.burden.toFixed(2)}%</td><td>${n.band}</td>
+      <td class="num">${HOU.national.vacancy.toFixed(2)}%</td>
+      <td class="num up">${sign(POP.totals.pct)}%</td>
+      <td class="num down">${sign((PS.national[PS.national.length - 1] / PS.national[PS.baseIndex] - 1) * 100)}%</td>
+      <td colspan="4">* 樣本數未達 100 戶</td></tr>`;
+  }
+  document.querySelectorAll('#tbl thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.k;
+      sortDir = sortKey === k ? -sortDir : (k === 'name' || k === 'band' || k === 'quadrant' ? 1 : -1);
+      sortKey = k;
+      document.querySelectorAll('#tbl thead th').forEach(x => x.removeAttribute('aria-sort'));
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable();
+    });
+  });
+  drawTable();
+
+  /* ── tooltip ───────────────────────────────────────────────────────── */
+  const tip = document.getElementById('tip');
+  function showTip(e, n) {
+    tip.innerHTML = `<div class="t-nm">${n}</div><dl>` +
+      CRIT.map(c => `<dt>${c.head}</dt><dd>第 ${c.rank[n]} 名　${c.fmt(n)}</dd>`).join('') +
+      `<dt>名次差</dt><dd>${Math.abs(gapOf(n))}</dd>` +
+      `<dt>現行分型</dt><dd style="font-family:var(--f-body)">${HOU.quadrants[H[n].quadrant].label}</dd>` +
+      '</dl>';
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 16, innerWidth - r.width - 8) + 'px';
+    tip.style.top = Math.max(8, Math.min(e.clientY - 12, innerHeight - r.height - 8)) + 'px';
+  }
+  function hideTip() { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); }
+  addEventListener('keydown', e => { if (e.key === 'Escape') { pinned = null; hideTip(); markBump(); } });
+})();
+</script>

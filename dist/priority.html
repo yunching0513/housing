@@ -1,0 +1,822 @@
+<title>先蓋在哪裡</title>
+
+<style>
+/* ── tokens ───────────────────────────────────────────────────────────────
+   Light is the complete palette on bare :root. Dark redefines only tokens,
+   once behind prefers-color-scheme (guarded so an explicit light choice wins)
+   and once behind [data-theme="dark"] so the toggle wins the other way.
+   Every component reads tokens only — never a literal, never a colour whose
+   sole definition sits inside a media block.                                */
+:root {
+  color-scheme: light dark;
+
+  --page:      #F4F7F7;
+  --card:      #FDFEFE;
+  --sea:       #E9EEEF;
+  --ink:       #12201F;
+  --ink-2:     #435657;
+  --ink-3:     #718485;
+  --rule:      #CBD8D9;
+  --rule-soft: #E0E8E9;
+  --coast:     #12201F;
+  --coast-w:   0.6;
+  --accent:    #245D5C;
+  --accent-bg: #DDE9E8;
+  --neutral:   #DFE0DA;
+  --shadow:    0 1px 2px rgba(18,32,31,.05), 0 8px 24px -12px rgba(18,32,31,.16);
+
+  /* diverging: sienna arm (decline) → teal arm (growth), 4 equal steps each,
+     midpoint at 0. Derived at fixed OKLCH lightnesses, not eyeballed.        */
+  --div-0: #7c401d;  --div-1: #a05429;  --div-2: #c46834;  --div-3: #e97d40;
+  --div-4: #4cb1af;  --div-5: #3e9493;  --div-6: #317978;  --div-7: #245d5c;
+
+  /* sequential: one hue, light → dark, for 人口密度                          */
+  --seq-0: #4ab5b3;  --seq-1: #40a09e;  --seq-2: #378b8a;
+  --seq-3: #2e7776;  --seq-4: #256463;  --seq-5: #1d5150;
+
+  /* second sequential ramp — sienna, for 空屋率 and 宅戶比. Same hue family as the
+     decline arm, so "more empty" keeps reading as the warm end throughout. */
+  --sq2-0: #ed7f41;  --sq2-1: #d27038;  --sq2-2: #b86130;
+  --sq2-3: #9e5328;  --sq2-4: #854520;  --sq2-5: #6d3718;
+
+  /* 優先度 4 階：四種分型本來就有順序（新建社宅的優先度），所以用單一色相的
+     順序色階而非四個類別色。深＝優先度最高。                                */
+  --pri-0: #1d5150;  --pri-1: #2a6f6f;  --pri-2: #39908e;  --pri-3: #48b1b0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page:      #0B1314;
+    --card:      #131E20;
+    --sea:       #101A1C;
+    --ink:       #E3EDEC;
+    --ink-2:     #A2B5B5;
+    --ink-3:     #74898A;
+    --rule:      #2A3839;
+    --rule-soft: #1D2A2C;
+    --coast:     #0B1314;
+    --coast-w:   0.5;
+    --accent:    #64CBC9;
+    --accent-bg: #1B2E2E;
+    --neutral:   #3A4244;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+
+    /* anchor flips in dark: the extremes carry the light, the midpoint the ink */
+    --div-0: #f2a177;  --div-1: #d37139;  --div-2: #a9592b;  --div-3: #80421f;
+    --div-4: #2b5f5e;  --div-5: #3b7e7d;  --div-6: #4d9f9d;  --div-7: #64cbc9;
+
+    --seq-0: #285958;  --seq-1: #336e6d;  --seq-2: #3f8583;
+    --seq-3: #4b9b9a;  --seq-4: #57b3b1;  --seq-5: #64cbc9;
+
+    --sq2-0: #783e1c;  --sq2-1: #944d25;  --sq2-2: #b15d2e;
+    --sq2-3: #cf6e37;  --sq2-4: #ed7f41;  --sq2-5: #f2a177;
+
+    --pri-0: #55cdcb;  --pri-1: #45aaa9;  --pri-2: #368988;  --pri-3: #286968;
+  }
+}
+
+:root[data-theme="dark"] {
+  --page:      #0B1314;
+  --card:      #131E20;
+  --sea:       #101A1C;
+  --ink:       #E3EDEC;
+  --ink-2:     #A2B5B5;
+  --ink-3:     #74898A;
+  --rule:      #2A3839;
+  --rule-soft: #1D2A2C;
+  --coast:     #0B1314;
+  --coast-w:   0.5;
+  --accent:    #64CBC9;
+  --accent-bg: #1B2E2E;
+  --neutral:   #3A4244;
+  --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+
+  --div-0: #f2a177;  --div-1: #d37139;  --div-2: #a9592b;  --div-3: #80421f;
+  --div-4: #2b5f5e;  --div-5: #3b7e7d;  --div-6: #4d9f9d;  --div-7: #64cbc9;
+
+  --seq-0: #285958;  --seq-1: #336e6d;  --seq-2: #3f8583;
+  --seq-3: #4b9b9a;  --seq-4: #57b3b1;  --seq-5: #64cbc9;
+
+  --sq2-0: #783e1c;  --sq2-1: #944d25;  --sq2-2: #b15d2e;
+  --sq2-3: #cf6e37;  --sq2-4: #ed7f41;  --sq2-5: #f2a177;
+
+  --pri-0: #55cdcb;  --pri-1: #45aaa9;  --pri-2: #368988;  --pri-3: #286968;
+}
+
+/* ── type ─────────────────────────────────────────────────────────────────
+   No webfont: a CJK face is megabytes and the artifact CSP blocks font CDNs,
+   so a linked face would silently fall back. Three deliberate system roles
+   instead — 明體 for display (the register of a 統計年報), 黑體 for running
+   text, mono with tabular figures for every number on the page.             */
+:root {
+  --f-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti TC",
+               "Noto Serif CJK TC", "Source Han Serif TC", PMingLiU, serif;
+  --f-body:    ui-sans-serif, system-ui, -apple-system, "PingFang TC",
+               "Noto Sans CJK TC", "Microsoft JhengHei", "Hiragino Sans", sans-serif;
+  --f-mono:    ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 56px) clamp(16px, 3vw, 32px) 72px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3vw, 40px);
+}
+
+h1, h2, h3 { font-family: var(--f-display); font-weight: 600; text-wrap: balance; margin: 0; }
+
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ── header ───────────────────────────────────────────────────────────── */
+header { display: flex; flex-direction: column; gap: 12px; }
+header h1 { font-size: clamp(30px, 4.4vw, 46px); line-height: 1.15; letter-spacing: .01em; }
+header .dek { max-width: 62ch; color: var(--ink-2); font-size: clamp(15px, 1.5vw, 17px); }
+header .dek b { color: var(--ink); font-weight: 600; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.stat { background: var(--card); padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; }
+.stat dt { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; color: var(--ink-3); }
+.stat dd {
+  margin: 0;
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(21px, 2.4vw, 27px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.stat .sub { font-family: var(--f-body); font-size: 12.5px; color: var(--ink-2); letter-spacing: 0; }
+.stat dd.up   { color: var(--div-7); }
+.stat dd.down { color: var(--div-0); }
+
+/* ── controls ─────────────────────────────────────────────────────────── */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.seg { display: flex; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; background: var(--card); }
+.seg button {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  font-family: var(--f-body); font-size: 13.5px; color: var(--ink-2);
+  padding: 8px 15px; border-right: 1px solid var(--rule); transition: background .12s, color .12s;
+}
+.seg button:last-child { border-right: 0; }
+.seg button:hover { background: var(--rule-soft); color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--accent-bg); color: var(--ink); font-weight: 600; }
+.controls .hint { font-size: 12.5px; color: var(--ink-3); margin-left: auto; }
+
+:where(button, [tabindex], th[role="button"]):focus-visible,
+.county:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── figure grid ──────────────────────────────────────────────────────── */
+.figures { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); gap: clamp(16px, 2.2vw, 28px); align-items: start; }
+@media (max-width: 940px) { .figures { grid-template-columns: 1fr; } }
+
+.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 3px; box-shadow: var(--shadow); }
+.panel > header { padding: 14px 18px 12px; border-bottom: 1px solid var(--rule-soft); gap: 3px; }
+.panel > header h2 { font-size: 16px; }
+.panel > header p { margin: 0; font-size: 12.5px; color: var(--ink-3); }
+.panel .body { padding: 14px 18px 18px; }
+
+/* ── map ──────────────────────────────────────────────────────────────── */
+.mapwrap { position: relative; }
+svg.map { display: block; width: 100%; height: auto; background: var(--sea); border-radius: 2px; }
+.county { stroke: var(--coast); stroke-width: var(--coast-w); stroke-linejoin: round; cursor: pointer; }
+.county:hover { stroke-width: 2.4; stroke: var(--ink); }
+.county.active { stroke-width: 2.8; stroke: var(--ink); }
+.map.dimmed .county:not(.active) { opacity: .38; }
+.grat { stroke: var(--ink-3); stroke-width: .4; opacity: .3; fill: none; }
+.grat-tick { font-family: var(--f-mono); font-size: 9px; fill: var(--ink-3); opacity: .8; }
+.inset-frame { fill: none; stroke: var(--ink-3); stroke-width: .7; opacity: .5; stroke-dasharray: 3 3; }
+.inset-label { font-family: var(--f-mono); font-size: 10.5px; fill: var(--ink-3); }
+.scalebar { fill: none; stroke: var(--ink-3); stroke-width: .9; opacity: .75; }
+.lbl { font-family: var(--f-body); font-size: 12.5px; font-weight: 600; fill: var(--ink); paint-order: stroke;
+       stroke: var(--sea); stroke-width: 3.2px; stroke-linejoin: round; pointer-events: none; }
+.lbl.sm { font-size: 11px; }
+.leader { stroke: var(--ink-3); stroke-width: .6; opacity: .7; fill: none; pointer-events: none; }
+
+/* ── legend ───────────────────────────────────────────────────────────── */
+.legend { margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
+.legend .swatches { display: flex; gap: 2px; }
+.legend .sw { flex: 1; height: 15px; border-radius: 1px; position: relative; }
+.legend .ticks { display: flex; font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3);
+                 font-variant-numeric: tabular-nums; }
+.legend .ticks span { flex: 1; text-align: right; transform: translateX(50%); white-space: nowrap; }
+.legend .ticks span:last-child { transform: none; opacity: 0; }
+.legend .cap { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); }
+.legend .zero { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3); }
+
+/* ── ranked bars ──────────────────────────────────────────────────────── */
+.bars { display: flex; flex-direction: column; }
+.row { display: grid; grid-template-columns: 4.6em minmax(0, 1fr) 5.6em; align-items: center;
+       gap: 8px; padding: 1px 0; cursor: pointer; border-radius: 2px; }
+.row:hover, .row.active { background: var(--rule-soft); }
+.row .nm { font-size: 12.5px; text-align: right; color: var(--ink-2); white-space: nowrap; }
+.row.active .nm { color: var(--ink); font-weight: 600; }
+.row .val { font-family: var(--f-mono); font-size: 11.5px; font-variant-numeric: tabular-nums;
+            text-align: right; color: var(--ink-2); }
+.row.active .val { color: var(--ink); font-weight: 600; }
+.track { position: relative; height: 15px; }
+.track .zeroline { position: absolute; top: -1px; bottom: -1px; width: 1px; background: var(--rule); }
+.track .bar { position: absolute; top: 2px; bottom: 2px; border-radius: 1px; min-width: 1.5px; }
+
+/* ── table ────────────────────────────────────────────────────────────── */
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+caption { text-align: left; font-size: 12.5px; color: var(--ink-3); padding-bottom: 10px; }
+th, td { padding: 7px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--rule-soft); }
+th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+thead th { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .06em; color: var(--ink-3);
+           font-weight: 500; border-bottom: 1px solid var(--rule); cursor: pointer; user-select: none; }
+thead th:hover { color: var(--ink); }
+thead th[aria-sort] { color: var(--ink); }
+thead th[aria-sort="descending"]::after { content: " ↓"; }
+thead th[aria-sort="ascending"]::after  { content: " ↑"; }
+tbody tr:hover, tbody tr.active { background: var(--rule-soft); }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+td .chip { display: inline-block; width: 9px; height: 9px; border-radius: 1px; margin-right: 7px; vertical-align: -1px; }
+td.up   { color: var(--div-7); font-weight: 600; }
+td.down { color: var(--div-0); font-weight: 600; }
+tfoot td { font-weight: 600; border-top: 1px solid var(--rule); border-bottom: 0; padding-top: 10px; }
+
+/* ── scatter: 人口變化 × 空屋率 ────────────────────────────────────────── */
+.scatter-wrap { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(0,1fr);
+                gap: clamp(16px,2.2vw,28px); align-items: start; }
+@media (max-width: 940px) { .scatter-wrap { grid-template-columns: 1fr; } }
+svg.scatter { display: block; width: 100%; height: auto; }
+.sc-axis { stroke: var(--rule); stroke-width: 1; }
+.sc-cut  { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 4 4; opacity: .65; }
+.sc-tick { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-3); }
+.sc-axlabel { font-family: var(--f-body); font-size: 11.5px; fill: var(--ink-2); }
+.sc-zone { font-family: var(--f-body); font-size: 12px; font-weight: 600; fill: var(--ink-3); }
+.sc-zone tspan.c { font-family: var(--f-mono); font-weight: 400; font-size: 10.5px; }
+.dot { fill: var(--accent); fill-opacity: .78; stroke: var(--card); stroke-width: 1.2; cursor: pointer; }
+.dot:hover, .dot.active { stroke: var(--ink); stroke-width: 2; }
+.dot-lbl { font-family: var(--f-body); font-size: 10.5px; fill: var(--ink-2); paint-order: stroke;
+           stroke: var(--card); stroke-width: 2.6px; stroke-linejoin: round; pointer-events: none; }
+.dot-lbl.active { fill: var(--ink); font-weight: 600; }
+.scatter.dimmed .dot:not(.active) { opacity: .3 }
+.scatter.dimmed .dot-lbl:not(.active) { opacity: .3 }
+
+.zones { display: flex; flex-direction: column; gap: 8px; }
+.zone { border: 1px solid var(--rule); border-left-width: 3px; border-radius: 3px;
+        background: var(--card); padding: 10px 13px; display: flex; flex-direction: column; gap: 3px; }
+.zone .cond { font-family: var(--f-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .04em; }
+.zone h4 { margin: 0; font-family: var(--f-display); font-size: 14.5px; font-weight: 600;
+           display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.zone h4 .n { font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-3); font-weight: 400; }
+.zone .who { font-size: 12px; color: var(--ink-2); }
+.zone .act { font-size: 11.8px; color: var(--ink-3); }
+
+/* ── tooltip ──────────────────────────────────────────────────────────── */
+#tip {
+  position: fixed; z-index: 40; pointer-events: none; opacity: 0; transform: translateY(3px);
+  transition: opacity .1s ease, transform .1s ease;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  box-shadow: var(--shadow); padding: 10px 12px; min-width: 196px;
+}
+#tip.on { opacity: 1; transform: none; }
+#tip .t-nm { font-family: var(--f-display); font-size: 15px; font-weight: 600; }
+#tip .t-en { font-family: var(--f-mono); font-size: 10px; color: var(--ink-3); letter-spacing: .06em; }
+#tip dl { display: grid; grid-template-columns: auto auto; gap: 2px 14px; margin: 9px 0 0;
+          font-size: 12px; border-top: 1px solid var(--rule-soft); padding-top: 8px; }
+#tip dt { color: var(--ink-3); }
+#tip dd { margin: 0; text-align: right; font-family: var(--f-mono);
+          font-variant-numeric: tabular-nums; font-size: 12px; }
+#tip dd.up { color: var(--div-7); font-weight: 600; }
+#tip dd.down { color: var(--div-0); font-weight: 600; }
+
+/* ── notes ────────────────────────────────────────────────────────────── */
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px 32px; }
+.notes section { display: flex; flex-direction: column; gap: 6px; }
+.notes h3 { font-size: 13.5px; }
+.notes p, .notes li { font-size: 12.5px; color: var(--ink-2); line-height: 1.65; margin: 0; }
+.notes ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 4px; }
+.notes code { font-family: var(--f-mono); font-size: 11.5px; background: var(--rule-soft);
+              padding: 1px 4px; border-radius: 2px; }
+hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.lede { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+        border-radius: 3px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.lede h2 { font-size: 17px; }
+.lede p { margin: 0; font-size: 13.6px; color: var(--ink-2); max-width: 74ch; }
+.lede p b { color: var(--ink); }
+
+svg.chart { display: block; width: 100%; height: auto; }
+.bump { fill: none; stroke: var(--ink-3); stroke-width: 1.4; opacity: .32; }
+.bump.hot { stroke: var(--sq2-1); stroke-width: 2.4; opacity: 1; }
+.bump.on  { stroke: var(--accent); stroke-width: 2.8; opacity: 1; }
+.bdot { fill: var(--ink-3); opacity: .38; }
+.bdot.hot { fill: var(--sq2-1); opacity: 1; }
+.bdot.on  { fill: var(--accent); opacity: 1; }
+.blbl { font-family: var(--f-body); font-size: 11px; fill: var(--ink-3); }
+.blbl.hot { fill: var(--ink); font-weight: 600; }
+.blbl.on  { fill: var(--ink); font-weight: 600; }
+.bhead { font-family: var(--f-body); font-size: 12.5px; font-weight: 600; fill: var(--ink); }
+.bsub  { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-3); }
+.bhit { fill: transparent; cursor: pointer; }
+.bumpwrap.dimmed .bump:not(.on) { opacity: .12; }
+.bumpwrap.dimmed .bdot:not(.on) { opacity: .12; }
+.bumpwrap.dimmed .blbl:not(.on) { opacity: .25; }
+
+.gaps { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 12px; }
+.gap { border: 1px solid var(--rule); border-left: 3px solid var(--sq2-1); border-radius: 3px;
+       background: var(--card); padding: 12px 14px; display: flex; flex-direction: column; gap: 5px; }
+.gap h4 { margin: 0; font-family: var(--f-display); font-size: 15px; font-weight: 600; }
+.gap .n { font-family: var(--f-mono); font-size: 21px; font-weight: 600; color: var(--ink); line-height: 1; }
+.gap .n small { font-family: var(--f-body); font-size: 11.5px; font-weight: 400; color: var(--ink-3); }
+.gap .d { font-size: 12px; color: var(--ink-2); }
+
+.vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: stretch; }
+@media (max-width: 720px) { .vs { grid-template-columns: 1fr; } }
+.vs .side { border: 1px solid var(--rule); border-radius: 3px; background: var(--card);
+            padding: 14px 16px; display: flex; flex-direction: column; gap: 7px; }
+.vs .side h4 { margin: 0; font-family: var(--f-display); font-size: 15.5px; font-weight: 600;
+               display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.vs .side h4 em { font-style: normal; font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); }
+.vs .mid { display: flex; align-items: center; justify-content: center;
+           font-family: var(--f-mono); font-size: 12px; color: var(--ink-3); }
+.vs dl { display: grid; grid-template-columns: auto auto; gap: 3px 12px; margin: 0; font-size: 12.5px; }
+.vs dt { color: var(--ink-3); }
+.vs dd { margin: 0; text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums;
+         color: var(--ink); }
+.vs dd.bad { color: var(--div-0); font-weight: 600; }
+
+.steps { display: flex; flex-direction: column; gap: 10px; counter-reset: s; }
+.step { display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start;
+        border: 1px solid var(--rule-soft); border-radius: 3px; padding: 12px 14px; background: var(--card); }
+.step::before { counter-increment: s; content: counter(s); font-family: var(--f-mono); font-size: 13px;
+                font-weight: 600; color: var(--card); background: var(--accent); width: 24px; height: 24px;
+                border-radius: 50%; display: grid; place-items: center; }
+.step h4 { margin: 0 0 3px; font-family: var(--f-display); font-size: 14.5px; font-weight: 600; }
+.step p { margin: 0; font-size: 12.8px; color: var(--ink-2); }
+.step .why { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+.thin { font-family: var(--f-mono); font-size: 10px; color: var(--ink-3); }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">115 年第 1 季 ・ 房價負擔能力 ・ 21 縣市</p>
+    <h1>先蓋在哪裡</h1>
+    <p class="dek">
+      前面幾頁用<b>空屋率</b>把縣市分成四型，其中「真的不夠住」是新建社宅的第一順位。
+      但那條分界只是全國空屋率13.05%，新北市離它<b>0.04個百分點</b>。
+      現在有了房價所得比與房貸負擔率，可以直接檢查：<b>照空屋率排，和照買不買得起排，
+      是不是同一個順序？</b>答案是不是。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="lede">
+    <h2>三個標準，三個答案</h2>
+    <p>要決定社宅先蓋在哪，至少有三種排法：<b>房子夠不夠</b>（空屋率低的優先）、
+    <b>買不買得起</b>（房價所得比高的優先）、<b>人有沒有在進來</b>（人口成長的優先）。
+    這一頁把22個縣市在三種排法下的名次畫在一起。線如果是平的，代表三個標準指向同一個地方；
+    線如果交叉得厲害，代表<b>你選哪個標準會決定蓋在哪裡</b>。</p>
+    <p>先講結論：交叉得很厲害。<b id="k-worst"></b>在「房子夠不夠」排第
+    <b id="k-worst-a"></b>名，在「買不買得起」排第<b id="k-worst-b"></b>名，
+    差<b id="k-worst-gap"></b>個名次。</p>
+  </div>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>同樣22個縣市，三種排法</h2>
+      <p>名次1為最優先。點任一縣市看它自己的線；橘線是三種排法差距最大的五個</p>
+    </header>
+    <div class="body">
+      <div class="bumpwrap" id="bumpwrap">
+        <svg class="chart" id="bump" viewBox="0 0 820 660" role="img"
+             aria-label="22 縣市在三種優先序標準下的名次變化圖"></svg>
+      </div>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:12px;max-width:80ch">
+        連江縣沒有房價負擔能力資料，不在這張圖上。澎湖縣、金門縣的房價資料
+        被來源標為「樣本數未達100戶」，名次僅供參考。
+      </p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2>差最多的五個縣市</h2>
+      <p>「房子夠不夠」的名次減「買不買得起」的名次，差距愈大代表兩個標準愈不同意</p>
+    </header>
+    <div class="body">
+      <div class="gaps" id="gaps"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:78ch">
+        方向不是隨機的。<b>空屋率低但買得起</b>的是屏東、雲林、嘉義縣這類農業縣：
+        房子沒空著，是因為當地房子本來就便宜、多是自有透天，不是因為搶不到。
+        <b>空屋率高但買不起</b>的是新竹縣、金門這類地方：空屋多，但空的那些跟
+        買不起的人要的不是同一批房子。空屋率量的是<b>存量鬆緊</b>，
+        房價所得比量的是<b>價格對所得</b>，這是兩件事。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>最要緊的一組對照</h2>
+      <p>現行分型把臺南市列為新建社宅第一順位，新北市不是</p>
+    </header>
+    <div class="body">
+      <div class="vs" id="vs"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:78ch">
+        兩者的分型差別只來自空屋率：臺南12.05%低於全國13.05%，新北13.09%高於，
+        差<b>1.04個百分點</b>，其中新北離分界只有<b>0.04個百分點</b>。
+        但在買不買得起上，新北12.63倍對臺南8.76倍，差<b>3.87倍</b>；
+        房貸負擔率新北55.30%（內政部分級：過低）對臺南38.33%（略低）。
+        <b>用空屋率排，臺南贏；用負擔能力排，新北贏得很明顯。</b>
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>那要用哪個</h2>
+      <p>不是三選一，是三個放在不同的位置</p>
+    </header>
+    <div class="body">
+      <div class="steps">
+        <div class="step">
+          <div>
+            <h4>人口變化當「門檻」，不當排序</h4>
+            <p>人還在進來的縣市才需要增加總量。這一軸最穩：新竹縣、桃園、臺中、新北
+            不管換哪個定義都是成長，不會翻面。</p>
+            <p class="why">但門檻要用新資料。全國常住人口<b>在109年見頂</b>（<span id="k-peak"></span> 人），
+            到115年已降到 <span id="k-now"></span> 人。前面幾頁用的99→109成長率，
+            量的是一個已經結束的階段。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h4>負擔能力當「排序」</h4>
+            <p>社宅解決的是租不起，不是房子不存在。所以門檻之內該照房價所得比或
+            房貸負擔率排，而不是照空屋率排。</p>
+            <p class="why">代價：這兩個指標衡量的是<b>買</b>不是<b>租</b>。真正貼題的是租金所得比，
+            內政部沒有按縣市公布。在拿到之前，房價所得比是最接近的官方數列。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h4>空屋率當「選工具」，不當排優先序</h4>
+            <p>同樣是要增加可負擔住宅，空屋多的地方先做包租代管與空屋活化，
+            空屋少的地方才需要新建。空屋率回答的是「用既有的還是蓋新的」，
+            不是「誰比較急」。</p>
+            <p class="why">而且要用連續值不用標籤：離分界0.04個百分點跟離7.13個百分點，
+            不該塗成同一種顏色。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header><h2>完整資料</h2><p>點欄位標題排序</p></header>
+    <div class="body">
+      <div class="tablewrap">
+        <table id="tbl">
+          <thead><tr>
+            <th data-k="name">縣市</th>
+            <th data-k="pir">房價所得比</th>
+            <th data-k="burden">房貸負擔率</th>
+            <th data-k="band">負擔分級</th>
+            <th data-k="vacancy">空屋率</th>
+            <th data-k="pct">99→109 人口</th>
+            <th data-k="since109">109→115 人口</th>
+            <th data-k="rPir">負擔名次</th>
+            <th data-k="rVac">缺房名次</th>
+            <th data-k="gap">名次差</th>
+            <th data-k="quadrant">現行分型</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>買不等於租</h3>
+      <p>房價所得比與房貸負擔率算的都是<b>購屋</b>：前者是中位數住宅總價除以家戶年
+      可支配所得中位數，後者是月攤還額除以月可支配所得。社宅是租賃政策，
+      這兩個是代理指標不是直接指標。會用它們，是因為它們是目前唯一有縣市別、
+      逐季更新的官方負擔能力數列。</p>
+    </section>
+    <section>
+      <h3>內政部自己的分級</h3>
+      <p>房貸負擔率30%以下為「可合理負擔」，30–40%「略低」，40–50%「偏低」，
+      50%以上「過低」。這是來源本身的分級，不是本專案自訂的門檻。
+      全國41.46%落在「偏低」，臺北市64.41%與新北市55.30%落在「過低」。</p>
+    </section>
+    <section>
+      <h3>三個縣市要小心</h3>
+      <p>連江縣不在這期發布裡。澎湖縣、金門縣被來源標註「樣本數未達100戶」：
+      中位數背後只有不到100筆交易，名次不宜當真。三者在圖上都有標示。</p>
+    </section>
+    <section>
+      <h3>人口高點就是基準年</h3>
+      <p>全國常住人口的高點是<b>109年</b>，也就是普查年、也就是這個專案所有結構分析
+      鎖定的基準。之後六年全國減少約12萬人。這代表用109年當分母算出來的比率會
+      <b>略為低估現在的緊張程度</b>（分母偏大），但各縣市方向不同：新竹縣還在
+      +6.6%，臺北市已經 −5.9%。</p>
+    </section>
+    <section>
+      <h3>名次差不是誤差</h3>
+      <p>兩個名次差很多，不代表其中一個算錯。它們量的本來就是不同的東西：
+      空屋率是存量鬆緊，房價所得比是價格對所得。這一頁的用途不是選出唯一正確的
+      排序，是讓「換一個標準會換一批縣市」這件事變成看得見的。</p>
+    </section>
+    <section>
+      <h3>資料來源</h3>
+      <p>內政部不動產資訊平台《房價負擔能力指標》115年第1季；行政院主計總處
+      表3歷次各市縣常住人口（45–115年，115年為初步統計）。解析程式為
+      <code>scripts/prep_affordability.py</code> 與 <code>scripts/prep_pop_series.py</code>。</p>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="aff">{"period":"115Q1","source":"內政部不動產資訊平台《房價負擔能力指標》季報","measures":{"pir":{"label":"房價所得比","unit":"倍","def":"中位數住宅總價 ÷ 家戶年可支配所得中位數。9.47 倍代表不吃不喝 9.47 年才買得起中位數住宅。"},"burden":{"label":"房貸負擔率","unit":"%","def":"中位數住宅貸款月攤還額 ÷ 家戶月可支配所得中位數。內政部分級：30% 以下可合理負擔，30–40% 略低，40–50% 偏低，50% 以上過低。"}},"caveat":"兩項指標衡量的是「買」不是「租」。社宅是租賃政策，這是目前唯一有縣市別的官方負擔能力數列，但不是最貼題的那一個。","national":{"burden":41.46,"burdenQ":0.71,"burdenY":-3.07,"pir":9.47,"pirQ":0.15,"pirY":-0.77,"thin":false,"band":"偏低"},"notListed":["連江縣"],"counties":[{"name":"新北市","quadrant":"slack_growing","listed":true,"burden":55.3,"burdenQ":0.78,"burdenY":-3.38,"pir":12.63,"pirQ":0.16,"pirY":-0.86,"thin":false,"band":"過低"},{"name":"臺北市","quadrant":"tight_shrinking","listed":true,"burden":64.41,"burdenQ":0.49,"burdenY":-4.53,"pir":14.72,"pirQ":0.1,"pirY":-1.13,"thin":false,"band":"過低"},{"name":"桃園市","quadrant":"slack_growing","listed":true,"burden":36.89,"burdenQ":0.65,"burdenY":-2.09,"pir":8.43,"pirQ":0.14,"pirY":-0.53,"thin":false,"band":"略低"},{"name":"臺中市","quadrant":"slack_growing","listed":true,"burden":49.67,"burdenQ":1.12,"burdenY":-3.7,"pir":11.35,"pirQ":0.24,"pirY":-0.92,"thin":false,"band":"偏低"},{"name":"臺南市","quadrant":"tight_growing","listed":true,"burden":38.33,"burdenQ":0.7,"burdenY":-3.9,"pir":8.76,"pirQ":0.15,"pirY":-0.95,"thin":false,"band":"略低"},{"name":"高雄市","quadrant":"tight_shrinking","listed":true,"burden":40.9,"burdenQ":0.87,"burdenY":-2.23,"pir":9.35,"pirQ":0.19,"pirY":-0.57,"thin":false,"band":"偏低"},{"name":"基隆市","quadrant":"slack_shrinking","listed":true,"burden":24.93,"burdenQ":-0.3,"burdenY":-2.18,"pir":5.7,"pirQ":-0.07,"pirY":-0.53,"thin":false,"band":"可合理負擔"},{"name":"新竹市","quadrant":"slack_growing","listed":true,"burden":36.88,"burdenQ":1.17,"burdenY":-1.41,"pir":8.43,"pirQ":0.26,"pirY":-0.37,"thin":false,"band":"略低"},{"name":"嘉義市","quadrant":"slack_shrinking","listed":true,"burden":32.85,"burdenQ":1.13,"burdenY":-2.21,"pir":7.51,"pirQ":0.25,"pirY":-0.55,"thin":false,"band":"略低"},{"name":"宜蘭縣","quadrant":"slack_growing","listed":true,"burden":32.09,"burdenQ":-1.49,"burdenY":-5.83,"pir":7.33,"pirQ":-0.35,"pirY":-1.39,"thin":false,"band":"略低"},{"name":"新竹縣","quadrant":"slack_growing","listed":true,"burden":40.31,"burdenQ":1.13,"burdenY":-1.17,"pir":9.21,"pirQ":0.25,"pirY":-0.33,"thin":false,"band":"偏低"},{"name":"苗栗縣","quadrant":"slack_shrinking","listed":true,"burden":33.46,"burdenQ":1.13,"burdenY":-2.54,"pir":7.64,"pirQ":0.24,"pirY":-0.64,"thin":false,"band":"略低"},{"name":"彰化縣","quadrant":"tight_shrinking","listed":true,"burden":36.01,"burdenQ":0.92,"burdenY":-3.05,"pir":8.23,"pirQ":0.2,"pirY":-0.75,"thin":false,"band":"略低"},{"name":"南投縣","quadrant":"slack_shrinking","listed":true,"burden":37.08,"burdenQ":0.4,"burdenY":-4.03,"pir":8.47,"pirQ":0.08,"pirY":-0.98,"thin":false,"band":"略低"},{"name":"雲林縣","quadrant":"slack_shrinking","listed":true,"burden":31.36,"burdenQ":1.54,"burdenY":-1.36,"pir":7.17,"pirQ":0.35,"pirY":-0.35,"thin":false,"band":"略低"},{"name":"嘉義縣","quadrant":"slack_shrinking","listed":true,"burden":29.21,"burdenQ":1.04,"burdenY":-1.95,"pir":6.67,"pirQ":0.23,"pirY":-0.49,"thin":false,"band":"可合理負擔"},{"name":"屏東縣","quadrant":"tight_shrinking","listed":true,"burden":30.98,"burdenQ":1.01,"burdenY":-1.83,"pir":7.08,"pirQ":0.22,"pirY":-0.46,"thin":false,"band":"略低"},{"name":"臺東縣","quadrant":"slack_shrinking","listed":true,"burden":35.66,"burdenQ":1.55,"burdenY":-0.85,"pir":8.15,"pirQ":0.35,"pirY":-0.25,"thin":false,"band":"略低"},{"name":"花蓮縣","quadrant":"slack_shrinking","listed":true,"burden":36.38,"burdenQ":-1.14,"burdenY":-4.07,"pir":8.31,"pirQ":-0.27,"pirY":-0.99,"thin":false,"band":"略低"},{"name":"澎湖縣","quadrant":"slack_shrinking","listed":true,"burden":35.22,"burdenQ":-0.89,"burdenY":-1.74,"pir":8.05,"pirQ":-0.21,"pirY":-0.45,"thin":true,"band":"略低"},{"name":"金門縣","quadrant":"slack_growing","listed":true,"burden":36.68,"burdenQ":0.39,"burdenY":-0.7,"pir":8.38,"pirQ":0.08,"pirY":-0.22,"thin":true,"band":"略低"},{"name":"連江縣","quadrant":"tight_shrinking","listed":false,"burden":null,"pir":null,"thin":false,"band":null}]}</script>
+<script type="application/json" id="hou">{"period":"民國109年11月","source":"行政院主計總處 109 年人口及住宅普查 表87、表66","national":{"houses":8993149,"occupied":6895887,"unoccupied":2097262,"occasional":488532,"otherUse":435122,"idle":1173608,"vacancy":13.05,"households":8086905,"perHousehold":1.112},"vacancyCut":13.05,"quadrants":{"tight_growing":{"key":"tight_growing","label":"真的不夠住","cond":"人變多，房子沒空著","act":"新建社宅的第一順位"},"slack_growing":{"key":"slack_growing","label":"有房子，但租不起或不合用","cond":"人變多，房子卻空著","act":"先做包租代管與空屋活化"},"tight_shrinking":{"key":"tight_shrinking","label":"住得起的人才留得下來","cond":"人變少，房子沒空著","act":"重點在租金負擔，不在增加總量"},"slack_shrinking":{"key":"slack_shrinking","label":"房子多到用不完","cond":"人變少，房子空著","act":"新建效益最低，轉向既有住宅改善"}},"counties":[{"houses":1676933,"occupied":1303213,"unoccupied":373720,"occasional":75354,"otherUse":78778,"idle":219588,"vacancy":13.09,"households":1532931,"perHousehold":1.094,"name":"新北市","quadrant":"slack_growing","margin":0.04},{"houses":950496,"occupied":754585,"unoccupied":195911,"occasional":49051,"otherUse":53059,"idle":93801,"vacancy":9.87,"households":938041,"perHousehold":1.013,"name":"臺北市","quadrant":"tight_shrinking","margin":-3.18},{"houses":867883,"occupied":685312,"unoccupied":182571,"occasional":37153,"otherUse":30303,"idle":115115,"vacancy":13.26,"households":769641,"perHousehold":1.128,"name":"桃園市","quadrant":"slack_growing","margin":0.21},{"houses":1073182,"occupied":813500,"unoccupied":259682,"occasional":48367,"otherUse":63489,"idle":147826,"vacancy":13.77,"households":985957,"perHousehold":1.088,"name":"臺中市","quadrant":"slack_growing","margin":0.72},{"houses":712130,"occupied":561453,"unoccupied":150677,"occasional":31780,"otherUse":33094,"idle":85803,"vacancy":12.05,"households":624795,"perHousehold":1.14,"name":"臺南市","quadrant":"tight_growing","margin":-1.0},{"houses":1107058,"occupied":866006,"unoccupied":241052,"occasional":56360,"otherUse":51267,"idle":133425,"vacancy":12.05,"households":957850,"perHousehold":1.156,"name":"高雄市","quadrant":"tight_shrinking","margin":-1.0},{"houses":171191,"occupied":124236,"unoccupied":46955,"occasional":14182,"otherUse":4290,"idle":28483,"vacancy":16.64,"households":140211,"perHousehold":1.221,"name":"基隆市","quadrant":"slack_shrinking","margin":3.59},{"houses":181086,"occupied":137935,"unoccupied":43151,"occasional":10701,"otherUse":7216,"idle":25234,"vacancy":13.93,"households":168545,"perHousehold":1.074,"name":"新竹市","quadrant":"slack_growing","margin":0.88},{"houses":106368,"occupied":77911,"unoccupied":28457,"occasional":6116,"otherUse":6607,"idle":15734,"vacancy":14.79,"households":93487,"perHousehold":1.138,"name":"嘉義市","quadrant":"slack_shrinking","margin":1.74},{"houses":188788,"occupied":122779,"unoccupied":66009,"occasional":15294,"otherUse":12618,"idle":38097,"vacancy":20.18,"households":142492,"perHousehold":1.325,"name":"宜蘭縣","quadrant":"slack_growing","margin":7.13},{"houses":209074,"occupied":158504,"unoccupied":50570,"occasional":11950,"otherUse":8056,"idle":30564,"vacancy":14.62,"households":198281,"perHousehold":1.054,"name":"新竹縣","quadrant":"slack_growing","margin":1.57},{"houses":190106,"occupied":145723,"unoccupied":44383,"occasional":11626,"otherUse":7289,"idle":25468,"vacancy":13.4,"households":167866,"perHousehold":1.132,"name":"苗栗縣","quadrant":"slack_shrinking","margin":0.35},{"houses":420090,"occupied":313698,"unoccupied":106392,"occasional":27633,"otherUse":25013,"idle":53746,"vacancy":12.79,"households":359748,"perHousehold":1.168,"name":"彰化縣","quadrant":"tight_shrinking","margin":-0.26},{"houses":173230,"occupied":130056,"unoccupied":43174,"occasional":11717,"otherUse":6418,"idle":25039,"vacancy":14.45,"households":153677,"perHousehold":1.127,"name":"南投縣","quadrant":"slack_shrinking","margin":1.4},{"houses":227420,"occupied":165304,"unoccupied":62116,"occasional":21633,"otherUse":10379,"idle":30104,"vacancy":13.24,"households":202051,"perHousehold":1.126,"name":"雲林縣","quadrant":"slack_shrinking","margin":0.19},{"houses":182774,"occupied":131034,"unoccupied":51740,"occasional":16332,"otherUse":9947,"idle":25461,"vacancy":13.93,"households":161076,"perHousehold":1.135,"name":"嘉義縣","quadrant":"slack_shrinking","margin":0.88},{"houses":292234,"occupied":226329,"unoccupied":65905,"occasional":17628,"otherUse":13763,"idle":34514,"vacancy":11.81,"households":258661,"perHousehold":1.13,"name":"屏東縣","quadrant":"tight_shrinking","margin":-1.24},{"houses":78293,"occupied":54099,"unoccupied":24194,"occasional":6862,"otherUse":3120,"idle":14212,"vacancy":18.15,"households":71989,"perHousehold":1.088,"name":"臺東縣","quadrant":"slack_shrinking","margin":5.1},{"houses":127365,"occupied":85131,"unoccupied":42234,"occasional":12583,"otherUse":7419,"idle":22232,"vacancy":17.46,"households":108957,"perHousehold":1.169,"name":"花蓮縣","quadrant":"slack_shrinking","margin":4.41},{"houses":31003,"occupied":21955,"unoccupied":9048,"occasional":3294,"otherUse":1611,"idle":4143,"vacancy":13.36,"households":27888,"perHousehold":1.112,"name":"澎湖縣","quadrant":"slack_shrinking","margin":0.31},{"houses":23405,"occupied":14928,"unoccupied":8477,"occasional":2608,"otherUse":1227,"idle":4642,"vacancy":19.83,"households":20346,"perHousehold":1.15,"name":"金門縣","quadrant":"slack_growing","margin":6.78},{"houses":3040,"occupied":2196,"unoccupied":844,"occasional":308,"otherUse":159,"idle":377,"vacancy":12.4,"households":2415,"perHousehold":1.259,"name":"連江縣","quadrant":"tight_shrinking","margin":-0.65}]}</script>
+<script type="application/json" id="pop">{"counties":[{"name":"新北市","en":"New Taipei","region":"北部","p99":4054467,"p109":4365947,"delta":311480,"pct":7.68,"area":2052.6,"density99":1975.3,"density109":2127.1,"male109":2131784,"female109":2234163,"sexRatio109":95.4},{"name":"臺北市","en":"Taipei","region":"北部","p99":2655515,"p109":2594581,"delta":-60934,"pct":-2.29,"area":271.8,"density99":9770.1,"density109":9545.9,"male109":1213224,"female109":1381357,"sexRatio109":87.8},{"name":"桃園市","en":"Taoyuan","region":"北部","p99":2190342,"p109":2441064,"delta":250722,"pct":11.45,"area":1221.0,"density99":1793.9,"density109":1999.3,"male109":1230476,"female109":1210588,"sexRatio109":101.6},{"name":"臺中市","en":"Taichung","region":"中部","p99":2731056,"p109":3033840,"delta":302784,"pct":11.09,"area":2214.9,"density99":1233.0,"density109":1369.7,"male109":1503545,"female109":1530295,"sexRatio109":98.3},{"name":"臺南市","en":"Tainan","region":"南部","p99":1840257,"p109":1875076,"delta":34819,"pct":1.89,"area":2191.7,"density99":839.6,"density109":855.6,"male109":925912,"female109":949164,"sexRatio109":97.6},{"name":"高雄市","en":"Kaohsiung","region":"南部","p99":2777384,"p109":2734275,"delta":-43109,"pct":-1.55,"area":2954.7,"density99":941.8,"density109":925.4,"male109":1333864,"female109":1400411,"sexRatio109":95.2},{"name":"基隆市","en":"Keelung","region":"北部","p99":381809,"p109":367264,"delta":-14545,"pct":-3.81,"area":132.8,"density99":2875.1,"density109":2766.4,"male109":180836,"female109":186428,"sexRatio109":97.0},{"name":"新竹市","en":"Hsinchu City","region":"北部","p99":476273,"p109":499468,"delta":23195,"pct":4.87,"area":104.2,"density99":4570.8,"density109":4795.5,"male109":248971,"female109":250497,"sexRatio109":99.4},{"name":"嘉義市","en":"Chiayi City","region":"南部","p99":267651,"p109":252028,"delta":-15623,"pct":-5.84,"area":60.0,"density99":4460.9,"density109":4198.7,"male109":118922,"female109":133106,"sexRatio109":89.3},{"name":"宜蘭縣","en":"Yilan","region":"北部","p99":426975,"p109":433319,"delta":6344,"pct":1.49,"area":2143.6,"density99":199.2,"density109":202.1,"male109":215749,"female109":217570,"sexRatio109":99.2},{"name":"新竹縣","en":"Hsinchu County","region":"北部","p99":522163,"p109":633163,"delta":111000,"pct":21.26,"area":1427.5,"density99":365.8,"density109":443.5,"male109":323322,"female109":309841,"sexRatio109":104.4},{"name":"苗栗縣","en":"Miaoli","region":"中部","p99":530339,"p109":521962,"delta":-8377,"pct":-1.58,"area":1820.3,"density99":291.3,"density109":286.7,"male109":259902,"female109":262060,"sexRatio109":99.2},{"name":"彰化縣","en":"Changhua","region":"中部","p99":1226420,"p109":1186795,"delta":-39625,"pct":-3.23,"area":1074.4,"density99":1141.5,"density109":1104.6,"male109":605657,"female109":581138,"sexRatio109":104.2},{"name":"南投縣","en":"Nantou","region":"中部","p99":460869,"p109":430211,"delta":-30658,"pct":-6.65,"area":4106.4,"density99":112.2,"density109":104.8,"male109":211812,"female109":218399,"sexRatio109":97.0},{"name":"雲林縣","en":"Yunlin","region":"中部","p99":618581,"p109":591111,"delta":-27470,"pct":-4.44,"area":1290.8,"density99":479.2,"density109":457.9,"male109":302552,"female109":288559,"sexRatio109":104.8},{"name":"嘉義縣","en":"Chiayi County","region":"南部","p99":492981,"p109":464164,"delta":-28817,"pct":-5.85,"area":1903.6,"density99":259.0,"density109":243.8,"male109":235282,"female109":228882,"sexRatio109":102.8},{"name":"屏東縣","en":"Pingtung","region":"南部","p99":801012,"p109":755047,"delta":-45965,"pct":-5.74,"area":2775.6,"density99":288.6,"density109":272.0,"male109":376101,"female109":378946,"sexRatio109":99.2},{"name":"臺東縣","en":"Taitung","region":"東部","p99":201039,"p109":189452,"delta":-11587,"pct":-5.76,"area":3515.3,"density99":57.2,"density109":53.9,"male109":95153,"female109":94299,"sexRatio109":100.9},{"name":"花蓮縣","en":"Hualien","region":"東部","p99":309941,"p109":300406,"delta":-9535,"pct":-3.08,"area":4628.6,"density99":67.0,"density109":64.9,"male109":147941,"female109":152465,"sexRatio109":97.0},{"name":"澎湖縣","en":"Penghu","region":"南部","p99":86967,"p109":81738,"delta":-5229,"pct":-6.01,"area":126.9,"density99":685.3,"density109":644.3,"male109":44417,"female109":37321,"sexRatio109":119.0},{"name":"金門縣","en":"Kinmen","region":"金馬","p99":57221,"p109":67173,"delta":9952,"pct":17.39,"area":151.7,"density99":377.2,"density109":442.9,"male109":34384,"female109":32789,"sexRatio109":104.9},{"name":"連江縣","en":"Lienchiang","region":"金馬","p99":14604,"p109":11813,"delta":-2791,"pct":-19.11,"area":28.8,"density99":507.1,"density109":410.2,"male109":7892,"female109":3921,"sexRatio109":201.3}],"totals":{"p99":23123866,"p109":23829897,"delta":706031,"pct":3.05,"grew":8,"shrank":14}}</script>
+<script type="application/json" id="ser">{"source":"行政院主計總處 表 3 歷次各市縣常住人口（單位原為千人，此處還原為人）","unitNote":"原表單位為千人，因此每個數字的解析度是 1,000 人","years":[45,55,69,79,89,99,109,113,114,115],"prelimYear":115,"censusYears":[99,109],"baseIndex":6,"national":[9368000,13505000,18030000,20394000,22301000,23124000,23830000,23693000,23713000,23710000],"counties":[{"name":"新北市","values":[668000,1143000,2365000,3066000,3722000,4054000,4366000,4364000,4366000,4362000],"firstYear":45,"splitFrom":null,"since109":-4000,"since109Pct":-0.09,"peakYear":109},{"name":"臺北市","values":[823000,1362000,2268000,2760000,2624000,2656000,2595000,2481000,2465000,2441000],"firstYear":45,"splitFrom":null,"since109":-154000,"since109Pct":-5.93,"peakYear":79},{"name":"桃園市","values":[412000,660000,1068000,1378000,1809000,2190000,2441000,2517000,2542000,2565000],"firstYear":45,"splitFrom":null,"since109":124000,"since109Pct":5.08,"peakYear":115},{"name":"臺中市","values":[784000,1113000,1635000,2058000,2500000,2731000,3034000,3051000,3068000,3076000],"firstYear":45,"splitFrom":null,"since109":42000,"since109Pct":1.38,"peakYear":115},{"name":"臺南市","values":[992000,1334000,1541000,1695000,1846000,1840000,1875000,1863000,1860000,1857000],"firstYear":45,"splitFrom":null,"since109":-18000,"since109Pct":-0.96,"peakYear":109},{"name":"高雄市","values":[900000,1446000,2225000,2513000,2757000,2777000,2734000,2691000,2690000,2692000],"firstYear":45,"splitFrom":null,"since109":-42000,"since109Pct":-1.54,"peakYear":99},{"name":"基隆市","values":[194000,294000,347000,349000,388000,382000,367000,362000,361000,361000],"firstYear":45,"splitFrom":null,"since109":-6000,"since109Pct":-1.63,"peakYear":89},{"name":"新竹市","values":[null,null,null,342000,396000,476000,499000,505000,507000,509000],"firstYear":79,"splitFrom":"新竹縣","since109":10000,"since109Pct":2.0,"peakYear":115},{"name":"嘉義市","values":[null,null,null,252000,266000,268000,252000,244000,243000,244000],"firstYear":79,"splitFrom":"嘉義縣","since109":-8000,"since109Pct":-3.17,"peakYear":99},{"name":"宜蘭縣","values":[303000,387000,440000,437000,445000,427000,433000,426000,426000,426000],"firstYear":45,"splitFrom":null,"since109":-7000,"since109Pct":-1.62,"peakYear":89},{"name":"新竹縣","values":[409000,554000,639000,371000,451000,522000,633000,661000,670000,675000],"firstYear":45,"splitFrom":null,"since109":42000,"since109Pct":6.64,"peakYear":115},{"name":"苗栗縣","values":[395000,493000,539000,526000,534000,530000,522000,520000,521000,522000],"firstYear":45,"splitFrom":null,"since109":0,"since109Pct":0.0,"peakYear":69},{"name":"彰化縣","values":[794000,993000,1160000,1205000,1255000,1226000,1187000,1154000,1150000,1147000],"firstYear":45,"splitFrom":null,"since109":-40000,"since109Pct":-3.37,"peakYear":89},{"name":"南投縣","values":[357000,478000,521000,515000,487000,461000,430000,428000,425000,425000],"firstYear":45,"splitFrom":null,"since109":-5000,"since109Pct":-1.16,"peakYear":69},{"name":"雲林縣","values":[604000,768000,784000,717000,705000,619000,591000,584000,584000,583000],"firstYear":45,"splitFrom":null,"since109":-8000,"since109Pct":-1.35,"peakYear":69},{"name":"嘉義縣","values":[630000,818000,815000,535000,553000,493000,464000,460000,459000,459000],"firstYear":45,"splitFrom":null,"since109":-5000,"since109Pct":-1.08,"peakYear":55},{"name":"屏東縣","values":[568000,779000,882000,875000,873000,801000,755000,743000,740000,737000],"firstYear":45,"splitFrom":null,"since109":-18000,"since109Pct":-2.38,"peakYear":69},{"name":"臺東縣","values":[170000,274000,280000,249000,205000,201000,189000,187000,186000,186000],"firstYear":45,"splitFrom":null,"since109":-3000,"since109Pct":-1.59,"peakYear":69},{"name":"花蓮縣","values":[220000,318000,355000,337000,327000,310000,300000,292000,288000,287000],"firstYear":45,"splitFrom":null,"since109":-13000,"since109Pct":-4.33,"peakYear":69},{"name":"澎湖縣","values":[86000,132000,106000,106000,83000,87000,82000,80000,79000,79000],"firstYear":45,"splitFrom":null,"since109":-3000,"since109Pct":-3.66,"peakYear":55},{"name":"金門縣","values":[45000,120000,52000,81000,56000,57000,67000,68000,68000,68000],"firstYear":45,"splitFrom":null,"since109":1000,"since109Pct":1.49,"peakYear":55},{"name":"連江縣","values":[11000,37000,9000,26000,18000,15000,12000,13000,13000,12000],"firstYear":45,"splitFrom":null,"since109":0,"since109Pct":0.0,"peakYear":55}],"splitNote":"69 年以前新竹縣含新竹市、嘉義縣含嘉義市，兩市在前三欄為空值"}</script>
+
+<script>
+(() => {
+  'use strict';
+  const AFF = JSON.parse(document.getElementById('aff').textContent);
+  const HOU = JSON.parse(document.getElementById('hou').textContent);
+  const POP = JSON.parse(document.getElementById('pop').textContent);
+  const PS  = JSON.parse(document.getElementById('ser').textContent);
+  const A = Object.fromEntries(AFF.counties.map(c => [c.name, c]));
+  const H = Object.fromEntries(HOU.counties.map(c => [c.name, c]));
+  const P = Object.fromEntries(POP.counties.map(c => [c.name, c]));
+  const S = Object.fromEntries(PS.counties.map(c => [c.name, c]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}, txt) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]);
+    if (txt != null) n.textContent = txt; return n; };
+  const int = v => Math.round(v).toLocaleString('en-US');
+  const sign = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v).toFixed(1);
+
+  // Only counties the affordability release actually covers can be ranked.
+  const LIVE = AFF.counties.filter(c => c.listed).map(c => c.name);
+
+  // Three orderings of the same 21 counties. Rank 1 = "should come first" under
+  // that criterion, so the vacancy rank is ascending (low vacancy = tight) while
+  // the other two are descending.
+  const CRIT = [
+    { key: 'vac',  head: '房子夠不夠',   sub: '空屋率低者優先',
+      val: n => H[n].vacancy,          asc: true,
+      fmt: n => H[n].vacancy.toFixed(2) + '%' },
+    { key: 'pir',  head: '買不買得起',   sub: '房價所得比高者優先',
+      val: n => A[n].pir,              asc: false,
+      fmt: n => A[n].pir.toFixed(2) + ' 倍' },
+    { key: 'pop',  head: '人有沒有在進來', sub: '109→115 成長高者優先',
+      val: n => S[n].since109Pct,      asc: false,
+      fmt: n => sign(S[n].since109Pct) + '%' },
+  ];
+  for (const c of CRIT) {
+    const s = [...LIVE].sort((a, b) => c.asc ? c.val(a) - c.val(b) : c.val(b) - c.val(a));
+    c.rank = Object.fromEntries(s.map((n, i) => [n, i + 1]));
+  }
+  const rVac = CRIT[0].rank, rPir = CRIT[1].rank;
+  const gapOf = n => rVac[n] - rPir[n];
+  const HOT = [...LIVE].sort((a, b) => Math.abs(gapOf(b)) - Math.abs(gapOf(a))).slice(0, 5);
+  const isHot = n => HOT.includes(n);
+
+  /* ── stats ─────────────────────────────────────────────────────────── */
+  {
+    const n = AFF.national;
+    const top = [...LIVE].sort((a, b) => A[b].pir - A[a].pir)[0];
+    const peak = PS.national[PS.baseIndex], now = PS.national[PS.national.length - 1];
+    const stat = (k, v, sub, cls) =>
+      `<div class="stat"><dt>${k}</dt><dd class="${cls || ''}">${v}</dd><span class="sub">${sub}</span></div>`;
+    document.getElementById('stats').innerHTML =
+      stat('全國房價所得比', n.pir.toFixed(2) + ' 倍', `較上年 ${sign(n.pirY)} 倍`) +
+      stat('全國房貸負擔率', n.burden.toFixed(2) + '%', `內政部分級：${n.band}`, 'down') +
+      stat('最買不起', `${top.slice(0, 3)} ${A[top].pir.toFixed(2)} 倍`,
+           `房貸負擔率 ${A[top].burden.toFixed(2)}%（${A[top].band}）`, 'down') +
+      stat('全國人口高點', `${PS.years[PS.baseIndex]} 年`,
+           `${int(peak)} 人，115 年 ${int(now)} 人`);
+    document.getElementById('k-peak').textContent = int(peak);
+    document.getElementById('k-now').textContent = int(now);
+    const w = HOT[0];
+    document.getElementById('k-worst').textContent = w;
+    document.getElementById('k-worst-a').textContent = rVac[w];
+    document.getElementById('k-worst-b').textContent = rPir[w];
+    document.getElementById('k-worst-gap').textContent = Math.abs(gapOf(w));
+  }
+
+  /* ── bump chart ────────────────────────────────────────────────────── */
+  const svg = document.getElementById('bump');
+  const wrap = document.getElementById('bumpwrap');
+  let pinned = null;
+  {
+    const W = 820, H = 660, TP = 52, B = 18, L = 96, R = 96;
+    const cols = [L, W / 2, W - R];
+    const N = LIVE.length;
+    const Y = r => TP + (r - 1) / (N - 1) * (H - TP - B);
+    // Layers, not interleaved: every visible mark must sit below every hit line,
+    // otherwise one county's stroke swallows the next county's click target.
+    const gLine = el('g'), gDot = el('g'), gLbl = el('g'), gHit = el('g');
+    svg.append(gLine, gDot, gLbl, gHit);
+    CRIT.forEach((c, i) => {
+      const anchor = i === 0 ? 'start' : i === 2 ? 'end' : 'middle';
+      const x = i === 0 ? cols[0] - 84 : i === 2 ? cols[2] + 84 : cols[1];
+      svg.appendChild(el('text', { class: 'bhead', x, y: 20, 'text-anchor': anchor }, c.head));
+      svg.appendChild(el('text', { class: 'bsub', x, y: 35, 'text-anchor': anchor }, c.sub));
+    });
+    for (const n of LIVE) {
+      const pts = CRIT.map((c, i) => [cols[i], Y(c.rank[n])]);
+      const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ');
+      const cls = isHot(n) ? ' hot' : '';
+      gLine.appendChild(el('path', { class: 'bump' + cls, 'data-n': n, d }));
+      pts.forEach(p => gDot.appendChild(el('circle', {
+        class: 'bdot' + cls, 'data-n': n, cx: p[0], cy: p[1], r: isHot(n) ? 3.6 : 2.6 })));
+      const thin = A[n].thin ? ' *' : '';
+      gLbl.appendChild(el('text', { class: 'blbl' + cls, 'data-n': n,
+        x: cols[0] - 9, y: Y(CRIT[0].rank[n]) + 3.5, 'text-anchor': 'end' },
+        `${CRIT[0].rank[n]}. ${n}${thin}`));
+      gLbl.appendChild(el('text', { class: 'blbl' + cls, 'data-n': n,
+        x: cols[2] + 9, y: Y(CRIT[2].rank[n]) + 3.5 }, `${n}${thin} ${CRIT[2].rank[n]}`));
+      // Invisible fat line so a 1.4px stroke is still easy to hit. 8px keeps
+      // adjacent ranks (29.5px apart) from stealing each other's endpoints;
+      // at crossings the overlap is inherent to the chart form.
+      gHit.appendChild(el('path', { class: 'bhit', 'data-n': n, 'stroke-width': 8,
+        stroke: 'transparent', d }));
+    }
+    gLbl.appendChild(el('text', { class: 'bsub', x: cols[0] - 84, y: H - 2 },
+      '* 樣本數未達 100 戶'));
+  }
+
+  function markBump() {
+    wrap.classList.toggle('dimmed', !!pinned);
+    for (const n of svg.querySelectorAll('[data-n]'))
+      n.classList.toggle('on', n.dataset.n === pinned);
+  }
+  svg.addEventListener('pointerover', e => {
+    const t = e.target.closest('[data-n]'); if (!t) return;
+    showTip(e, t.dataset.n);
+  });
+  svg.addEventListener('pointermove', e => {
+    const t = e.target.closest('[data-n]'); if (t) showTip(e, t.dataset.n);
+  });
+  svg.addEventListener('pointerout', hideTip);
+  svg.addEventListener('click', e => {
+    const t = e.target.closest('[data-n]');
+    pinned = t && pinned !== t.dataset.n ? t.dataset.n : null;
+    markBump();
+  });
+
+  /* ── gap cards ─────────────────────────────────────────────────────── */
+  document.getElementById('gaps').innerHTML = HOT.map(n => {
+    const g = gapOf(n);
+    const dir = g > 0 ? '空屋率說不急，價格說很急' : '空屋率說很急，價格說還好';
+    return `<div class="gap">
+      <h4>${n}${A[n].thin ? '<span class="thin"> 樣本不足</span>' : ''}</h4>
+      <div class="n">${Math.abs(g)} <small>個名次差</small></div>
+      <div class="d">房子夠不夠 第 ${rVac[n]} 名（空屋率 ${H[n].vacancy.toFixed(2)}%）</div>
+      <div class="d">買不買得起 第 ${rPir[n]} 名（${A[n].pir.toFixed(2)} 倍）</div>
+      <div class="d" style="color:var(--ink-3);font-size:11.8px">${dir}</div>
+    </div>`;
+  }).join('');
+
+  /* ── 新北 vs 臺南 ──────────────────────────────────────────────────── */
+  {
+    const side = n => {
+      const a = A[n], h = H[n];
+      return `<div class="side">
+        <h4>${n}<em>${HOU.quadrants[h.quadrant].label}</em></h4>
+        <dl>
+          <dt>房價所得比</dt><dd${a.pir >= 10 ? ' class="bad"' : ''}>${a.pir.toFixed(2)} 倍</dd>
+          <dt>房貸負擔率</dt><dd${a.burden >= 50 ? ' class="bad"' : ''}>${a.burden.toFixed(2)}%</dd>
+          <dt>內政部分級</dt><dd style="font-family:var(--f-body)">${a.band}</dd>
+          <dt>空屋率</dt><dd>${h.vacancy.toFixed(2)}%</dd>
+          <dt>距全國分界</dt><dd>${sign(h.vacancy - HOU.vacancyCut)}</dd>
+          <dt>109→115 人口</dt><dd>${sign(S[n].since109Pct)}%</dd>
+          <dt>負擔名次</dt><dd>第 ${rPir[n]} 名</dd>
+          <dt>缺房名次</dt><dd>第 ${rVac[n]} 名</dd>
+        </dl></div>`;
+    };
+    document.getElementById('vs').innerHTML =
+      side('新北市') + '<div class="mid">對照</div>' + side('臺南市');
+  }
+
+  /* ── table ─────────────────────────────────────────────────────────── */
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  let sortKey = 'pir', sortDir = -1;
+  const ROWS = HOU.counties.map(c => {
+    const n = c.name, a = A[n], listed = a.listed;
+    return {
+      name: n, listed, pir: listed ? a.pir : null, burden: listed ? a.burden : null,
+      band: listed ? a.band : '－', thin: listed && a.thin,
+      vacancy: c.vacancy, pct: P[n].pct, since109: S[n].since109Pct,
+      rPir: listed ? rPir[n] : null, rVac: listed ? rVac[n] : null,
+      gap: listed ? gapOf(n) : null,
+      quadrant: HOU.quadrants[c.quadrant].label,
+    };
+  });
+
+  function drawTable() {
+    const rows = [...ROWS].sort((a, b) => {
+      const x = a[sortKey], y = b[sortKey];
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    tbody.innerHTML = rows.map(r => `<tr>
+      <td>${r.name}${r.thin ? '<span class="thin"> *</span>' : ''}</td>
+      <td class="num">${r.pir == null ? '－' : r.pir.toFixed(2)}</td>
+      <td class="num">${r.burden == null ? '－' : r.burden.toFixed(2) + '%'}</td>
+      <td>${r.band}</td>
+      <td class="num">${r.vacancy.toFixed(2)}%</td>
+      <td class="num ${r.pct > 0 ? 'up' : 'down'}">${sign(r.pct)}%</td>
+      <td class="num ${r.since109 > 0 ? 'up' : 'down'}">${sign(r.since109)}%</td>
+      <td class="num">${r.rPir ?? '－'}</td>
+      <td class="num">${r.rVac ?? '－'}</td>
+      <td class="num">${r.gap == null ? '－' : (r.gap > 0 ? '+' : r.gap < 0 ? '−' : '±') + Math.abs(r.gap)}</td>
+      <td>${r.quadrant}</td>
+    </tr>`).join('');
+    const n = AFF.national;
+    tfoot.innerHTML = `<tr>
+      <td>全國</td><td class="num">${n.pir.toFixed(2)}</td>
+      <td class="num">${n.burden.toFixed(2)}%</td><td>${n.band}</td>
+      <td class="num">${HOU.national.vacancy.toFixed(2)}%</td>
+      <td class="num up">${sign(POP.totals.pct)}%</td>
+      <td class="num down">${sign((PS.national[PS.national.length - 1] / PS.national[PS.baseIndex] - 1) * 100)}%</td>
+      <td colspan="4">* 樣本數未達 100 戶</td></tr>`;
+  }
+  document.querySelectorAll('#tbl thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.k;
+      sortDir = sortKey === k ? -sortDir : (k === 'name' || k === 'band' || k === 'quadrant' ? 1 : -1);
+      sortKey = k;
+      document.querySelectorAll('#tbl thead th').forEach(x => x.removeAttribute('aria-sort'));
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable();
+    });
+  });
+  drawTable();
+
+  /* ── tooltip ───────────────────────────────────────────────────────── */
+  const tip = document.getElementById('tip');
+  function showTip(e, n) {
+    tip.innerHTML = `<div class="t-nm">${n}</div><dl>` +
+      CRIT.map(c => `<dt>${c.head}</dt><dd>第 ${c.rank[n]} 名　${c.fmt(n)}</dd>`).join('') +
+      `<dt>名次差</dt><dd>${Math.abs(gapOf(n))}</dd>` +
+      `<dt>現行分型</dt><dd style="font-family:var(--f-body)">${HOU.quadrants[H[n].quadrant].label}</dd>` +
+      '</dl>';
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 16, innerWidth - r.width - 8) + 'px';
+    tip.style.top = Math.max(8, Math.min(e.clientY - 12, innerHeight - r.height - 8)) + 'px';
+  }
+  function hideTip() { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); }
+  addEventListener('keydown', e => { if (e.key === 'Escape') { pinned = null; hideTip(); markBump(); } });
+})();
+</script>
