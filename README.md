@@ -45,7 +45,7 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 
 ## 二、頁面
 
-`dist/` 下有四頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
+`dist/` 下有五頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
 
 | 檔案 | 內容 | 空間單元 |
 |---|---|---|
@@ -53,6 +53,7 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 | `town.html` | 臺灣空屋地圖：空屋在哪裡、能不能用 | 368 鄉鎮市區 |
 | `metro.html` | 六都與新竹的內部落差：縣市平均掩蓋了什麼 | 174 鄉鎮市區 |
 | `trend.html` | 空屋率的十六年：內政部半年數列 | 22 縣市 ＋ 174 行政區 |
+| `social.html` | 包租代管在哪裡：社宅政策實際落點 | 22 縣市（19 有辦） |
 | `docs/architecture.html` | 資料站架構草案 | — |
 | `docs/verification.html` | 空屋數字對帳單：與內政部官方文件核對 | — |
 
@@ -129,6 +130,29 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 108 與 109 年是用 110 年上半年起的精進地址比對法回頭重算的，110 年上半年起才是
 直接統計。另外它只涵蓋房屋稅籍與台電勾稽成功的 81.67%，是樣本不是普查。
 
+### 2e. 包租代管在哪裡（P3 的一半）
+
+社宅有兩條路：直接興建，以及包租代管（政府或業者向屋主承租再轉租）。
+後者是唯一直接吃掉現有空屋的工具，所以跟前面幾頁的空屋分析是同一個問題的兩面。
+
+- 縣市面量圖，可切換三個指標：每千家戶媒合戶數、累計媒合戶數、第 5 期（現行）媒合戶數
+- 與普查四分型的交叉檢查：「有房子，但租不起或不合用」該型中位數 24.39 戶／千家戶，
+  是「房子多到用不完」該型的 5.7 倍。包租代管確實落在分型建議的位置
+- 19 縣市排序條圖與完整資料表，與地圖三向連動
+
+三件事寫在頁面上而不是只寫在這裡：
+
+1. **表上的是累計媒合戶數，不是現有存量。**五輪計畫每次媒合都記一筆，
+   到期、退出都不扣。全國累計 234,596 戶，仍有效的契約只有 116,390 戶（49.6%）。
+   有效契約數只有全國一個數字，所以頁面不拿這個比例去乘任何縣市。
+2. **澎湖、金門、連江根本不在原表上**，畫成灰色的「未列」而不是最低那一級。
+   高雄與臺東的第 5 期標「未開辦」，同樣不當 0。
+3. **只有第 5 期還在動**，第 1 至 4 期媒合期間已截止、數據不再更新。
+
+還缺直接興建：那份資料在 pip.moi.gov.tw 與國土署網站，兩站用同一套防火牆
+擋掉機房 IP（回 `Request Rejected`），也沒有上架到政府資料開放平臺，
+只能在一般網路環境下載。
+
 ### 與內政部用電統計的對帳
 
 `scripts/verify_vacancy.py` 把普查空屋率與內政部低度使用（用電）住宅率逐縣市比對。
@@ -146,6 +170,7 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 | `data/sources/twTown1982.geo.json` | g0v `twgeojson`，鄉鎮市區界 |
 | `data_TW/07_普查109年_統計表/縣市/` | 各縣市報告表，含鄉鎮市區細分 |
 | `data/sources/114年低度使用住宅統計資訊簡冊.pdf` | 內政部不動產資訊平台，115 年 7 月出刊 |
+| `data/sources/社會住宅包租代管計畫執行情形_1150731.pdf` | 內政部國土管理署，115 年 7 月 31 日 |
 
 #### 兩期行政區的對齊
 
@@ -166,7 +191,8 @@ python3 scripts/prep_housing.py  # 普查住宅表與分型   -> data/tw_housing
 python3 scripts/prep_town_geo.py  # 簡化鄉鎮市區界    -> data/tw_towns.json
 python3 scripts/prep_town_data.py # 鄉鎮市區住宅資料  -> data/tw_town_data.json
 python3 scripts/prep_moi_series.py # 內政部半年數列   -> data/tw_moi_series.json
-python3 scripts/build.py         # 內嵌並產出四頁     -> dist/*.html
+python3 scripts/prep_social_housing.py # 包租代管執行情形 -> data/tw_social_housing.json
+python3 scripts/build.py         # 內嵌並產出五頁     -> dist/*.html
 python3 scripts/verify_vacancy.py # 與內政部用電統計對帳
 ```
 

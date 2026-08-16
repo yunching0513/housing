@@ -26,6 +26,11 @@ PAGES = {
     'trend.html': ('trend.template.html', {
         '__SER_JSON__': 'tw_moi_series.json',
     }),
+    'social.html': ('social.template.html', {
+        '__GEO_JSON__': 'tw_counties.json',
+        '__SOC_JSON__': 'tw_social_housing.json',
+        '__HOU_JSON__': 'tw_housing.json',
+    }),
 }
 
 

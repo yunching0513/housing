@@ -1,0 +1,554 @@
+<title>包租代管在哪裡</title>
+
+<style>
+__SHARED_CSS__
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.lede { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+        border-radius: 3px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.lede h2 { font-size: 17px; }
+.lede p { margin: 0; font-size: 13.6px; color: var(--ink-2); max-width: 74ch; }
+.lede p b { color: var(--ink); }
+
+.county.nodata { fill: var(--neutral); }
+.legend .sw.nd { background: var(--neutral); flex: 0 0 34px; }
+.legend .ndrow { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-3); }
+.legend .ndrow i { width: 22px; height: 13px; border-radius: 1px; background: var(--neutral);
+                   display: inline-block; border: 1px solid var(--rule); }
+
+.row.nd .track { opacity: .5; }
+.row .val.nd { color: var(--ink-3); font-weight: 400; }
+
+.qgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(232px, 1fr)); gap: 12px; }
+.qcard { border: 1px solid var(--rule); border-left-width: 3px; border-radius: 3px;
+         background: var(--card); padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.qcard h4 { margin: 0; font-family: var(--f-display); font-size: 14.5px; font-weight: 600; }
+.qcard .med { font-family: var(--f-mono); font-size: 22px; font-weight: 600; color: var(--ink);
+              font-variant-numeric: tabular-nums; line-height: 1; }
+.qcard .med small { font-family: var(--f-body); font-size: 11.5px; font-weight: 400; color: var(--ink-3); }
+.qcard .act { font-size: 11.8px; color: var(--ink-3); }
+.qcard .who { font-size: 12px; color: var(--ink-2); }
+.qbar { height: 6px; background: var(--rule-soft); border-radius: 3px; position: relative; }
+.qbar i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">資料日期 115 年 7 月 31 日 ・ 包租代管 ・ 19 縣市有辦</p>
+    <h1>包租代管在哪裡</h1>
+    <p class="dek">
+      社宅有兩條路：一條是<b>蓋</b>，一條是<b>租下別人已經蓋好的房子再轉租</b>。
+      後者叫包租代管，是唯一能直接吃掉現有空屋的工具。這一頁看它實際落在哪裡：
+      全國累計媒合 <b>23.5 萬戶</b>，但其中 <b>30.5% 集中在桃園市一個縣市</b>。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="lede">
+    <h2>這個數字不是「現在有多少戶在住」</h2>
+    <p>表上的是<b>累計媒合戶數</b>：第 1 期到第 5 期五輪計畫，每一次媒合成功都記一筆，
+    然後全部加起來。房東收回、房客搬走、契約到期都不會扣掉，同一戶跨期續約會被算兩次。
+    官方自己在同一張表的footer給了對照：全國累計 <b id="k-cum"></b> 戶，
+    <b>目前仍有效的契約只有 <span id="k-live"></span> 戶</b>，剩不到一半。</p>
+    <p>有效契約數<b>只公布全國一個數字</b>，沒有縣市別。所以這一頁不會拿 49.6% 去乘各縣市：
+    那會假設每個縣市的存活率一樣，而早開辦的縣市累計裡本來就有比較多過期案。
+    地圖看的是<b>累計投入的相對強度</b>，不是現有存量。</p>
+  </div>
+
+  <hr class="rule">
+
+  <div class="controls">
+    <div class="seg" id="seg" role="group" aria-label="切換指標">
+      <button data-k="per1000" aria-pressed="true">每千家戶</button>
+      <button data-k="matched" aria-pressed="false">累計戶數</button>
+      <button data-k="latest" aria-pressed="false">第 5 期（現行）</button>
+    </div>
+    <span class="hint">滑過或點選任一縣市，地圖、長條與表格同步</span>
+  </div>
+
+  <div class="figures">
+    <section class="panel">
+      <header><h2 id="map-title">包租代管分布</h2><p id="map-sub"></p></header>
+      <div class="body">
+        <div class="mapwrap"><svg class="map" id="map" viewBox="0 0 990 1000"
+             role="img" aria-labelledby="map-title" aria-describedby="map-desc"></svg>
+          <p id="map-desc" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header><h2>19 縣市排序</h2><p id="bars-sub"></p></header>
+      <div class="body"><div class="bars" id="bars"></div></div>
+    </section>
+  </div>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>它有落在該落的地方嗎</h2>
+      <p>把各縣市依普查的四種分型分組，看每組的每千家戶媒合戶數中位數</p>
+    </header>
+    <div class="body">
+      <div class="qgrid" id="qgrid"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:78ch">
+        分型是另外兩頁用 109 年普查算的，跟這份包租代管資料完全獨立。
+        對起來的結果是<b>一致的</b>：「有房子，但租不起或不合用」這一型的中位數
+        <b id="k-sg"></b> 戶／千家戶，是「房子多到用不完」那一型的
+        <b id="k-ratio"></b> 倍。包租代管確實集中在<b>房子有空、人卻還在進來</b>的地方，
+        而不是撒在全國。卡片依中位數由高到低排，「真的不夠住」那一型
+        <b>只有臺南市一個縣市</b>，中位數等於它自己，不宜當成一組的代表值。
+      </p>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:10px;max-width:78ch">
+        但這個一致不能全記在政策精準度上。包租代管要有<b>租賃市場</b>才辦得起來：
+        雲林、嘉義縣、南投這些「房子多到用不完」的縣市，空屋多但可出租的物件少、
+        房東參與意願低，數字低有一部分是<b>辦不動</b>而不是<b>不需要辦</b>。
+        兩者在這份資料裡分不開。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header><h2>完整資料</h2><p>點欄位標題排序。「－」表示該期未辦理或未開辦</p></header>
+    <div class="body">
+      <div class="tablewrap">
+        <table id="tbl">
+          <thead><tr>
+            <th data-k="name">縣市</th>
+            <th data-k="matched">累計媒合</th>
+            <th data-k="per1000">每千家戶</th>
+            <th data-k="latest">第 5 期</th>
+            <th data-k="r4">第 4 期</th>
+            <th data-k="r3">第 3 期</th>
+            <th data-k="r2">第 2 期</th>
+            <th data-k="r1">第 1 期</th>
+            <th data-k="households">家戶數</th>
+            <th data-k="quadrant">普查分型</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>三個縣市根本不在表上</h3>
+      <p>澎湖縣、金門縣、連江縣在原表中沒有列。這跟「辦了但媒合 0 戶」不一樣，
+      所以地圖上畫成灰色的「未列」，不是畫成最低那一級。高雄市與臺東縣的第 5 期
+      標「未開辦」，同樣不併入 0 計算。</p>
+    </section>
+    <section>
+      <h3>只有第 5 期還在動</h3>
+      <p>原表footer註明第 1 至 4 期的媒合期間已截止、數據不再更新。所以「累計」
+      這一欄裡有四期是<b>凍結的歷史</b>，只有第 5 期反映現在的辦理速度。
+      要看當前投入，切到「第 5 期」那個指標。</p>
+    </section>
+    <section>
+      <h3>中央與地方是兩套執行</h3>
+      <p>每期分「地方」與「中央」兩欄，中央指國家住宅及都市更新中心偕同各地
+      租賃住宅服務商業同業公會執行。本頁把兩者相加，因為對租屋家庭而言是同一件事；
+      原始分欄仍保留在 <code>data/tw_social_housing.json</code> 裡。</p>
+    </section>
+    <section>
+      <h3>分母是普查家戶數</h3>
+      <p>每千家戶用的分母是 109 年 11 月普查的一般家戶數，跟包租代管資料
+      差了近 6 年。這段期間家戶數是增加的，所以這裡算出來的比率會<b>略為高估</b>。
+      更貼題的分母是租屋家戶數，但那要 114 年的權屬資料，還沒拿到。</p>
+    </section>
+    <section>
+      <h3>還缺直接興建</h3>
+      <p>社宅的另一半是政府直接興建（已完工、興建中、待開工）。那份資料在
+      pip.moi.gov.tw 與國土署網站上，兩站都用同一套防火牆擋掉機房 IP，
+      這邊抓不到，也沒有上架到政府資料開放平臺。補進來之後才能算完整的社宅覆蓋率。</p>
+    </section>
+    <section>
+      <h3>資料來源</h3>
+      <p>內政部國土管理署《社會住宅包租代管計畫執行情形》，資料日期 115 年 7 月 31 日。
+      解析程式為 <code>scripts/prep_social_housing.py</code>，每一期的縣市加總都與原表
+      小計列對帳後才寫檔。</p>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="geo">__GEO_JSON__</script>
+<script type="application/json" id="soc">__SOC_JSON__</script>
+<script type="application/json" id="hou">__HOU_JSON__</script>
+
+<script>
+(() => {
+  'use strict';
+  const GEO = JSON.parse(document.getElementById('geo').textContent);
+  const S = JSON.parse(document.getElementById('soc').textContent);
+  const HOU = JSON.parse(document.getElementById('hou').textContent);
+  const C = Object.fromEntries(S.counties.map(c => [c.name, c]));
+  const Q = Object.fromEntries(HOU.counties.map(c => [c.name, c.quadrant]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]); return n; };
+  const int = v => Math.round(v).toLocaleString('en-US');
+
+  // ── projection (same geometry and framing as the 住宅供需圖) ───────────
+  const MAIN = [258, 8, 724, 984];
+  const INSETS = { matsu: { mag: 1.5, x: 14, y: 40 }, kinmen: { mag: 2.0, x: 14, y: 292 } };
+  const RECTS = { main: MAIN };
+  const proj = {};
+  const cosOf = b => Math.cos((b[1] + b[3]) / 2 * Math.PI / 180);
+  {
+    const b = GEO.bounds.main, k = cosOf(b), [x, y, w, h] = MAIN;
+    const s = Math.min(w / ((b[2] - b[0]) * k), h / (b[3] - b[1]));
+    proj.main = { b, k, s, dx: x + (w - (b[2] - b[0]) * k * s) / 2,
+                  dy: y + (h - (b[3] - b[1]) * s) / 2 };
+  }
+  for (const [g, cfg] of Object.entries(INSETS)) {
+    const b = GEO.bounds[g], k = cosOf(b), s = proj.main.s * cfg.mag;
+    RECTS[g] = [cfg.x, cfg.y, (b[2] - b[0]) * k * s, (b[3] - b[1]) * s];
+    proj[g] = { b, k, s, dx: cfg.x, dy: cfg.y };
+  }
+  const px = (g, lon) => proj[g].dx + (lon - proj[g].b[0]) * proj[g].k * proj[g].s;
+  const py = (g, lat) => proj[g].dy + (proj[g].b[3] - lat) * proj[g].s;
+  const pathOf = c => c.rings.map(r =>
+    'M' + r.map(([lo, la]) => `${px(c.group, lo).toFixed(1)} ${py(c.group, la).toFixed(1)}`).join('L') + 'Z'
+  ).join('');
+  const centroid = c => {
+    const r = c.rings[0]; let a = 0, cx = 0, cy = 0;
+    for (let i = 0; i < r.length - 1; i++) {
+      const x1 = px(c.group, r[i][0]), y1 = py(c.group, r[i][1]);
+      const x2 = px(c.group, r[i + 1][0]), y2 = py(c.group, r[i + 1][1]);
+      const f = x1 * y2 - x2 * y1;
+      a += f; cx += (x1 + x2) * f; cy += (y1 + y2) * f;
+    }
+    return a ? [cx / (3 * a), cy / (3 * a)] : [px(c.group, r[0][0]), py(c.group, r[0][1])];
+  };
+  const LBL = {
+    新北市: ['新北', -46, 26], 臺北市: ['臺北', 56, -34, 1], 桃園市: ['桃園', -18, 8],
+    基隆市: ['基隆', 42, -24, 1], 新竹市: ['竹市', -52, 4, 1], 新竹縣: ['竹縣', 18, 6],
+    宜蘭縣: ['宜蘭', 6, 12], 苗栗縣: ['苗栗', -6, 2], 臺中市: ['臺中', 24, 2],
+    彰化縣: ['彰化', -36, 6, 1], 南投縣: ['南投', 8, 10], 雲林縣: ['雲林', -28, 4, 1],
+    嘉義市: ['嘉市', -52, -8, 1], 嘉義縣: ['嘉縣', 10, 8], 臺南市: ['臺南', -4, 6],
+    高雄市: ['高雄', 2, 26], 屏東縣: ['屏東', 2, 30], 花蓮縣: ['花蓮', 0, 20],
+    臺東縣: ['臺東', -4, 12], 澎湖縣: ['澎湖', 0, 42],
+  };
+
+  // ── metrics ───────────────────────────────────────────────────────────
+  // All three are counts of the same thing, so all three use the sequential
+  // ramp. 每千家戶 is the default because the counties differ 500-fold in size:
+  // an absolute-count choropleth of anything in Taiwan just redraws population.
+  const METRICS = {
+    per1000: {
+      label: '每千家戶累計媒合戶數', unit: '戶/千家戶',
+      breaks: [5, 10, 20, 30, 45],
+      get: c => c.per1000, fmt: v => v.toFixed(2),
+      tick: v => String(v),
+      sub: '累計媒合戶數 ÷ 109 年普查家戶數 × 1000。全國 29.01',
+      lo: '少', hi: '多',
+    },
+    matched: {
+      label: '累計媒合戶數', unit: '戶',
+      breaks: [600, 1700, 2500, 10000, 30000],
+      get: c => c.matched, fmt: v => int(v),
+      tick: v => v >= 10000 ? (v / 10000) + '萬' : int(v),
+      sub: '第 1 期至第 5 期五輪計畫的媒合次數總和，未扣除已到期契約',
+      lo: '少', hi: '多',
+    },
+    latest: {
+      label: '第 5 期媒合戶數', unit: '戶',
+      breaks: [200, 400, 1300, 4000, 10000],
+      get: c => c.latest, fmt: v => int(v),
+      tick: v => v >= 10000 ? (v / 10000) + '萬' : int(v),
+      sub: '115 年開辦的現行這期。第 1 至 4 期媒合期間已截止，數據不再更新',
+      lo: '少', hi: '多',
+    },
+  };
+  const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
+    return i === -1 ? m.breaks.length : i; };
+  const fillOf = (m, v) => v == null ? 'var(--neutral)' : `var(--seq-${classOf(m, v)})`;
+
+  let metric = 'per1000', pinned = null, hovered = null;
+  const LISTED = S.counties.filter(c => c.listed);
+
+  // ── build map ─────────────────────────────────────────────────────────
+  const svg = document.getElementById('map');
+  const gGrat = el('g', { class: 'grat' }), gTick = el('g'), gLand = el('g'),
+        gDeco = el('g'), gLbl = el('g');
+  svg.append(gGrat, gTick, gLand, gDeco, gLbl);
+  {
+    const [rx, ry, rw, rh] = RECTS.main;
+    for (let lon = 120; lon <= 122; lon++) {
+      const x = px('main', lon); if (x < rx || x > rx + rw) continue;
+      gGrat.append(el('line', { x1: x, y1: ry, x2: x, y2: ry + rh }));
+      if (x + 34 <= 990) gTick.append(Object.assign(
+        el('text', { class: 'grat-tick', x: x + 3, y: ry + rh - 6 }), { textContent: lon + '°E' }));
+    }
+    for (let lat = 22; lat <= 25; lat++) {
+      const y = py('main', lat); if (y < ry || y > ry + rh) continue;
+      gGrat.append(el('line', { x1: rx, y1: y, x2: rx + rw, y2: y }));
+      gTick.append(Object.assign(el('text', { class: 'grat-tick', x: rx + 4, y: y - 4 }),
+        { textContent: lat + '°N' }));
+    }
+  }
+  for (const c of GEO.counties) {
+    gLand.append(el('path', {
+      class: 'county' + (C[c.name].listed ? '' : ' nodata'), d: pathOf(c),
+      'data-name': c.name, tabindex: '0', role: 'button', 'aria-label': c.name,
+    }));
+  }
+  {
+    const mk = (g, text) => {
+      const [x, y, w, h] = RECTS[g];
+      gDeco.append(el('rect', { class: 'inset-frame', x, y, width: w, height: h, rx: 2 }));
+      gDeco.append(Object.assign(el('text', { class: 'inset-label', x: x + 2, y: y - 6 }),
+        { textContent: `${text} ×${(proj[g].s / proj.main.s).toFixed(1)}` }));
+    };
+    mk('matsu', '連江縣（馬祖）');
+    mk('kinmen', '金門縣');
+    const KM = 50, x0 = 26, y0 = 946, w = KM * proj.main.s / 111.32;
+    gDeco.append(el('path', { class: 'scalebar',
+      d: `M${x0} ${y0 - 5}V${y0}H${x0 + w}V${y0 - 5}M${x0 + w / 2} ${y0}v-4` }));
+    for (const [v, x] of [[0, x0], [KM / 2, x0 + w / 2], [KM, x0 + w]]) {
+      gDeco.append(Object.assign(el('text', {
+        class: 'inset-label', x, y: y0 + 13,
+        'text-anchor': v === 0 ? 'start' : v === KM ? 'end' : 'middle',
+      }), { textContent: v === KM ? `${v} km` : String(v) }));
+    }
+  }
+  for (const c of GEO.counties) {
+    if (!LBL[c.name]) continue;
+    const [nm, dx = 0, dy = 0, lead = 0] = LBL[c.name];
+    const [cx, cy] = centroid(c);
+    if (lead) gLbl.append(el('path', { class: 'leader',
+      d: `M${cx.toFixed(1)} ${cy.toFixed(1)}L${(cx + dx * .82).toFixed(1)} ${(cy + dy * .82 - 4).toFixed(1)}` }));
+    gLbl.append(Object.assign(el('text', {
+      class: 'lbl' + (['基隆市', '新竹市', '嘉義市', '澎湖縣'].includes(c.name) ? ' sm' : ''),
+      x: (cx + dx).toFixed(1), y: (cy + dy).toFixed(1), 'text-anchor': 'middle',
+    }), { textContent: nm }));
+  }
+
+  // ── stats ─────────────────────────────────────────────────────────────
+  {
+    const n = S.national;
+    const tao = C['桃園市'];
+    const stat = (k, v, sub) =>
+      `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
+    document.getElementById('stats').innerHTML =
+      stat('累計媒合戶數', int(n.matched), `第 1 期至第 5 期，${S.asOf}`) +
+      stat('其中仍有效', int(n.live), `僅 ${n.liveShare}%，且只有全國一個數字`) +
+      stat('全國每千家戶', n.per1000.toFixed(2), '以 109 年普查家戶數為分母') +
+      stat('桃園市占比', (tao.matched / n.matched * 100).toFixed(1) + '%',
+           `一個縣市 ${int(tao.matched)} 戶，全國最多`);
+    document.getElementById('k-cum').textContent = int(n.matched);
+    document.getElementById('k-live').textContent = int(n.live);
+  }
+
+  // ── panels ────────────────────────────────────────────────────────────
+  const barsEl = document.getElementById('bars');
+  const legendEl = document.getElementById('legend');
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  const tip = document.getElementById('tip');
+  let sortKey = 'per1000', sortDir = -1;
+
+  function paint() {
+    const m = METRICS[metric];
+    document.getElementById('map-sub').textContent = m.sub;
+    document.getElementById('bars-sub').textContent = `依${m.label}排序 ・ 單位 ${m.unit}`;
+    document.getElementById('map-desc').textContent =
+      `臺灣${m.label}分布圖。` + LISTED.map(c => `${c.name} ${m.fmt(m.get(c))}`).join('、') +
+      `。${S.notListed.join('、')}未列於本表。`;
+    for (const p of gLand.children) {
+      const c = C[p.dataset.name];
+      p.style.fill = fillOf(m, c.listed ? m.get(c) : null);
+    }
+    drawLegend(m); drawBars(m); drawTable(); mark();
+  }
+
+  function drawLegend(m) {
+    legendEl.innerHTML = '';
+    const cap = document.createElement('div'); cap.className = 'cap';
+    cap.innerHTML = `<span>← ${m.lo}</span><span>${m.hi} →</span>`;
+    const sws = document.createElement('div'); sws.className = 'swatches';
+    for (let i = 0; i <= m.breaks.length; i++) {
+      const d = document.createElement('div');
+      d.className = 'sw'; d.style.background = `var(--seq-${i})`;
+      const cnt = LISTED.filter(c => classOf(m, m.get(c)) === i).length;
+      d.title = `${cnt} 個縣市`;
+      if (!cnt) d.style.opacity = '.34';
+      sws.append(d);
+    }
+    const tk = document.createElement('div'); tk.className = 'ticks';
+    for (const b of m.breaks) {
+      const s = document.createElement('span'); s.textContent = m.tick(b); tk.append(s);
+    }
+    tk.append(document.createElement('span'));
+    const nd = document.createElement('div'); nd.className = 'ndrow';
+    nd.innerHTML = `<i></i><span>未列於本表：${S.notListed.join('、')}（不等於 0 戶）</span>`;
+    legendEl.append(cap, sws, tk, nd);
+  }
+
+  function drawBars(m) {
+    const hi = Math.max(...LISTED.map(m.get)) || 1;
+    const rows = [...S.counties].sort((a, b) =>
+      (b.listed ? m.get(b) : -1) - (a.listed ? m.get(a) : -1));
+    barsEl.innerHTML = rows.map(c => {
+      const v = c.listed ? m.get(c) : null;
+      const w = v == null ? 0 : v / hi * 100;
+      return `<div class="row${v == null ? ' nd' : ''}" data-name="${c.name}" tabindex="0">
+        <span class="nm">${c.name.slice(0, 3)}</span>
+        <span class="track"><i class="bar" style="left:0;width:${w}%;background:${fillOf(m, v)}"></i></span>
+        <span class="val${v == null ? ' nd' : ''}">${v == null ? '未列' : m.fmt(v)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  const QLAB = HOU.quadrants;
+  const dash = v => v == null ? '－' : int(v);
+
+  function drawTable() {
+    const m = METRICS[metric];
+    const get = (c, k) => {
+      if (k === 'name') return c.name;
+      if (k === 'quadrant') return QLAB[Q[c.name]].label;
+      if (k === 'r4') return c.rounds ? sum(c.rounds.slice(2, 4)) : null;
+      if (k === 'r3') return c.rounds ? sum(c.rounds.slice(4, 6)) : null;
+      if (k === 'r2') return c.rounds ? sum(c.rounds.slice(6, 8)) : null;
+      if (k === 'r1') return c.rounds ? c.rounds[8] : null;
+      return c[k];
+    };
+    const sum = a => a.every(x => x == null) ? null : a.reduce((t, x) => t + (x || 0), 0);
+    const rows = [...S.counties].sort((a, b) => {
+      const x = get(a, sortKey), y = get(b, sortKey);
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    tbody.innerHTML = rows.map(c => `
+      <tr data-name="${c.name}">
+        <td><i class="chip" style="background:${fillOf(m, c.listed ? m.get(c) : null)}"></i>${c.name}</td>
+        <td class="num">${dash(c.matched)}</td>
+        <td class="num">${c.per1000 == null ? '－' : c.per1000.toFixed(2)}</td>
+        <td class="num">${dash(get(c, 'latest'))}</td>
+        <td class="num">${dash(get(c, 'r4'))}</td>
+        <td class="num">${dash(get(c, 'r3'))}</td>
+        <td class="num">${dash(get(c, 'r2'))}</td>
+        <td class="num">${dash(get(c, 'r1'))}</td>
+        <td class="num">${int(c.households)}</td>
+        <td>${QLAB[Q[c.name]].label}</td>
+      </tr>`).join('');
+    const n = S.national;
+    tfoot.innerHTML = `<tr>
+      <td>全國</td><td class="num">${int(n.matched)}</td>
+      <td class="num">${n.per1000.toFixed(2)}</td>
+      <td class="num">${int(n.latest)}</td>
+      <td class="num">${int(n.byRound[2] + n.byRound[3])}</td>
+      <td class="num">${int(n.byRound[4] + n.byRound[5])}</td>
+      <td class="num">${int(n.byRound[6] + n.byRound[7])}</td>
+      <td class="num">${int(n.byRound[8])}</td>
+      <td class="num">${int(n.households)}</td>
+      <td>有效契約 ${int(n.live)} 戶</td></tr>`;
+  }
+
+  // ── quadrant cross-check ──────────────────────────────────────────────
+  {
+    const median = a => {
+      const s = [...a].sort((x, y) => x - y), h = s.length >> 1;
+      return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2;
+    };
+    const groups = {};
+    for (const c of LISTED) (groups[Q[c.name]] ||= []).push(c);
+    const meds = Object.fromEntries(Object.entries(groups)
+      .map(([k, v]) => [k, median(v.map(c => c.per1000))]));
+    // Ordered by the median itself, so the ordinal ramp matches what it encodes.
+    const ORDER = Object.keys(groups).sort((a, b) => meds[b] - meds[a]);
+    const hi = Math.max(...Object.values(meds));
+    document.getElementById('qgrid').innerHTML = ORDER.map((k, i) => {
+      const q = QLAB[k], g = groups[k].sort((a, b) => b.per1000 - a.per1000);
+      const col = `var(--pri-${i})`;
+      return `<div class="qcard" style="border-left-color:${col}">
+        <h4>${q.label}</h4>
+        <div class="med">${meds[k].toFixed(2)} <small>戶／千家戶（中位數）</small></div>
+        <div class="qbar"><i style="width:${meds[k] / hi * 100}%;background:${col}"></i></div>
+        <div class="who">${g.length} 縣市：${g.map(c => c.name.slice(0, 3)).join('、')}</div>
+        <div class="act">建議做法：${q.act}</div>
+      </div>`;
+    }).join('');
+    document.getElementById('k-sg').textContent = meds.slack_growing.toFixed(2);
+    document.getElementById('k-ratio').textContent =
+      (meds.slack_growing / meds.slack_shrinking).toFixed(1);
+  }
+
+  // ── linking ───────────────────────────────────────────────────────────
+  function mark() {
+    const n = pinned || hovered;
+    svg.classList.toggle('dimmed', !!n);
+    for (const p of gLand.children) p.classList.toggle('active', p.dataset.name === n);
+    for (const r of barsEl.children) r.classList.toggle('active', r.dataset.name === n);
+    for (const r of tbody.children) r.classList.toggle('active', r.dataset.name === n);
+  }
+  function showTip(e, name) {
+    const c = C[name], m = METRICS[metric];
+    tip.innerHTML = `<div class="t-nm">${name}</div>` +
+      (c.listed
+        ? `<dl><dt>${m.label}</dt><dd>${m.fmt(m.get(c))}</dd>
+             <dt>累計媒合</dt><dd>${int(c.matched)} 戶</dd>
+             <dt>每千家戶</dt><dd>${c.per1000.toFixed(2)}</dd>
+             <dt>第 5 期</dt><dd>${dash(c.latest)}</dd>
+             <dt>普查分型</dt><dd style="font-family:var(--f-body)">${QLAB[Q[name]].label}</dd></dl>`
+        : `<dl><dt>狀態</dt><dd style="font-family:var(--f-body)">未列於本表</dd></dl>`);
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 16, innerWidth - r.width - 8) + 'px';
+    tip.style.top = Math.max(8, Math.min(e.clientY - 12, innerHeight - r.height - 8)) + 'px';
+  }
+  function hideTip() { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); }
+
+  for (const host of [gLand, barsEl, tbody]) {
+    host.addEventListener('pointerover', e => {
+      const t = e.target.closest('[data-name]'); if (!t) return;
+      hovered = t.dataset.name; showTip(e, hovered); mark();
+    });
+    host.addEventListener('pointermove', e => {
+      const t = e.target.closest('[data-name]'); if (t) showTip(e, t.dataset.name);
+    });
+    host.addEventListener('pointerout', e => {
+      if (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-name]')) return;
+      hovered = null; hideTip(); mark();
+    });
+    host.addEventListener('click', e => {
+      const t = e.target.closest('[data-name]'); if (!t) return;
+      pinned = pinned === t.dataset.name ? null : t.dataset.name; mark();
+    });
+  }
+  addEventListener('keydown', e => { if (e.key === 'Escape') { pinned = null; hideTip(); mark(); } });
+
+  document.getElementById('seg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    metric = b.dataset.k;
+    document.querySelectorAll('#seg button').forEach(x =>
+      x.setAttribute('aria-pressed', String(x === b)));
+    paint();
+  });
+  document.querySelectorAll('#tbl thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.k;
+      sortDir = sortKey === k ? -sortDir : (k === 'name' || k === 'quadrant' ? 1 : -1);
+      sortKey = k;
+      document.querySelectorAll('#tbl thead th').forEach(x => x.removeAttribute('aria-sort'));
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable(); mark();
+    });
+  });
+
+  paint();
+})();
+</script>
