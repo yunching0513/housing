@@ -36,6 +36,46 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 `census.dgbas.gov.tw` 與 `www.dgbas.gov.tw` 另有 Cloudflare 人機驗證，指令列無法通過；
 這些項目會被標記在 manifest 與資料夾 README 中，在一般桌機用瀏覽器開即可下載。
 
+### 內政部不動產資訊平台（pip.moi.gov.tw）
+
+`pip.moi.gov.tw`、`www.nlma.gov.tw`、`socialhousing.nlma.gov.tw` 都在同一套 F5
+防火牆後面，**整段機房 IP 一律拒絕**：任何路徑（含 `/robots.txt`）都回傳 247 位元組的
+`Request Rejected` 頁面加一組 support ID。這不是 User-Agent 或憑證問題，換標頭沒有用，
+一般家用或辦公室網路則正常。所以下面兩支工具要在**自己的電腦**上跑。
+
+```bash
+# 1. 先看那一頁到底提供什麼
+python3 scripts/fetch_pip.py --url https://pip.moi.gov.tw/Publicize/Info/A4010
+
+# 2. 下載步驟 1 找到的檔案
+python3 scripts/fetch_pip.py --url <同上> --download \
+        --out "/path/to/2026 - housing_TW/04_住宅政策_中央"
+```
+
+`fetch_pip.py` 只用標準函式庫，macOS 內建的 python3 直接可跑。步驟 1 會列出並寫入
+`_discovery.json`：直接可下載的檔案連結、內嵌 script 裡疑似資料端點的網址，
+以及這一頁是不是 ASP.NET 表單頁（有 `__VIEWSTATE` 就代表檔案藏在 POST 後面）。
+下載時會依 `Content-Disposition`、Content-Type 與檔頭位元組決定副檔名，
+「下載連結」其實回傳網頁時會存成 `.html` 而不是假裝成 `.csv`。
+
+如果步驟 1 什麼都找不到，表示表格是載入後才用 JavaScript 產生的，改用瀏覽器版：
+
+```bash
+npm i playwright && npx playwright install chromium     # 只需一次
+node scripts/fetch_pip_browser.mjs --url <網址> --out <資料夾>
+
+# 頁面要自己點篩選條件時：開視窗、給你兩分鐘慢慢點
+node scripts/fetch_pip_browser.mjs --url <網址> --out <資料夾> --headed --wait 120
+```
+
+瀏覽器版會把頁面過程中**所有像資料的回應**都存下來（不管是 XHR、postback 還是
+真正的下載動作），另外產出 `_network.json`（每個存下的檔案與其來源網址）與
+`_page.html`（scripts 跑完後的 DOM，可以直接 grep 連結）。
+
+零安裝的做法：在瀏覽器開該頁 → 開發者工具 → Network → 篩選 Fetch/XHR →
+點一次頁面上的查詢或下載 → 在清單裡找回傳 JSON 或檔案的那一筆 →
+右鍵 Copy as cURL，貼進終端機就能重複執行。
+
 ### 版控範圍
 
 `data_TW/` 內已下載的資料多數入版控，但**戶政司的村里逐月序列不入版控**
