@@ -1,0 +1,351 @@
+<title>住宅供需資料站架構</title>
+
+<style>
+:root {
+  color-scheme: light dark;
+  --page:#F4F7F7; --card:#FDFEFE; --sunk:#EDF1F1;
+  --ink:#12201F; --ink-2:#435657; --ink-3:#718485;
+  --rule:#CBD8D9; --rule-soft:#E0E8E9;
+  --accent:#245D5C; --accent-bg:#DDE9E8;
+  --have:#317978; --gap:#c46834; --paid:#8a7b52;
+  --shadow:0 1px 2px rgba(18,32,31,.05), 0 8px 24px -12px rgba(18,32,31,.16);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page:#0B1314; --card:#131E20; --sunk:#0F1A1B;
+    --ink:#E3EDEC; --ink-2:#A2B5B5; --ink-3:#74898A;
+    --rule:#2A3839; --rule-soft:#1D2A2C;
+    --accent:#64CBC9; --accent-bg:#1B2E2E;
+    --have:#4d9f9d; --gap:#d37139; --paid:#b3a373;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"] {
+  --page:#0B1314; --card:#131E20; --sunk:#0F1A1B;
+  --ink:#E3EDEC; --ink-2:#A2B5B5; --ink-3:#74898A;
+  --rule:#2A3839; --rule-soft:#1D2A2C;
+  --accent:#64CBC9; --accent-bg:#1B2E2E;
+  --have:#4d9f9d; --gap:#d37139; --paid:#b3a373;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+:root{
+  --f-display:"Iowan Old Style","Palatino Linotype",Palatino,"Songti TC","Noto Serif CJK TC","Source Han Serif TC",PMingLiU,serif;
+  --f-body:ui-sans-serif,system-ui,-apple-system,"PingFang TC","Noto Sans CJK TC","Microsoft JhengHei","Hiragino Sans",sans-serif;
+  --f-mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.68;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,3vw,32px) 96px;display:flex;flex-direction:column;gap:clamp(28px,3.4vw,46px)}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;text-wrap:balance;margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+header h1{font-size:clamp(29px,4.2vw,44px);line-height:1.16;margin-top:10px}
+header .dek{max-width:64ch;color:var(--ink-2);font-size:clamp(15px,1.5vw,17px);margin:14px 0 0}
+header .dek b{color:var(--ink);font-weight:600}
+
+section{display:flex;flex-direction:column;gap:16px}
+section > h2{font-size:clamp(20px,2.4vw,25px);display:flex;align-items:baseline;gap:12px}
+section > h2 .n{font-family:var(--f-mono);font-size:13px;font-weight:400;color:var(--accent);letter-spacing:.06em}
+section p{margin:0;max-width:72ch;color:var(--ink-2)}
+section p b, li b{color:var(--ink);font-weight:600}
+hr.rule{border:0;border-top:1px solid var(--rule);margin:0}
+
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:3px;box-shadow:var(--shadow);padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.panel h3{font-size:15.5px}
+
+.tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--rule);border-radius:3px}
+table{width:100%;border-collapse:collapse;font-size:13.2px}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule-soft)}
+thead th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink-3);font-weight:500;border-bottom:1px solid var(--rule);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+code{font-family:var(--f-mono);font-size:11.8px;background:var(--sunk);padding:1px 5px;border-radius:2px}
+
+.tag{display:inline-block;font-family:var(--f-mono);font-size:10px;letter-spacing:.05em;padding:2px 7px;border-radius:2px;white-space:nowrap;border:1px solid currentColor}
+.tag.have{color:var(--have)} .tag.gap{color:var(--gap)} .tag.paid{color:var(--paid)}
+
+/* spatial ladder */
+.ladder{display:flex;flex-direction:column;gap:2px}
+.rung{display:grid;grid-template-columns:8.5em 5.5em 1fr;gap:14px;align-items:center;padding:11px 14px;background:var(--card);border:1px solid var(--rule);border-radius:3px}
+.rung.pick{border-color:var(--accent);background:var(--accent-bg)}
+.rung .lv{font-family:var(--f-display);font-size:16px;font-weight:600}
+.rung .ct{font-family:var(--f-mono);font-size:12px;color:var(--ink-3);text-align:right;font-variant-numeric:tabular-nums}
+.rung .why{font-size:12.8px;color:var(--ink-2)}
+.rung.pick .why{color:var(--ink)}
+.bar{height:4px;border-radius:2px;background:var(--accent);opacity:.28}
+
+/* page map */
+.pages{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.pg{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.pg .id{font-family:var(--f-mono);font-size:10.5px;color:var(--accent);letter-spacing:.08em}
+.pg h3{font-size:15px}
+.pg p{font-size:12.8px;color:var(--ink-2);margin:0}
+.pg .q{font-size:12.5px;color:var(--ink-3);font-style:italic}
+
+ul,ol{margin:0;padding-left:1.25em;display:flex;flex-direction:column;gap:7px;color:var(--ink-2);max-width:72ch}
+li::marker{color:var(--ink-3)}
+
+.q-list{display:flex;flex-direction:column;gap:14px;counter-reset:q}
+.q-item{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:3px;padding:14px 18px;display:flex;flex-direction:column;gap:7px}
+.q-item h3{font-size:15px;display:flex;gap:10px;align-items:baseline}
+.q-item h3::before{counter-increment:q;content:"Q" counter(q);font-family:var(--f-mono);font-size:11px;color:var(--accent);letter-spacing:.06em}
+.q-item p{font-size:13.2px;margin:0}
+.q-item .rec{font-size:13px;color:var(--ink);background:var(--sunk);padding:8px 11px;border-radius:2px}
+.q-item .rec b{color:var(--accent)}
+
+.pipe{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:18px;overflow-x:auto}
+.pipe pre{margin:0}
+
+.phase{display:grid;grid-template-columns:4.5em 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--rule-soft)}
+.phase:last-child{border-bottom:0}
+.phase .p{font-family:var(--f-mono);font-size:12px;color:var(--accent);font-weight:600;padding-top:2px}
+.phase .body{display:flex;flex-direction:column;gap:5px}
+.phase h3{font-size:14.5px}
+.phase p{font-size:13px;margin:0}
+
+.callout{background:var(--sunk);border:1px solid var(--rule);border-radius:3px;padding:14px 18px;font-size:13.4px;color:var(--ink-2)}
+.callout b{color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">架構草案 ・ 待討論 ・ 2026-08</p>
+  <h1>住宅供需資料站架構</h1>
+  <p class="dek">
+    一個回答「<b>社會住宅該蓋在哪、蓋多少</b>」的靜態資料站。核心不是把統計攤開，
+    而是把<b>人口實際在哪</b>與<b>房子實際空在哪</b>疊在同一張圖上——這兩者在臺灣是
+    地理錯開的，而錯開的程度就是政策該介入的位置。
+  </p>
+</header>
+
+<div class="callout">
+  <b>先修正兩件事。</b>你給的那篇文章讓我查證後推翻了我上一輪的兩個判斷：一是
+  <b>常住人口已經年度化</b>——主計總處自 115 年起雙軌發布，115 年 1 月 1 日全國
+  2,371 萬人、較戶籍人口多 41.1 萬，不必再靠十年普查看趨勢；二是<b>電信信令不只單月、
+  也不只縣市層級</b>——SEGIS 上的「行政區電信信令人口統計資料」已有 112 年 11 月，
+  且縣市、鄉鎮市區、村里三級<b>免費且免申請</b>，並提供 SHP。這兩點直接改變了系統
+  能做到的時間與空間解析度。
+</div>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">01</span>資料盤點</h2>
+  <p>依「拿得到的難度」分三級。A 級已在 <code>data_TW/</code>，B 級公開但需在本機瀏覽器
+  環境取得（雲端 IP 會被 Cloudflare 或 WAF 擋），C 級需申請或付費。</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>狀態</th><th>資料</th><th>來源</th><th>頻率</th><th>最細空間</th><th>在系統裡的角色</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag have">已在手</span></td><td>普查 109 全套（常住人口、住宅存量、空置、家戶、遷徙、通勤）</td><td>主計總處</td><td>每 10 年</td><td>鄉鎮市區</td><td>基準年結構，所有比率的分母</td></tr>
+      <tr><td><span class="tag have">已在手</span></td><td>普查 99 常住人口</td><td>主計總處</td><td>—</td><td>縣市</td><td>十年變化的起點</td></tr>
+      <tr><td><span class="tag have">已在手</span></td><td>戶籍人口與戶數村里月報</td><td>戶政司</td><td>每月</td><td>村里</td><td>期間內插；戶數是住宅需求的計量單位</td></tr>
+      <tr><td><span class="tag have">已在手</span></td><td>住宅補貼、公益出租人、國有地社宅清冊</td><td>國土署、國產署</td><td>不定期</td><td>縣市</td><td>政策投入強度；潛在基地</td></tr>
+      <tr><td><span class="tag have">已在手</span></td><td>地方社宅基地與戶數（6 縣市）</td><td>各都發局</td><td>不定期</td><td>基地點位</td><td>既有供給落點</td></tr>
+
+      <tr><td><span class="tag gap">待補</span></td><td><b>常住人口年報</b></td><td>主計總處</td><td>每年</td><td>縣市</td><td>取代普查作為趨勢主線</td></tr>
+      <tr><td><span class="tag gap">待補</span></td><td><b>低度使用（用電）住宅、待售新成屋</b></td><td>內政部（台電＋稅籍）</td><td>每半年</td><td>鄉鎮市區</td><td>空屋的權威指標，年度追蹤主力</td></tr>
+      <tr><td><span class="tag gap">待補</span></td><td><b>電信信令 112 年 11 月</b>（日間活動／夜間停留／旅次）</td><td>SEGIS</td><td>不定期</td><td>村里</td><td>實際居住與職住分離；含 SHP</td></tr>
+      <tr><td><span class="tag gap">待補</span></td><td>社宅興辦進度（直接興建／包租代管）</td><td>國土署</td><td>每月</td><td>縣市</td><td>政策覆蓋率的分子</td></tr>
+      <tr><td><span class="tag gap">待補</span></td><td>房價所得比、貸款負擔率</td><td>內政部</td><td>每季</td><td>縣市</td><td>負擔能力，需求強度的權重</td></tr>
+      <tr><td><span class="tag gap">待補</span></td><td>最小統計區圖、鄉鎮市區與村里界</td><td>統計處</td><td>不定期</td><td>—</td><td>下鑽層的圖資底盤</td></tr>
+      <tr><td><span class="tag gap">待補</span></td><td>普查 99 住宅專章（.ods）</td><td>主計總處</td><td>—</td><td>鄉鎮市區</td><td>住宅存量的十年比較基準</td></tr>
+
+      <tr><td><span class="tag paid">選配</span></td><td>電信信令最小統計區</td><td>SEGIS 申請</td><td>—</td><td>最小統計區</td><td>基地級選址，自然人 2,000／法人 9,500 元</td></tr>
+      <tr><td><span class="tag paid">選配</span></td><td>捷運分時 OD、TDX、ETC</td><td>北捷、交通部</td><td>每月／每年</td><td>站點</td><td>可及性；歷史資料需書面申請</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>那篇文章補上的三塊——<b>用電空屋</b>、<b>電信信令</b>、<b>運輸 OD</b>——前兩塊是這個系統的
+  骨幹，第三塊我建議先不做（見 Q4）。</p>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">02</span>空間單元階梯</h2>
+  <p>這是整個架構最關鍵的決策，因為它同時決定資料可得性、圖資量與前端技術選型。</p>
+
+  <div class="ladder">
+    <div class="rung"><span class="lv">縣市</span><span class="ct">22</span>
+      <span class="why">所有資料都有這層。適合總覽與跨縣市比較，但對「蓋在哪」幫助有限。<div class="bar" style="width:6%"></div></span></div>
+    <div class="rung pick"><span class="lv">鄉鎮市區</span><span class="ct">368</span>
+      <span class="why"><b>建議主軸。</b>低度使用住宅、電信信令、戶籍、普查縣市表都到這層，而這正是社宅選址的實際決策尺度。圖資量可控。<div class="bar" style="width:38%"></div></span></div>
+    <div class="rung"><span class="lv">村里</span><span class="ct">約 7,760</span>
+      <span class="why">信令與戶籍有，普查沒有。適合下鑽看熱點，但圖資量跨過自製 SVG 的臨界點。<div class="bar" style="width:72%"></div></span></div>
+    <div class="rung"><span class="lv">最小統計區</span><span class="ct">約 17,000</span>
+      <span class="why">需付費申請。屬於基地選址的問題，與「哪個行政區該蓋」是兩件事。<div class="bar" style="width:100%"></div></span></div>
+  </div>
+
+  <p><b>建議：主軸鎖在鄉鎮市區，村里作為下鑽，最小統計區暫不納入。</b>理由是資料完整度在
+  鄉鎮市區這層最高——低度使用住宅只到這層，而它是空屋分析不可取代的來源。往下走一層，
+  空屋資料就斷了，圖上會出現大片無資料區。</p>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">03</span>指標設計</h2>
+  <p>四個指標族，最後收斂成一個可排序的優先度。重點是<b>每個指標都要能追溯到單一來源</b>，
+  不做無法解釋的合成分數。</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>族</th><th>指標</th><th>算法</th><th>來源</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3"><b>需求強度</b></td><td>常住人口變化</td><td>年對年，非十年累計</td><td>常住人口年報</td></tr>
+      <tr><td>家戶數成長</td><td>戶數月報年化</td><td>戶政司</td></tr>
+      <tr><td>日夜人口差</td><td>（日間活動 − 夜間停留）／夜間停留</td><td>電信信令</td></tr>
+      <tr><td rowspan="3"><b>供給狀態</b></td><td>空置率（普查定義）</td><td>目前沒有使用宅 ÷ 住宅總數</td><td>普查表 87</td></tr>
+      <tr><td>空置率（用電定義）</td><td>月均用電 ≤ 60 度之宅數比率</td><td>低度使用住宅</td></tr>
+      <tr><td>宅戶比</td><td>住宅總數 ÷ 住戶數</td><td>普查表 87 ÷ 表 66</td></tr>
+      <tr><td rowspan="2"><b>負擔能力</b></td><td>房價所得比</td><td>直接引用</td><td>內政部</td></tr>
+      <tr><td>補貼申請密度</td><td>租金補貼戶數 ÷ 住戶數</td><td>國土署</td></tr>
+      <tr><td rowspan="2"><b>政策覆蓋</b></td><td>社宅覆蓋率</td><td>社宅戶數 ÷ 住戶數</td><td>國土署＋地方</td></tr>
+      <tr><td>包租代管媒合密度</td><td>有效契約數 ÷ 租屋戶數</td><td>國土署</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="panel">
+    <h3>核心分析：錯配四象限</h3>
+    <p style="font-size:13.4px">以<b>人口變化</b>為 X 軸、<b>空置率</b>為 Y 軸，把 368 個鄉鎮市區分成四類。
+    這是整個站的分析心臟，因為它直接把「該不該蓋」的答案分型：</p>
+    <ul style="font-size:13px">
+      <li><b>人口成長 × 低空置</b>——真缺房。社宅新建的第一順位。</li>
+      <li><b>人口成長 × 高空置</b>——供給有但錯配（產品類型或價格不符）。優先包租代管與空屋活化，而非新建。</li>
+      <li><b>人口衰退 × 低空置</b>——存量緊繃但人口外流，多為高房價擠出。臺北市在縣市層級就是這型。</li>
+      <li><b>人口衰退 × 高空置</b>——空洞化。新建社宅的效益最低，資源該轉向既有住宅改善與長照配置。</li>
+    </ul>
+    <p style="font-size:12.6px;color:var(--ink-3)">縣市層級已可算：宜蘭 +1.5%／空置 20.2%，臺北 −2.3%／9.9%，
+    新竹縣 +21.3%／14.6%。四象限在鄉鎮市區層級才會真正有解析度。</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">04</span>頁面架構</h2>
+  <p>七頁，順序就是論證順序：先看人在哪，再看房在哪，然後看兩者錯開多少，最後才談政策。</p>
+
+  <div class="pages">
+    <div class="pg"><span class="id">P0</span><h3>總覽</h3><p class="q">臺灣住宅供需長什麼樣？</p><p>一張全國圖加四個關鍵數字，其餘頁面的入口。</p></div>
+    <div class="pg"><span class="id">P1</span><h3>人口在哪裡</h3><p class="q">誰住在這裡，跟戶籍差多少？</p><p>常住／戶籍／信令夜間三種口徑並陳，差距本身就是發現。已完成縣市版。</p></div>
+    <div class="pg"><span class="id">P2</span><h3>房子在哪裡</h3><p class="q">存量多少，空著多少？</p><p>住宅存量、兩種定義的空置率、屋齡與面積結構。</p></div>
+    <div class="pg"><span class="id">P3</span><h3>錯配在哪裡</h3><p class="q">人與房差在哪？</p><p>四象限分型圖與地圖連動。全站的分析核心。</p></div>
+    <div class="pg"><span class="id">P4</span><h3>社宅現況</h3><p class="q">已經蓋了什麼？</p><p>既有社宅與包租代管分布、覆蓋率、與缺口的對照。</p></div>
+    <div class="pg"><span class="id">P5</span><h3>政策模擬</h3><p class="q">若要蓋 N 戶，該怎麼配？</p><p>依人口、缺口、錯配三種配置邏輯試算並比較，輸出可下載表。</p></div>
+    <div class="pg"><span class="id">P6</span><h3>資料與方法</h3><p class="q">這些數字哪來的？</p><p>來源、頻率、定義差異、已知限制。直接由 manifest 產生。</p></div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">05</span>技術架構</h2>
+  <p>建議<b>純靜態站</b>，不設後端。資料更新頻率是半年到季，沒有即時查詢需求；靜態站零維運、
+  可長期引用，也讓每次發布都對應一個明確的資料版本。</p>
+
+  <div class="pipe">
+<pre class="mermaid">flowchart LR
+  A["政府開放資料<br/>data.gov.tw / SEGIS / pip.moi"] --> B["fetch_sources.py<br/>下載＋SHA-256 查核"]
+  B --> C["data_TW/<br/>原始檔＋manifest"]
+  C --> D["prep_*.py<br/>空間單元對齊<br/>指標計算"]
+  D --> E["data/*.json<br/>每頁一份精簡資料"]
+  E --> F["build.py<br/>資料內嵌進版型"]
+  F --> G["dist/<br/>純靜態頁面"]
+  G --> H["GitHub Pages<br/>或 Cloudflare Pages"]
+</pre>
+  </div>
+
+  <div class="panel">
+    <h3>幾個刻意不做的選擇</h3>
+    <ul style="font-size:13.2px">
+      <li><b>不用 SPA 框架。</b>這是資料敘事網站不是應用程式。React／Vue 會拖慢首屏、
+      讓引用與存檔變困難，換來的互動性這裡用不上。</li>
+      <li><b>不引入 Node 工具鏈。</b>七頁的規模，現有的 Python 模板注入（<code>build.py</code>）
+      就夠了。多一套工具鏈就多一組相依與版本問題。</li>
+      <li><b>不用地圖服務。</b>鄉鎮市區 368 個多邊形，簡化後可直接內嵌 SVG，不需要
+      MapLibre 或圖磚。到村里（7,760）才需要重新評估——那是 P4 的事。</li>
+      <li><b>不內嵌中文網頁字型。</b>檔案動輒數 MB，且 artifact 的 CSP 會擋字型 CDN，
+      連結後只會靜默 fallback。改以系統字型堆疊分工。</li>
+    </ul>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">06</span>分期</h2>
+  <div>
+    <div class="phase"><span class="p">P0 ✓</span><div class="body"><h3>人口變化圖（已完成）</h3>
+      <p>縣市層級，99→109 常住人口，三個指標可切換。已發布。</p></div></div>
+    <div class="phase"><span class="p">P1</span><div class="body"><h3>縣市層級雙層圖</h3>
+      <p>把住宅存量、空置率、宅戶比疊上現有地圖，加上四象限分型。資料<b>已全部在手</b>，
+      可立即動工。</p></div></div>
+    <div class="phase"><span class="p">P2</span><div class="body"><h3>下鑽到鄉鎮市區</h3>
+      <p>需先補低度使用住宅與 SEGIS 信令。圖資換成鄉鎮市區界。這一步做完，站才真正能回答選址問題。</p></div></div>
+    <div class="phase"><span class="p">P3</span><div class="body"><h3>社宅現況與政策模擬</h3>
+      <p>需補社宅興辦進度。模擬頁的價值在於讓不同配置邏輯的後果可以並排比較，而非給單一答案。</p></div></div>
+    <div class="phase"><span class="p">P4</span><div class="body"><h3>村里下鑽（選配）</h3>
+      <p>信令有村里，但空屋沒有。要做就得接受圖層在這個尺度是不完整的，或另外付費申請。</p></div></div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">07</span>待你決定</h2>
+  <p>以下六題會改變架構，我各附了建議與理由。</p>
+
+  <div class="q-list">
+    <div class="q-item"><h3>空間主軸停在鄉鎮市區，還是要做到村里？</h3>
+      <p>村里的信令免費可得，但低度使用住宅只到鄉鎮市區。做到村里會讓空屋圖層開天窗。</p>
+      <div class="rec"><b>建議：</b>主軸鄉鎮市區。村里只在「人口」相關圖層開放下鑽，並明確標示空屋資料不到這層。</div></div>
+
+    <div class="q-item"><h3>空置率用普查定義還是用電定義？</h3>
+      <p>兩者差很多：普查「目前沒有使用」全國 13.1%，內政部低度使用住宅約 10%。定義不同——
+      前者問住戶，後者看電表。</p>
+      <div class="rec"><b>建議：</b>兩個都放，並列而非擇一。用電定義做趨勢（半年一次），普查定義做結構（有屋齡、面積、權屬交叉）。</div></div>
+
+    <div class="q-item"><h3>要不要納入運輸 OD（捷運、TDX、ETC）？</h3>
+      <p>文章花了整章談這塊。它能回答「這個社宅基地通勤方便嗎」，但那是基地層級的問題。</p>
+      <div class="rec"><b>建議：</b>P1–P3 不做。理由是它回答的問題比目前的尺度細一階，且歷史資料需書面申請。真要納入，最小可行版本是<b>捷運分時 OD</b>——月更新、免申請、直接下載。</div></div>
+
+    <div class="q-item"><h3>要不要花錢申請最小統計區信令？</h3>
+      <p>自然人 2,000 元、法人 9,500 元，需實體寄件審核。</p>
+      <div class="rec"><b>建議：</b>先不要。等 P2 做完、確認鄉鎮市區層級解析度不夠回答你的研究問題，再針對特定縣市申請。屆時申請範圍也會更明確。</div></div>
+
+    <div class="q-item"><h3>時間基準取哪一年？</h3>
+      <p>普查是 109 年 11 月，信令有 109 年 11 月與 112 年 11 月，低度使用住宅到 114 年上半年，
+      常住人口有 115 年。混用會出現「拿 109 年的分母除 114 年的分子」。</p>
+      <div class="rec"><b>建議：</b>結構分析鎖 <b>109 年 11 月</b>（普查與信令同期，可互相校正）；趨勢分析用各自最新期，並在每張圖標註期別。不做跨期強行對齊。</div></div>
+
+    <div class="q-item"><h3>這個站的讀者是誰？</h3>
+      <p>學術發表、政策簡報、公眾溝通，三者的取捨不同——學術要方法透明與可重現，政策要結論明確，
+      公眾要少即是多。</p>
+      <div class="rec"><b>建議：</b>先寫定一個主要讀者。若是投《都市與計劃》一類的期刊，站台應側重方法可重現與資料可追溯，P5 政策模擬則要謹慎——模擬容易被當成預測。</div></div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <h2><span class="n">08</span>我看到的風險</h2>
+  <ul>
+    <li><b>空屋不等於可用住宅。</b>低度使用住宅裡有相當比例是屋齡 40 年以上的偏鄉老宅，
+    以及 5 年內的投資型新成屋（空置率 21.9%）。這兩者都不是社宅能直接接手的存量。
+    任何「空屋這麼多為什麼還要蓋」的推論都必須先做屋齡與區位分層。</li>
+    <li><b>信令數的是裝置不是人。</b>雙卡、外籍、無手機的兒童與長者都會偏誤。金門的信令
+    夜間人口比普查常住人口高 46%，那是方法假影不是發現。適合看相對變化，不適合當絕對分母。</li>
+    <li><b>房屋稅籍資料我手上只有 103–105 年</b>（2014–2016），偏舊。若要用它做住宅存量的
+    年度代理，得另外找財政部的季報。</li>
+    <li><b>政策模擬的分寸。</b>把配置邏輯攤開比較是有價值的；輸出一個「應蓋 N 戶」的數字
+    則會超出資料能支撐的範圍。建議模擬頁只做敏感度比較，不給單一建議值。</li>
+  </ul>
+</section>
+
+</div>
