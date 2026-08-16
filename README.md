@@ -36,6 +36,13 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 `census.dgbas.gov.tw` 與 `www.dgbas.gov.tw` 另有 Cloudflare 人機驗證，指令列無法通過；
 這些項目會被標記在 manifest 與資料夾 README 中，在一般桌機用瀏覽器開即可下載。
 
+### 版控範圍
+
+`data_TW/` 內已下載的資料多數入版控，但**戶政司的村里逐月序列不入版控**
+（`data_TW/03_人口動態_戶籍/`，264 個檔、約 200 MB）。那是逐月累積的檔案，
+放進 git 會讓每次 clone 都付出不成比例的代價；在本機執行一次
+`fetch_sources.py` 即可取得，且拿到的會是最新一期。
+
 ## 二、臺灣人口十年遷徙圖
 
 以民國 99 年與 109 年的**常住人口數**，做出 22 縣市的人口變化地圖。
