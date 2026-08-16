@@ -1,0 +1,585 @@
+<title>空屋率的十六年</title>
+
+<style>
+__SHARED_CSS__
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.lede { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+        border-radius: 3px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.lede h2 { font-size: 17px; }
+.lede p { margin: 0; font-size: 13.6px; color: var(--ink-2); max-width: 74ch; }
+.lede p b { color: var(--ink); }
+
+svg.chart { display: block; width: 100%; height: auto; }
+.ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.ln.nat { stroke: var(--accent); }
+.ln.est { stroke-dasharray: 5 4; }
+.ln.ghost { stroke: var(--ink-3); stroke-width: 1; opacity: .45; }
+.ax { stroke: var(--rule); stroke-width: 1; }
+.gridline { stroke: var(--rule-soft); stroke-width: 1; }
+.tk { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-3); }
+.axlbl { font-family: var(--f-body); font-size: 11.5px; fill: var(--ink-2); }
+.mark { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 3; opacity: .7; }
+.marklbl { font-family: var(--f-body); font-size: 10.5px; fill: var(--ink-3); }
+.pt { fill: var(--accent); stroke: var(--card); stroke-width: 1.1; cursor: pointer; }
+.pt.hi { r: 4.5; }
+.era { fill: var(--rule-soft); opacity: .55; }
+.eralbl { font-family: var(--f-mono); font-size: 9.5px; fill: var(--ink-3); letter-spacing: .04em; }
+
+/* small multiples */
+.sm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+           gap: 12px 14px; }
+.sm { border: 1px solid var(--rule-soft); border-radius: 3px; padding: 8px 9px 6px;
+      display: flex; flex-direction: column; gap: 3px; background: var(--card); }
+.sm.on { border-color: var(--ink-3); }
+.sm .hd { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.sm .nm { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.sm .dv { font-family: var(--f-mono); font-size: 11px; font-variant-numeric: tabular-nums; }
+.sm .dv.up { color: var(--div-0); } /* 空屋率上升＝壞方向 */
+.sm .dv.down { color: var(--div-7); }
+.sm .ft { font-family: var(--f-mono); font-size: 9.5px; color: var(--ink-3);
+          display: flex; justify-content: space-between; }
+
+/* dumbbell */
+.dbrow { display: grid; grid-template-columns: 4.4em minmax(0, 1fr) 4.6em; align-items: center;
+         gap: 10px; padding: 2.5px 0; cursor: default; }
+.dbrow:hover { background: var(--rule-soft); }
+.dbrow .nm { font-size: 12.5px; text-align: right; color: var(--ink-2); white-space: nowrap; }
+.dbtrack { position: relative; height: 16px; }
+.dbtrack .seg { position: absolute; top: 7px; height: 2px; border-radius: 1px; }
+.dbtrack .d1, .dbtrack .d2 { position: absolute; top: 4px; width: 8px; height: 8px;
+                             border-radius: 50%; margin-left: -4px; }
+.dbtrack .d1 { background: var(--card); border: 1.5px solid var(--ink-3); }
+.dbtrack .d2 { border: 0; }
+.dbtrack .natline { position: absolute; top: -2px; bottom: -2px; width: 1px; background: var(--ink-3); opacity: .45; }
+.dbrow .dv { font-family: var(--f-mono); font-size: 11.5px; font-variant-numeric: tabular-nums;
+             text-align: right; font-weight: 600; }
+.dbscale { display: flex; justify-content: space-between; font-family: var(--f-mono);
+           font-size: 10px; color: var(--ink-3); margin-top: 4px; }
+
+/* slope */
+.slope-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: clamp(16px, 2.2vw, 28px); }
+.sl-lbl { font-family: var(--f-body); font-size: 11px; fill: var(--ink-2); }
+.sl-lbl.hi { fill: var(--ink); font-weight: 600; }
+.sl-ln { fill: none; stroke: var(--ink-3); stroke-width: 1.4; opacity: .5; }
+.sl-ln.hi { stroke: var(--sq2-1); stroke-width: 2.4; opacity: 1; }
+.sl-dot { fill: var(--ink-3); opacity: .55; }
+.sl-dot.hi { fill: var(--sq2-1); opacity: 1; }
+.sl-per { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-3); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.filters select, .filters input {
+  font-family: var(--f-body); font-size: 13px; color: var(--ink);
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px; padding: 6px 9px;
+}
+.filters .count { font-size: 12.5px; color: var(--ink-3); margin-left: auto; }
+.tallwrap { max-height: 560px; overflow: auto; }
+.tallwrap thead th { position: sticky; top: 0; background: var(--card); z-index: 1; }
+
+.keyrow { display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+          font-size: 12px; color: var(--ink-3); margin-top: 10px; }
+.keyrow i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--accent);
+            vertical-align: 3px; margin-right: 6px; }
+.keyrow i.dash { border-top-style: dashed; }
+.keyrow i.g { border-top: 1px solid var(--ink-3); opacity: .6; }
+.keyrow i.dot { width: 8px; height: 8px; border: 1.5px solid var(--ink-3); border-radius: 50%;
+                background: var(--card); }
+.keyrow i.dot.f { border: 0; background: var(--accent); }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">民國 98 年 – 114 年下半年 ・ 23 期 ・ 內政部用電統計</p>
+    <h1>空屋率的十六年</h1>
+    <p class="dek">
+      普查十年才做一次，只能給一張很細的定格照。內政部用電統計相反：欄位少，
+      但<b>每半年一期、回推到民國 98 年</b>。把它接上來，就看得到方向。
+      而方向講了一件平均值藏起來的事：<b>全國空屋率五年幾乎沒動，底下卻正在分裂</b>：
+      六都和新竹全部往下，南部農業縣和離島全部往上。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="lede">
+    <h2>先講這份資料是什麼</h2>
+    <p>內政部每半年拿全國房屋稅籍的住宅，去比對台電抄表：一戶如果 11、12 月
+    平均每月用電<b>不到 60 度</b>，就算「低度使用（用電）住宅」。這跟普查問屋主
+    「這間現在有沒有在用」是兩套不同的認定，數字本來就不會一樣：
+    109 年同一個時點，普查說 <b>13.05%</b>、用電說 <b>9.23%</b>。
+    <b>不要把兩個數字相減</b>，要分開讀：普查給結構，用電給趨勢。</p>
+  </div>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>全國：98 年到 114 年下半年</h2>
+      <p>低度使用（用電）住宅占房屋稅籍住宅的比率。縱軸未從 0 起，範圍 8%–11%</p>
+    </header>
+    <div class="body">
+      <svg class="chart" id="natline" viewBox="0 0 840 300" role="img"
+           aria-label="全國低度使用住宅比率 98 年至 114 年下半年折線圖"></svg>
+      <div class="keyrow">
+        <span><i class="dash"></i>98–107 年：比率推估法</span>
+        <span><i></i>108 年起：實際勾稽</span>
+        <span>灰底 = 原始資料已不可得，只能推估</span>
+      </div>
+      <p class="bandnote" style="font-size:12px;color:var(--ink-3);margin-top:10px">
+        98–108 年只有年值，本頁擺在年底位置（用電基準本來就是 11、12 月抄表）；
+        109 年起才分上下半年。所以左半段的點是一年一個，右半段是半年一個。
+      </p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2>平均不動，底下在分裂</h2>
+      <p>從普查基準 109 年下半年到 114 年下半年，各縣市的變化。全國只 +0.21 個百分點</p>
+    </header>
+    <div class="body">
+      <div id="dumbbell"></div>
+      <div class="dbscale" id="dbscale"></div>
+      <div class="keyrow">
+        <span><i class="dot"></i>109 年下半年（普查同期）</span>
+        <span><i class="dot f"></i>114 年下半年</span>
+        <span>細灰線 = 該期全國值</span>
+      </div>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-2);margin-top:12px;max-width:74ch">
+        <b id="k-up"></b> 個縣市上升、<b id="k-dn"></b> 個下降。上升的幾乎全在南部與離島，
+        下降的幾乎全是六都與新竹。這對社宅選址是直接的：<b>空屋在變多的地方，
+        跟人在移入的地方不是同一批</b>。
+      </p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2>22 縣市各自的十六年</h2>
+      <p>縱軸統一為 5%–20%，所以格子之間可以直接比。灰線為全國</p>
+    </header>
+    <div class="body">
+      <div class="controls" style="margin-bottom:12px">
+        <div class="seg" id="smsort" role="group" aria-label="排序">
+          <button data-k="delta" aria-pressed="true">依 109→114 變化</button>
+          <button data-k="level" aria-pressed="false">依最新比率</button>
+          <button data-k="name" aria-pressed="false">依縣市</button>
+        </div>
+        <span class="hint">每格右上角是 109 年下半年到 114 年下半年的變化</span>
+      </div>
+      <div class="sm-grid" id="smgrid"></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>新屋空屋率一年掉了 10 個百分點</h2>
+      <p>依屋齡與坪數分，113 年下半年 → 114 年上半年 → 114 年下半年</p>
+    </header>
+    <div class="body">
+      <div class="slope-grid">
+        <div>
+          <svg class="chart" id="slope-age" viewBox="0 0 400 320" role="img"
+               aria-label="低度使用住宅比率依屋齡分的三期變化"></svg>
+        </div>
+        <div>
+          <svg class="chart" id="slope-size" viewBox="0 0 400 320" role="img"
+               aria-label="低度使用住宅比率依總面積分的三期變化"></svg>
+        </div>
+      </div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:14px;max-width:74ch">
+        普查說「屋齡未滿 10 年的新屋空屋率最高」，用電統計同意，但也顯示這件事
+        <b>變得很快</b>：5 年以下的低度使用比率從 <b>22.91%</b>（113 年下半年）
+        掉到 <b>12.39%</b>（114 年下半年），一年降 10.52 個百分點。這是交屋潮在被消化，
+        不是空屋問題被解決：同期全國住宅存量仍從 <b id="k-stock0"></b> 增到
+        <b id="k-stock1"></b>。<b>用「新屋空屋很多」當作不必蓋社宅的理由，
+        會被一年的資料推翻</b>；用「小坪數空屋率最高」則站得住，20 坪以下三期都是最高的一群。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>六都與新竹：174 個行政區的近三期</h2>
+      <p>用電統計只公布這 8 個縣市的行政區細分，剛好對上「六都與新竹的內部落差」那一頁</p>
+    </header>
+    <div class="body">
+      <div class="filters" style="margin-bottom:10px">
+        <select id="f-county"><option value="">全部縣市</option></select>
+        <select id="f-dir">
+          <option value="">全部方向</option>
+          <option value="dn">近一年下降</option>
+          <option value="up">近一年上升</option>
+        </select>
+        <input id="f-q" type="search" placeholder="搜尋行政區" aria-label="搜尋行政區">
+        <span class="count" id="f-count"></span>
+      </div>
+      <div class="tablewrap tallwrap">
+        <table id="dtab">
+          <thead><tr>
+            <th data-k="county">縣市</th><th data-k="name">行政區</th>
+            <th data-k="r0">113H2</th><th data-k="r1">114H1</th><th data-k="r2">114H2</th>
+            <th data-k="yRate">較上年同期</th><th data-k="c2">114H2 宅數</th>
+            <th data-k="yCount">宅數增減</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:12px">
+        H1 為上半年、H2 為下半年。「較上年同期」是 114 年下半年減 113 年下半年，單位為百分點。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>這份數列有三段方法</h3>
+      <p>內政部自己在附註裡講了：110 年上半年起改用精進的地址比對法，並回頭
+      重算 108 年與 109 年上、下半年；98 到 107 年的原始資料已經取不到，
+      只能用「比率推估法」推估。所以左半段的線是<b>推估值</b>，圖上以虛線與灰底標出。
+      拿 98 年跟 114 年直接相減，等於把兩種方法的差當成真實變化。</p>
+    </section>
+    <section>
+      <h3>只比對到 81.67%</h3>
+      <p>114 年下半年，房屋稅籍住宅資料與台電資料勾稽成功率是 81.67%。
+      比率是<b>就比對成功者</b>算出來的，不是全國所有住宅。剩下的近兩成
+      不是隨機缺失（門牌整編、非典型地址較容易失敗），所以比率有系統性誤差的空間。</p>
+    </section>
+    <section>
+      <h3>60 度是一條硬線</h3>
+      <p>用電低於每月 60 度就算低度使用。這會把「有人住但很省電」、「只住週末」
+      算進去，也會把「沒人住但冰箱一直開著」漏掉。它測的是<b>用電低</b>，
+      不是<b>沒人住</b>；長期趨勢可信，單一戶的判定不可信。</p>
+    </section>
+    <section>
+      <h3>為什麼結構分析仍鎖 109 年 11 月</h3>
+      <p>用電統計只有比率、宅數、屋齡、坪數，沒有人口、戶數、遷入、住宅權屬。
+      要把「空屋在哪裡」跟「人在哪裡」放在一起看，只有普查做得到。
+      所以另外兩頁維持 109 年 11 月的基準，這一頁負責時間方向。</p>
+    </section>
+    <section>
+      <h3>那瑪夏區在這裡有資料</h3>
+      <p>普查頁上高雄市那瑪夏區因為缺圖資畫不出來，用電統計則有：
+      113 年下半年 30.25% → 114 年下半年 18.86%，是 174 區裡降幅最大的。
+      小基數（不到 1,200 宅）變動劇烈，不宜單獨解讀。</p>
+    </section>
+    <section>
+      <h3>資料來源</h3>
+      <p>內政部不動產資訊平台《低度使用(用電)住宅、待售新成屋統計資訊簡冊》，
+      115 年 7 月出刊，資料期 114 年下半年。取表 1、2、6、7 與表 8–15。
+      解析程式為 <code>scripts/prep_moi_series.py</code>。</p>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="ser">__SER_JSON__</script>
+
+<script>
+(() => {
+  'use strict';
+  const S = JSON.parse(document.getElementById('ser').textContent);
+  const P = S.periods, N = P.length;
+  const IDX = Object.fromEntries(P.map((p, i) => [p.short, i]));
+  const I09 = IDX['109H2'], LAST = N - 1;
+  const NS = 'http://www.w3.org/2000/svg';
+  const fmt = (n, d = 2) => n.toLocaleString('zh-TW', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const sign = n => (n > 0 ? '+' : n < 0 ? '−' : '±') + fmt(Math.abs(n), 2);
+  const el = (t, a = {}, txt) => {
+    const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]);
+    if (txt != null) n.textContent = txt;
+    return n;
+  };
+
+  // 98–108 年只有年值；用電基準是 11、12 月抄表，所以擺在年底。109 年起分半年。
+  const tx = p => p.year + (p.half === null ? 0.75 : p.half === 1 ? 0.25 : 0.75);
+  const TX = P.map(tx), T0 = TX[0], T1 = TX[N - 1];
+
+  /* ── 1. 全國長期線 ─────────────────────────────────────────────────── */
+  {
+    const svg = document.getElementById('natline');
+    const W = 840, H = 300, L = 46, R = 14, TP = 16, B = 40;
+    const r = S.national.rates;
+    const y0 = 8, y1 = 11;
+    const X = t => L + (t - T0) / (T1 - T0) * (W - L - R);
+    const Y = v => TP + (y1 - v) / (y1 - y0) * (H - TP - B);
+
+    // 推估期的底色：把「這段不是量出來的」畫成一塊，而不是只寫在註腳裡
+    const eEnd = X((TX[IDX['108']] + TX[IDX['109H1']]) / 2);
+    svg.appendChild(el('rect', { class: 'era', x: L, y: TP, width: eEnd - L, height: H - TP - B }));
+    svg.appendChild(el('text', { class: 'eralbl', x: L + 6, y: H - B - 7 }, '推估值'));
+
+    for (let v = y0; v <= y1; v += 0.5) {
+      svg.appendChild(el('line', { class: 'gridline', x1: L, x2: W - R, y1: Y(v), y2: Y(v) }));
+      if (v % 1 === 0) svg.appendChild(el('text', { class: 'tk', x: L - 7, y: Y(v) + 3.5, 'text-anchor': 'end' }, v + '%'));
+    }
+    svg.appendChild(el('line', { class: 'ax', x1: L, x2: W - R, y1: Y(y0), y2: Y(y0) }));
+
+    for (let y = 98; y <= 114; y += 2) {
+      const x = X(y + 0.75);
+      svg.appendChild(el('text', { class: 'tk', x, y: H - B + 16, 'text-anchor': 'middle' }, y));
+    }
+    svg.appendChild(el('text', { class: 'axlbl', x: L, y: H - 6 }, '民國年'));
+
+    // 普查基準線
+    const xc = X(TX[I09]);
+    svg.appendChild(el('line', { class: 'mark', x1: xc, x2: xc, y1: TP, y2: Y(y0) }));
+    svg.appendChild(el('text', { class: 'marklbl', x: xc + 5, y: TP + 12 }, '普查基準 109/11'));
+
+    const seg = (from, to, cls) => {
+      const d = [];
+      for (let i = from; i <= to; i++) d.push((i === from ? 'M' : 'L') + X(TX[i]) + ' ' + Y(r[i]));
+      svg.appendChild(el('path', { class: 'ln nat ' + cls, d: d.join(' ') }));
+    };
+    seg(0, IDX['108'], 'est');                 // 推估
+    seg(IDX['108'], LAST, '');                 // 實際勾稽（從 108 接上，線不斷）
+
+    const lo = r.indexOf(Math.min(...r)), hi = r.indexOf(Math.max(...r));
+    const hiN = r.indexOf(Math.max(...r.slice(IDX['109H1'])));
+    r.forEach((v, i) => {
+      const c = el('circle', { class: 'pt', cx: X(TX[i]), cy: Y(v), r: 2.6 });
+      c.addEventListener('pointerenter', e => tipAt(e, `${P[i].label}<br>${fmt(v)}%`));
+      c.addEventListener('pointerleave', hideTip);
+      svg.appendChild(c);
+    });
+    const note = (i, txt, dy, anchor) => {
+      svg.appendChild(el('circle', { class: 'pt hi', cx: X(TX[i]), cy: Y(r[i]), r: 4.5 }));
+      svg.appendChild(el('text', {
+        class: 'marklbl', x: X(TX[i]) + (anchor === 'end' ? -7 : 7), y: Y(r[i]) + dy,
+        'text-anchor': anchor || 'start', fill: 'var(--ink)'
+      }, txt));
+    };
+    note(hi, `98 年 ${fmt(r[hi])}%（相對高點）`, -11);
+    note(lo, `110 下 ${fmt(r[lo])}%（長期低點）`, 17, 'end');
+    note(hiN, `114 上 ${fmt(r[hiN])}%`, -11, 'end');
+    note(LAST, `114 下 ${fmt(r[LAST])}%`, 26, 'end');
+  }
+
+  /* ── 2. stats ──────────────────────────────────────────────────────── */
+  {
+    const r = S.national.rates;
+    const dPrev = r[LAST] - r[LAST - 1];
+    const d09 = r[LAST] - r[I09];
+    const age0 = S.national.byAge[0].rates;
+    const stat = (k, v, cls, sub) =>
+      `<div class="stat"><dt>${k}</dt><dd class="${cls || ''}">${v}</dd><span class="sub">${sub}</span></div>`;
+    document.getElementById('stats').innerHTML =
+      stat('114 年下半年', fmt(r[LAST]) + '%', '', `較上期 ${sign(dPrev)} 個百分點`) +
+      stat('對照普查基準', sign(d09), d09 > 0 ? 'down' : 'up',
+           `109 下 ${fmt(r[I09])}% → 114 下 ${fmt(r[LAST])}%`) +
+      stat('長期低點', fmt(Math.min(...r)) + '%', '', '110 年下半年') +
+      stat('新屋（5 年以下）', fmt(age0[2]) + '%', 'up',
+           `一年前 ${fmt(age0[0])}%，降 ${fmt(age0[0] - age0[2])} 個百分點`);
+    document.getElementById('k-stock0').textContent =
+      (S.national.stockRecent[0] / 10000).toFixed(0) + ' 萬宅';
+    document.getElementById('k-stock1').textContent =
+      (S.national.stockRecent[4] / 10000).toFixed(0) + ' 萬宅';
+  }
+
+  /* ── 3. dumbbell 109H2 → 114H2 ─────────────────────────────────────── */
+  {
+    const rows = S.counties.map(c => ({
+      name: c.name, a: c.rates[I09], b: c.rates[LAST], d: +(c.rates[LAST] - c.rates[I09]).toFixed(2)
+    })).sort((x, y) => y.d - x.d);
+    const lo = 5, hi = 19;
+    const pos = v => (v - lo) / (hi - lo) * 100;
+    const nA = pos(S.national.rates[I09]), nB = pos(S.national.rates[LAST]);
+    document.getElementById('dumbbell').innerHTML = rows.map(r => {
+      const x1 = pos(r.a), x2 = pos(r.b), up = r.d > 0;
+      const l = Math.min(x1, x2), w = Math.abs(x2 - x1);
+      const col = up ? 'var(--div-2)' : 'var(--div-6)';
+      return `<div class="dbrow" data-n="${r.name}">
+        <span class="nm">${r.name}</span>
+        <span class="dbtrack">
+          <i class="natline" style="left:${nA}%"></i>
+          <i class="natline" style="left:${nB}%"></i>
+          <i class="seg" style="left:${l}%;width:${w}%;background:${col}"></i>
+          <i class="d1" style="left:${x1}%"></i>
+          <i class="d2" style="left:${x2}%;background:${col}"></i>
+        </span>
+        <span class="dv" style="color:${col}">${sign(r.d)}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('dbscale').innerHTML =
+      [5, 9, 13, 17, 19].map(v => `<span>${v}%</span>`).join('');
+    document.getElementById('k-up').textContent = rows.filter(r => r.d > 0).length;
+    document.getElementById('k-dn').textContent = rows.filter(r => r.d < 0).length;
+
+    document.querySelectorAll('.dbrow').forEach(row => {
+      row.addEventListener('pointerenter', e => {
+        const r = rows.find(x => x.name === row.dataset.n);
+        tipAt(e, `${r.name}<br>109 下 ${fmt(r.a)}% → 114 下 ${fmt(r.b)}%`);
+      });
+      row.addEventListener('pointerleave', hideTip);
+    });
+  }
+
+  /* ── 4. small multiples ────────────────────────────────────────────── */
+  {
+    const grid = document.getElementById('smgrid');
+    const W = 148, H = 46, lo = 5, hi = 20;
+    const X = t => (t - T0) / (T1 - T0) * W;
+    const Y = v => H - (v - lo) / (hi - lo) * H;
+    const path = (rs, from = 0) => rs.map((v, i) =>
+      ((i === from ? 'M' : 'L') + X(TX[i]).toFixed(1) + ' ' + Y(v).toFixed(1)))
+      .slice(from).join(' ');
+    const natD = path(S.national.rates);
+    const eEnd = X((TX[IDX['108']] + TX[IDX['109H1']]) / 2);
+
+    const draw = key => {
+      const cs = S.counties.slice();
+      if (key === 'delta') cs.sort((a, b) => (b.rates[LAST] - b.rates[I09]) - (a.rates[LAST] - a.rates[I09]));
+      else if (key === 'level') cs.sort((a, b) => b.rates[LAST] - a.rates[LAST]);
+      grid.innerHTML = cs.map(c => {
+        const d = +(c.rates[LAST] - c.rates[I09]).toFixed(2);
+        const est = path(c.rates.slice(0, IDX['108'] + 1));   // 推估段
+        const act = path(c.rates, IDX['108']);                // 實際勾稽段
+        return `<div class="sm">
+          <div class="hd"><span class="nm">${c.name}</span>
+            <span class="dv ${d > 0 ? 'up' : 'down'}">${sign(d)}</span></div>
+          <svg viewBox="0 0 ${W} ${H}" class="chart" aria-hidden="true">
+            <rect class="era" x="0" y="0" width="${eEnd.toFixed(1)}" height="${H}"></rect>
+            <path class="ln ghost" d="${natD}"></path>
+            <path class="ln nat est" style="stroke-width:1.6" d="${est}"></path>
+            <path class="ln nat" style="stroke-width:1.6" d="${act}"></path>
+          </svg>
+          <div class="ft"><span>109下 ${fmt(c.rates[I09], 1)}%</span><span>114下 ${fmt(c.rates[LAST], 1)}%</span></div>
+        </div>`;
+      }).join('');
+    };
+    draw('delta');
+    document.getElementById('smsort').addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      document.querySelectorAll('#smsort button').forEach(x =>
+        x.setAttribute('aria-pressed', String(x === b)));
+      draw(b.dataset.k);
+    });
+  }
+
+  /* ── 5. slope charts ───────────────────────────────────────────────── */
+  {
+    const slope = (id, bands, hiIdx, title, unit) => {
+      const svg = document.getElementById(id);
+      const W = 400, H = 320, L = 8, R = 96, TP = 34, B = 26;
+      const vals = bands.flatMap(b => b.rates).filter(v => v != null);
+      const y1 = Math.ceil(Math.max(...vals) / 5) * 5, y0 = 0;
+      const cols = [L + 78, (L + 78 + W - R) / 2, W - R];
+      const Y = v => TP + (y1 - v) / (y1 - y0) * (H - TP - B);
+      svg.appendChild(el('text', { class: 'axlbl', x: 0, y: 12, fill: 'var(--ink)',
+        'font-weight': 600, 'font-size': 13 }, title));
+      svg.appendChild(el('text', { class: 'sl-per', x: 0, y: 27 }, unit));
+      S.recent.forEach((p, i) => svg.appendChild(
+        el('text', { class: 'sl-per', x: cols[i], y: TP - 8, 'text-anchor': 'middle' }, p)));
+      bands.forEach((b, bi) => {
+        const on = bi === hiIdx, cls = on ? ' hi' : '';
+        const pts = b.rates.map((v, i) => v == null ? null : [cols[i], Y(v)]).filter(Boolean);
+        if (pts.length > 1)
+          svg.appendChild(el('path', { class: 'sl-ln' + cls, d: pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ') }));
+        pts.forEach(p => svg.appendChild(el('circle', { class: 'sl-dot' + cls, cx: p[0], cy: p[1], r: on ? 3.4 : 2.4 })));
+      });
+
+      // The bands bunch up (5 of the 7 age bands sit inside 6–13%), so the end
+      // labels have to be pushed apart or they overprint each other. Leaders
+      // keep each label attached to the value it belongs to.
+      const place = (side, get, text) => {
+        const want = bands.map((b, bi) => ({
+          bi, v: get(b), y: get(b) == null ? null : Y(get(b)), t: text(b, get(b))
+        })).filter(o => o.y != null).sort((a, b) => a.y - b.y);
+        const GAP = 13.5, top = TP - 2, bot = H - B + 8;
+        want.forEach((o, i) => { o.ly = i ? Math.max(o.y, want[i - 1].ly + GAP) : Math.max(o.y, top); });
+        for (let i = want.length - 1; i >= 0; i--) {
+          const o = want[i];
+          o.ly = Math.min(o.ly, i === want.length - 1 ? bot : want[i + 1].ly - GAP);
+        }
+        want.forEach(o => {
+          const on = o.bi === hiIdx, cls = on ? ' hi' : '';
+          const x = side === 'L' ? cols[0] - 9 : cols[2] + 9;
+          if (Math.abs(o.ly - o.y) > 1.5) {
+            const kx = side === 'L' ? cols[0] - 4 : cols[2] + 4;
+            svg.appendChild(el('path', {
+              class: 'leader', d: `M${side === 'L' ? cols[0] - 3 : cols[2] + 3} ${o.y} L${kx} ${o.ly - 3.5}`
+            }));
+          }
+          svg.appendChild(el('text', {
+            class: 'sl-lbl' + cls, x, y: o.ly, 'text-anchor': side === 'L' ? 'end' : 'start'
+          }, o.t));
+        });
+      };
+      place('L', b => b.rates[0], b => b.label);
+      place('R', b => b.rates[2], (b, v) => fmt(v, 2) + '%');
+    };
+    slope('slope-age', S.national.byAge, 0, '依屋齡', '全國，%');
+    slope('slope-size', S.national.bySize, 0, '依總面積', '全國，%');
+  }
+
+  /* ── 6. district table ─────────────────────────────────────────────── */
+  {
+    const rows = S.districts.map(d => ({
+      county: d.county, name: d.name, r0: d.rates[0], r1: d.rates[1], r2: d.rates[2],
+      yRate: d.yRate, c2: d.counts[2], yCount: d.yCount
+    }));
+    const sel = document.getElementById('f-county');
+    [...new Set(rows.map(r => r.county))].forEach(c =>
+      sel.appendChild(new Option(c, c)));
+    const tb = document.querySelector('#dtab tbody');
+    let sort = { k: 'r2', dir: -1 };
+
+    const render = () => {
+      const c = sel.value, dir = document.getElementById('f-dir').value;
+      const q = document.getElementById('f-q').value.trim();
+      let out = rows.filter(r =>
+        (!c || r.county === c) &&
+        (!dir || (dir === 'up' ? r.yRate > 0 : r.yRate < 0)) &&
+        (!q || r.name.includes(q) || r.county.includes(q)));
+      out.sort((a, b) => {
+        const x = a[sort.k], y = b[sort.k];
+        return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sort.dir;
+      });
+      tb.innerHTML = out.map(r => `<tr>
+        <td>${r.county}</td><td>${r.name}</td>
+        <td class="num">${fmt(r.r0)}</td><td class="num">${fmt(r.r1)}</td>
+        <td class="num">${fmt(r.r2)}</td>
+        <td class="num ${r.yRate > 0 ? 'down' : 'up'}">${sign(r.yRate)}</td>
+        <td class="num">${r.c2.toLocaleString('zh-TW')}</td>
+        <td class="num ${r.yCount > 0 ? 'down' : 'up'}">${r.yCount > 0 ? '+' : r.yCount < 0 ? '−' : '±'}${Math.abs(r.yCount).toLocaleString('zh-TW')}</td>
+      </tr>`).join('');
+      document.getElementById('f-count').textContent = `${out.length} / ${rows.length} 個行政區`;
+    };
+    document.querySelectorAll('#dtab thead th').forEach(th => {
+      th.addEventListener('click', () => {
+        const k = th.dataset.k;
+        sort = { k, dir: sort.k === k ? -sort.dir : (k === 'county' || k === 'name' ? 1 : -1) };
+        document.querySelectorAll('#dtab thead th').forEach(x => x.removeAttribute('aria-sort'));
+        th.setAttribute('aria-sort', sort.dir === 1 ? 'ascending' : 'descending');
+        render();
+      });
+    });
+    [sel, document.getElementById('f-dir'), document.getElementById('f-q')]
+      .forEach(n => n.addEventListener('input', render));
+    render();
+  }
+
+  /* ── tooltip ───────────────────────────────────────────────────────── */
+  const tip = document.getElementById('tip');
+  function tipAt(e, html) {
+    tip.innerHTML = `<div class="t-nm" style="font-size:13px">${html}</div>`;
+    tip.classList.add('on');
+    tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - r.width - 8) + 'px';
+    tip.style.top = Math.max(8, e.clientY - r.height - 12) + 'px';
+  }
+  function hideTip() { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); }
+})();
+</script>

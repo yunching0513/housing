@@ -45,13 +45,14 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 
 ## 二、頁面
 
-`dist/` 下有兩頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
+`dist/` 下有四頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
 
 | 檔案 | 內容 | 空間單元 |
 |---|---|---|
 | `index.html` | 臺灣住宅供需圖：人口與住宅供給對照 | 22 縣市 |
 | `town.html` | 臺灣空屋地圖：空屋在哪裡、能不能用 | 368 鄉鎮市區 |
 | `metro.html` | 六都與新竹的內部落差：縣市平均掩蓋了什麼 | 174 鄉鎮市區 |
+| `trend.html` | 空屋率的十六年：內政部半年數列 | 22 縣市 ＋ 174 行政區 |
 | `docs/architecture.html` | 資料站架構草案 | — |
 | `docs/verification.html` | 空屋數字對帳單：與內政部官方文件核對 | — |
 
@@ -112,6 +113,22 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 臺北市 12 區有 11 區被歸為「真的不夠住」，但常住人口在減少：分型橫軸是遷入率，
 只計流入不計流出。頁面上有專節說明這個讀法。
 
+### 2d. 空屋率的十六年
+
+前三頁都鎖在 109 年 11 月。這一頁補時間：內政部每半年用台電抄表算一次
+低度使用住宅比率，數列回推到民國 98 年，共 23 期。
+
+- 全國長期折線（98–114 下半年），標出方法變更的分界與普查基準點
+- **109 下半年 → 114 下半年的縣市啞鈴圖**：全國只 +0.21 個百分點，
+  底下卻是 13 升 9 降，上升的幾乎全在南部與離島，下降的幾乎全是六都與新竹
+- 22 縣市小倍數折線，縱軸統一 5%–20%
+- 屋齡與坪數的三期斜線圖：**屋齡 5 年以下的低度使用比率一年由 22.91% 降到 12.39%**
+- 六都與新竹 174 個行政區的近三期表格，鍵值與 `metro.html` 完全對得上
+
+這份數列有三段方法，頁面上以虛線與灰底標出：98–107 年是「比率推估法」推估的，
+108 與 109 年是用 110 年上半年起的精進地址比對法回頭重算的，110 年上半年起才是
+直接統計。另外它只涵蓋房屋稅籍與台電勾稽成功的 81.67%，是樣本不是普查。
+
 ### 與內政部用電統計的對帳
 
 `scripts/verify_vacancy.py` 把普查空屋率與內政部低度使用（用電）住宅率逐縣市比對。
@@ -128,6 +145,7 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 | `data/sources/twCounty2010.geo.json` | g0v `twgeojson`，2010 年縣市界 |
 | `data/sources/twTown1982.geo.json` | g0v `twgeojson`，鄉鎮市區界 |
 | `data_TW/07_普查109年_統計表/縣市/` | 各縣市報告表，含鄉鎮市區細分 |
+| `data/sources/114年低度使用住宅統計資訊簡冊.pdf` | 內政部不動產資訊平台，115 年 7 月出刊 |
 
 #### 兩期行政區的對齊
 
@@ -147,7 +165,8 @@ python3 scripts/prep_geo.py      # 簡化縣市界圖資     -> data/tw_counties
 python3 scripts/prep_housing.py  # 普查住宅表與分型   -> data/tw_housing.json
 python3 scripts/prep_town_geo.py  # 簡化鄉鎮市區界    -> data/tw_towns.json
 python3 scripts/prep_town_data.py # 鄉鎮市區住宅資料  -> data/tw_town_data.json
-python3 scripts/build.py         # 內嵌並產出三頁     -> dist/*.html
+python3 scripts/prep_moi_series.py # 內政部半年數列   -> data/tw_moi_series.json
+python3 scripts/build.py         # 內嵌並產出四頁     -> dist/*.html
 python3 scripts/verify_vacancy.py # 與內政部用電統計對帳
 ```
 

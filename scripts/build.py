@@ -23,6 +23,9 @@ PAGES = {
         '__TGEO_JSON__': 'tw_towns.json',
         '__TDAT_JSON__': 'tw_town_data.json',
     }),
+    'trend.html': ('trend.template.html', {
+        '__SER_JSON__': 'tw_moi_series.json',
+    }),
 }
 
 
