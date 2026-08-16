@@ -16,6 +16,7 @@ def main():
     for token, src in (
         ('__GEO_JSON__', ROOT / 'data' / 'tw_counties.json'),
         ('__POP_JSON__', ROOT / 'data' / 'tw_population.json'),
+        ('__HOU_JSON__', ROOT / 'data' / 'tw_housing.json'),
     ):
         if token not in html:
             sys.exit(f'template is missing {token}')

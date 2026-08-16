@@ -43,18 +43,31 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 放進 git 會讓每次 clone 都付出不成比例的代價；在本機執行一次
 `fetch_sources.py` 即可取得，且拿到的會是最新一期。
 
-## 二、臺灣人口十年遷徙圖
+## 二、臺灣住宅供需圖（P1）
 
-以民國 99 年與 109 年的**常住人口數**，做出 22 縣市的人口變化地圖。
+把人口與住宅供給放在同一頁：民國 109 年 11 月的普查基準，加上 99 → 109 年的十年變化。
 
 ### 產出
 
 `dist/index.html` — 單一自帶資料的 HTML 頁面（無外部請求）。內含：
 
-- 縣市面量圖（choropleth），可切換三個指標：十年成長率、十年增減人數、109 年人口密度
-- 22 縣市排序條圖，與地圖、表格三向連動（hover／點選固定）
+- 縣市面量圖，可切換五個指標：十年成長率、十年增減人數、人口密度、**空屋率**、**宅戶比**
+- 22 縣市排序條圖，與地圖、散布圖、表格四向連動（hover／點選固定）
+- **人口變化 × 空屋率散布圖**，附四種情況的白話分型與各自的行動建議
 - 完整資料表（可排序），同時作為色彩編碼的替代讀取管道
 - 金門、馬祖以標示放大倍率的插圖呈現；主圖附比例尺與經緯格網
+
+### 時間基準
+
+結構分析一律鎖 **民國 109 年 11 月**：人口與住宅取自同一次普查，分子分母同期才不失真。
+十年變化為 99 年 11 月 → 109 年 11 月。
+
+### 為什麼分型用散布圖而不是四色地圖
+
+22 個縣市裡有 5 個離全國空屋率分界不到 0.5 個百分點（新北 13.09% 對全國 13.05%）。
+四色地圖會把「剛好在線上」畫得跟「明顯在某一區」一樣確定。散布圖把分界線本身畫出來，
+讀者看得到誰接近邊緣。四色分型另外也未通過色彩檢核：深藍綠與深赭在正常視覺下的
+ΔE 僅 14.8，低於 15 的門檻。
 
 ### 資料來源
 
@@ -77,9 +90,10 @@ python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 ### 重建（地圖）
 
 ```bash
-python3 scripts/prep_data.py   # 合併兩期人口資料 -> data/tw_population.json
-python3 scripts/prep_geo.py    # 簡化縣市界圖資  -> data/tw_counties.json
-python3 scripts/build.py       # 把資料內嵌進版型 -> dist/index.html
+python3 scripts/prep_data.py     # 合併兩期人口資料   -> data/tw_population.json
+python3 scripts/prep_geo.py      # 簡化縣市界圖資     -> data/tw_counties.json
+python3 scripts/prep_housing.py  # 普查住宅表與分型   -> data/tw_housing.json
+python3 scripts/build.py         # 把資料內嵌進版型   -> dist/index.html
 ```
 
 `prep_data.py` 與 `prep_geo.py` 預期在含有原始檔的目錄下執行，路徑寫在各檔開頭。
