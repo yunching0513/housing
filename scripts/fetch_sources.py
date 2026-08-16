@@ -133,6 +133,15 @@ def fetch(url, store, tries=3):
     return 'unknown', b'', ''
 
 
+def merge(prior, rows):
+    """Prior attempts plus this run's, newest wins per URL — so a scoped or
+    interrupted run never erases what earlier runs recorded as still missing."""
+    out = dict(prior)
+    for r in rows:
+        out[r['來源網址']] = r
+    return list(out.values())
+
+
 def write_manifest(path, rows):
     if not rows:
         return
@@ -147,6 +156,7 @@ def main():
     ap.add_argument('--out', default=str(ROOT / 'data_TW'), help='目的資料夾')
     ap.add_argument('--force', action='store_true', help='已存在的檔案也重新下載')
     ap.add_argument('--sources', default=str(ROOT / 'sources.json'))
+    ap.add_argument('--skip', help='略過分類符合此正規式的項目，例如 03_人口動態_戶籍')
     args = ap.parse_args()
 
     out = pathlib.Path(args.out).expanduser()
@@ -155,18 +165,21 @@ def main():
     store = meta / 'extra-ca.pem'
     sources = json.loads(pathlib.Path(args.sources).read_text(encoding='utf-8'))
 
-    # Resume at URL granularity: anything the manifest already records as a 200
-    # is left alone, so a rerun only retries what actually failed.
-    done, rows = {}, []
+    # Resume at URL granularity. Every prior row is carried forward — including
+    # failures, so the manifest keeps reporting what is still missing — but only
+    # the 200s are treated as done and skipped.
+    prior, done, rows = {}, {}, []
     book = meta / 'manifest.csv'
     if book.exists() and not args.force:
         for r in csv.DictReader(book.open(encoding='utf-8-sig')):
+            prior[r['來源網址']] = r
             if r['狀態'] == '200' and (out / r['檔案']).exists():
                 done[r['來源網址']] = r
-        rows = list(done.values())
 
     ok, skipped, failed = 0, 0, []
     for i, e in enumerate(sources, 1):
+        if args.skip and re.search(args.skip, e['category']):
+            continue
         folder = out / e['category']
         folder.mkdir(parents=True, exist_ok=True)
         for url in e['urls']:
@@ -200,9 +213,9 @@ def main():
                 '狀態': status, '位元組': len(body), 'SHA256': digest, '下載時間_UTC': stamp,
             })
             if len(rows) % 25 == 0:
-                write_manifest(book, rows)   # checkpoint, so an interrupted run still resumes
+                write_manifest(book, merge(prior, rows))   # checkpoint for resume
 
-    write_manifest(book, rows)
+    write_manifest(book, merge(prior, rows))
 
     print(f'\n成功 {ok} ・ 略過 {skipped} ・ 失敗 {len(failed)}')
     if failed:
