@@ -38,6 +38,10 @@ PAGES = {
         '__TGEO_JSON__': 'tw_towns.json',
         '__SIG_JSON__': 'tw_signal.json',
     }),
+    'build.html': ('build.template.html', {
+        '__GEO_JSON__': 'tw_counties.json',
+        '__BLD_JSON__': 'tw_social_build.json',
+    }),
     'county.html': ('county.template.html', {
         '__GEO_JSON__': 'tw_counties.json',
         '__PROF_JSON__': 'tw_county_profile.json',

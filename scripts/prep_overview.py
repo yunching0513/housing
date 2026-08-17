@@ -34,6 +34,7 @@ def main():
     pser = load('tw_pop_series.json')
     sig = load('tw_signal.json')
     prof = load('tw_county_profile.json')
+    bld = load('tw_social_build.json')
 
     n_hou, n_moi = hou['national'], moi['national']
     last = len(moi['periods']) - 1
@@ -101,9 +102,15 @@ def main():
                  f"{outflow['county']}{outflow['name']}少 "
                  f"{abs(outflow['dayWork'] - outflow['nightWork']):,} 人",
          'note': '日夜比與空屋率幾乎不相關（r=0.06），不能單獨拿來選址'},
+        {'file': 'build.html', 'title': '社宅蓋了多少', 'unit': '22 縣市',
+         'asks': '已經蓋了多少、蓋到哪個階段',
+         'says': f"承諾 {bld['national']['total']['total']:,} 戶，"
+                 f"已完工只有 {bld['national']['total']['done']:,} 戶"
+                 f"（{bld['national']['total']['done'] / bld['national']['total']['total'] * 100:.1f}%）",
+         'note': f"{sum(1 for c in bld['counties'] if c['total']['done'] == 0)} 個縣市一戶都還沒完工"},
         {'file': 'county.html', 'title': '縣市檔案', 'unit': '22 縣市',
          'asks': '這一個縣市到底怎麼樣',
-         'says': '選一個縣市，七份資料一次看完，每個數字附 22 縣市名次',
+         'says': '選一個縣市，八份資料一次看完，每個數字附 22 縣市名次',
          'note': '合併的代價是期別不一致，頁面上逐項標注'},
     ]
 
@@ -122,10 +129,12 @@ def main():
          'unit': '縣市', 'have': True, 'use': '買不買得起；優先序的排序依據'},
         {'name': '電信信令人口', 'org': 'SEGIS', 'period': sig['period'],
          'unit': '鄉鎮市區', 'have': True, 'use': '實際停留人口與日夜差'},
-        {'name': '社宅直接興建進度', 'org': '國土署', 'period': '—', 'unit': '縣市',
-         'have': False, 'use': '覆蓋率分子的另一半。站台擋機房 IP，需在一般網路環境下載'},
-        {'name': '租金水準', 'org': '內政部', 'period': '—', 'unit': '縣市',
-         'have': False, 'use': '社宅是租賃政策，租金所得比才是最貼題的負擔指標'},
+        {'name': '社宅直接興建進度', 'org': '國土署', 'period': bld['asOf'], 'unit': '縣市',
+         'have': True, 'use': '覆蓋率分子的另一半；四個階段分開，已完工才是存量'},
+        {'name': '不動產成交實價登錄', 'org': '內政部', 'period': '99–115 年', 'unit': '鄉鎮市區',
+         'have': True, 'use': '買賣與租賃逐筆交易，租金水準的原始資料'},
+        {'name': '租金所得比', 'org': '—', 'period': '—', 'unit': '縣市',
+         'have': False, 'use': '有租金了但缺縣市別家戶所得，還算不出來'},
     ]
 
     reading = [
@@ -142,6 +151,10 @@ def main():
         {'h': '信令數的是手機不是人',
          'p': '一人兩支手機是兩個人，沒有手機的小孩與長輩是零個人。'
               f"桃園大園區的信令夜間人口是普查常住的 2.73 倍，因為那裡是機場。"},
+        {'h': '承諾不是存量',
+         'p': f"社宅總計 {bld['national']['total']['total']:,} 戶裡，"
+              f"已完工只有 {bld['national']['total']['done']:,} 戶，其餘在興建、待開工或還在規劃。"
+              '新聞引用的多半是總計；要講「現在有多少可以住」只能用已完工。'},
         {'h': '分界線附近不要當硬結論',
          'p': '四分型只差一個空屋率門檻。新北市離全國分界 0.04 個百分點，'
               '換一個空屋定義就會翻面，換一個標準會換一批縣市。'},

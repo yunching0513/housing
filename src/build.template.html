@@ -1,0 +1,551 @@
+<title>社宅蓋了多少</title>
+
+<style>
+__SHARED_CSS__
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.lede { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+        border-radius: 3px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.lede h2 { font-size: 17px; }
+.lede p { margin: 0; font-size: 13.6px; color: var(--ink-2); max-width: 74ch; }
+.lede p b { color: var(--ink); }
+
+.county.zero { fill: var(--neutral); }
+.legend .ndrow { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-3); }
+.legend .ndrow i { width: 22px; height: 13px; border-radius: 1px; background: var(--neutral);
+                   display: inline-block; border: 1px solid var(--rule); }
+
+/* stage funnel: 已完工 → 興建中 → 待開工 → 規劃中 */
+.frow { display: grid; grid-template-columns: 4.4em minmax(0, 1fr) 5.6em; gap: 10px;
+        align-items: center; padding: 2.5px 0; cursor: default; }
+.frow:hover, .frow.active { background: var(--rule-soft); }
+.frow .nm { font-size: 12.5px; text-align: right; color: var(--ink-2); white-space: nowrap; }
+.frow.active .nm { color: var(--ink); font-weight: 600; }
+.ftrack { display: flex; height: 16px; border-radius: 2px; overflow: hidden; background: var(--rule-soft); }
+.ftrack i { height: 100%; }
+.frow .fv { font-family: var(--f-mono); font-size: 11.5px; font-variant-numeric: tabular-nums;
+            text-align: right; color: var(--ink); }
+.fkey { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-3); margin-top: 12px; }
+.fkey span { display: flex; align-items: center; gap: 6px; }
+.fkey i { width: 13px; height: 13px; border-radius: 2px; display: inline-block; }
+
+/* 中央 vs 地方 */
+.split2 { display: grid; grid-template-columns: 4.4em minmax(0, 1fr) 4.6em; gap: 10px;
+          align-items: center; padding: 2.5px 0; font-size: 12.5px; }
+.split2 .nm { text-align: right; color: var(--ink-2); white-space: nowrap; }
+.s2track { position: relative; height: 15px; background: var(--rule-soft); border-radius: 2px; }
+.s2track i { position: absolute; inset: 0 auto 0 0; border-radius: 2px 0 0 2px; background: var(--div-6); }
+.s2track .mid { position: absolute; top: -3px; bottom: -3px; left: 50%; width: 1px; background: var(--ink-3); opacity: .5; }
+.split2 .v { font-family: var(--f-mono); font-size: 11.5px; text-align: right; color: var(--ink); }
+
+/* 兩條路 */
+.paths { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.path { border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: 3px;
+        background: var(--card); padding: 13px 15px; display: flex; flex-direction: column; gap: 6px; }
+.path h4 { margin: 0; font-family: var(--f-display); font-size: 15px; font-weight: 600; }
+.path .big { font-family: var(--f-mono); font-size: 21px; font-weight: 600; color: var(--ink); line-height: 1.1; }
+.path .big small { font-family: var(--f-body); font-size: 11.5px; font-weight: 400; color: var(--ink-3); }
+.path p { margin: 0; font-size: 12.2px; color: var(--ink-2); }
+.path .warn { font-size: 11.6px; color: var(--ink-3); }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow" id="eyebrow"></p>
+    <h1>社宅蓋了多少</h1>
+    <p class="dek">
+      前面幾頁都在問「該蓋在哪」。這一頁問的是<b>已經蓋了多少、蓋到哪個階段了</b>。
+      全國承諾 <b id="k-total"></b> 戶，但<b>現在住得進去的只有 <span id="k-done"></span> 戶</b>，
+      而且有 <b id="k-zero"></b> 個縣市一戶都還沒完工。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="lede">
+    <h2>四個階段差很多，不要當成同一個數字</h2>
+    <p><b>已完工</b>是新建社宅取得使用執照、修繕社宅修繕完成——這是唯一「現在有人住得進去」的。
+    <b>興建中</b>是已取得建照並完成開工申報。<b>待開工</b>是已決標但還沒動工。
+    這三個加起來叫<b>已決標</b>，代表錢已經花下去、廠商已經定了。
+    <b>規劃中</b>則是還沒決標，最不確定。</p>
+    <p>新聞上常見的「社宅XX萬戶」多半引用的是<b>總計</b>（含規劃中），
+    那是<b>承諾</b>不是<b>存量</b>。全國總計 <b id="k-total2"></b> 戶裡，
+    已完工只占 <b id="k-donepct"></b>%。這一頁預設用已完工著色，就是為了不讓承諾看起來像成果。</p>
+  </div>
+
+  <hr class="rule">
+
+  <div class="controls">
+    <div class="seg" id="seg" role="group" aria-label="切換指標">
+      <button data-k="donePer1000" aria-pressed="true">已完工／千家戶</button>
+      <button data-k="awardedPer1000" aria-pressed="false">已決標／千家戶</button>
+      <button data-k="totalPer1000" aria-pressed="false">總計／千家戶</button>
+      <button data-k="centralShare" aria-pressed="false">中央佔比</button>
+    </div>
+    <span class="hint">滑過或點選任一縣市，地圖、階段圖與表格同步</span>
+  </div>
+
+  <div class="figures">
+    <section class="panel">
+      <header><h2 id="map-title">社宅興辦分布</h2><p id="map-sub"></p></header>
+      <div class="body">
+        <div class="mapwrap">
+          <svg class="map" id="map" viewBox="0 0 990 1000" role="img"
+               aria-labelledby="map-title" aria-describedby="map-desc"></svg>
+          <p id="map-desc" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header><h2>每個縣市走到哪一步</h2>
+        <p>條長代表總計戶數（同一比例尺），顏色是階段。右側為總計</p></header>
+      <div class="body">
+        <div id="funnel"></div>
+        <div class="fkey" id="fkey"></div>
+        <p class="bandnote" style="font-size:12px;color:var(--ink-3);margin-top:10px">
+          依總計戶數排序。基隆、新竹縣、南投、嘉義市、嘉義縣、宜蘭、花蓮、澎湖、金門
+          九個縣市的已完工段長度為零。
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>誰在蓋</h2>
+      <p>中央（國家住宅及都市更新中心、國產署）佔總計的比例。中線為 50%</p>
+    </header>
+    <div class="body">
+      <div id="central"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:14px;max-width:78ch">
+        全國中央佔 <b id="k-central"></b>%，但縣市之間差距極大。
+        <b id="k-cmax"></b> 幾乎全由中央興辦，<b id="k-cmin"></b> 則以地方為主。
+        這不是效率問題而是分工：<b>地方有土地的縣市自己蓋，沒有的靠中央</b>。
+        臺北市地方佔 82.2% 是因為市有地多；九個已完工掛零的縣市裡有八個是中央佔 100%，
+        代表當地幾乎沒有自辦。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>兩條路加起來</h2>
+      <p>直接興建與包租代管是社宅的兩半，口徑不同，不能相加成一個數字</p>
+    </header>
+    <div class="body">
+      <div class="paths" id="paths"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:78ch">
+        <b>為什麼不把兩個數字加起來。</b>直接興建的「已完工」是<b>存量</b>：
+        蓋好了就在那裡。包租代管的「累計媒合」是<b>流量</b>：五輪計畫每次媒合都記一筆，
+        到期、退出都不扣，同一戶跨期續約算兩次。官方自己給的對照是
+        累計 <b id="k-rented"></b> 戶對仍有效 <b id="k-rentedlive"></b> 戶。
+        把 4.7 萬戶存量加上 23.5 萬戶流量會得到一個沒有意義的數字。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header><h2>完整資料</h2><p>點欄位標題排序。單位：戶</p></header>
+    <div class="body">
+      <div class="tablewrap">
+        <table id="tbl">
+          <thead><tr>
+            <th data-k="name">縣市</th>
+            <th data-k="done">已完工</th><th data-k="building">興建中</th>
+            <th data-k="awaiting">待開工</th><th data-k="awarded">已決標</th>
+            <th data-k="planning">規劃中</th><th data-k="total">總計</th>
+            <th data-k="donePer1000">已完工／千家戶</th>
+            <th data-k="centralShare">中央佔比</th>
+            <th data-k="rented">包租代管累計</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>總計不是存量</h3>
+      <p>總計＝已決標＋規劃中，規劃中連廠商都還沒定。要講「現在有多少社宅可以住」，
+      唯一對的欄位是<b>已完工</b>。要講「已經投入多少」，用已決標。
+      總計只適合講政策目標，而且要說清楚那是承諾。</p>
+    </section>
+    <section>
+      <h3>分母是 109 年家戶數</h3>
+      <p>每千家戶用的分母是 109 年 11 月普查的一般家戶數，與社宅資料差近 6 年。
+      這段期間家戶數是增加的，所以這裡算出來的比率會<b>略為高估</b>。
+      更貼題的分母是租屋家戶或所得後 20% 家戶，兩者都還沒拿到縣市別資料。</p>
+    </section>
+    <section>
+      <h3>已完工掛零不等於沒在做</h3>
+      <p>九個縣市已完工為 0，但其中多數有興建中或已決標的案子。
+      基隆市 449 戶全在興建中、嘉義縣 1,006 戶全在興建中。
+      看階段圖比看單一數字準確。</p>
+    </section>
+    <section>
+      <h3>中央的兩個來源</h3>
+      <p>中央 70,359 戶裡，國家住宅及都市更新中心 70,136 戶、財政部國有財產署 223 戶。
+      另外中央的興辦方式分兩種：直接興辦 66,249 戶、其他多元方式 4,110 戶，
+      後者含包租、代管以外的合作模式。原表備註有列，本頁未拆。</p>
+    </section>
+    <section>
+      <h3>與包租代管口徑不同</h3>
+      <p>這兩份資料的資料日相同（115 年 7 月 31 日），來源也同為國土管理署，
+      但一個是存量、一個是累計流量。頁面上分開放、分開講，
+      <code>data/tw_social_build.json</code> 裡也是兩個獨立欄位。</p>
+    </section>
+    <section>
+      <h3>資料來源</h3>
+      <p>內政部國土管理署《全國社會住宅興辦進度統計表》，截至 2026 年 7 月 31 日。
+      解析程式為 <code>scripts/prep_social_build.py</code>：縣市名印在三列的中間那列，
+      因此改為湊滿中央／地方／小計三列再指派；寫檔前逐列驗算三個等式
+      （三階段和＝已決標、已決標＋規劃中＝總計、中央＋地方＝小計）與縣市加總＝合計。</p>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="geo">__GEO_JSON__</script>
+<script type="application/json" id="bld">__BLD_JSON__</script>
+
+<script>
+__MAP_ZOOM_JS__
+(() => {
+  'use strict';
+  const GEO = JSON.parse(document.getElementById('geo').textContent);
+  const D = JSON.parse(document.getElementById('bld').textContent);
+  const C = Object.fromEntries(D.counties.map(c => [c.name, c]));
+  const NAT = D.national;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}, txt) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]);
+    if (txt != null) n.textContent = txt; return n; };
+  const int = v => v == null ? '－' : Math.round(v).toLocaleString('en-US');
+
+  /* ── projection: same framing as the other county maps ──────────────── */
+  const MAIN = [258, 8, 724, 984];
+  const INSETS = { matsu: { mag: 1.5, x: 14, y: 40 }, kinmen: { mag: 2.0, x: 14, y: 292 } };
+  const RECTS = { main: MAIN }, proj = {};
+  const cosOf = b => Math.cos((b[1] + b[3]) / 2 * Math.PI / 180);
+  {
+    const b = GEO.bounds.main, k = cosOf(b), [x, y, w, h] = MAIN;
+    const s = Math.min(w / ((b[2] - b[0]) * k), h / (b[3] - b[1]));
+    proj.main = { b, k, s, dx: x + (w - (b[2] - b[0]) * k * s) / 2,
+                  dy: y + (h - (b[3] - b[1]) * s) / 2 };
+  }
+  for (const [g, cfg] of Object.entries(INSETS)) {
+    const b = GEO.bounds[g], k = cosOf(b), s = proj.main.s * cfg.mag;
+    RECTS[g] = [cfg.x, cfg.y, (b[2] - b[0]) * k * s, (b[3] - b[1]) * s];
+    proj[g] = { b, k, s, dx: cfg.x, dy: cfg.y };
+  }
+  const px = (g, lon) => proj[g].dx + (lon - proj[g].b[0]) * proj[g].k * proj[g].s;
+  const py = (g, lat) => proj[g].dy + (proj[g].b[3] - lat) * proj[g].s;
+  const pathOf = c => c.rings.map(r =>
+    'M' + r.map(([lo, la]) => `${px(c.group, lo).toFixed(1)} ${py(c.group, la).toFixed(1)}`).join('L') + 'Z'
+  ).join('');
+  const centroid = c => {
+    const r = c.rings[0]; let a = 0, cx = 0, cy = 0;
+    for (let i = 0; i < r.length - 1; i++) {
+      const x1 = px(c.group, r[i][0]), y1 = py(c.group, r[i][1]);
+      const x2 = px(c.group, r[i + 1][0]), y2 = py(c.group, r[i + 1][1]);
+      const f = x1 * y2 - x2 * y1;
+      a += f; cx += (x1 + x2) * f; cy += (y1 + y2) * f;
+    }
+    return a ? [cx / (3 * a), cy / (3 * a)] : [px(c.group, r[0][0]), py(c.group, r[0][1])];
+  };
+  const LBL = {
+    新北市: ['新北', -46, 26], 臺北市: ['臺北', 56, -34, 1], 桃園市: ['桃園', -18, 8],
+    基隆市: ['基隆', 42, -24, 1], 新竹市: ['竹市', -52, 4, 1], 新竹縣: ['竹縣', 18, 6],
+    宜蘭縣: ['宜蘭', 6, 12], 苗栗縣: ['苗栗', -6, 2], 臺中市: ['臺中', 24, 2],
+    彰化縣: ['彰化', -36, 6, 1], 南投縣: ['南投', 8, 10], 雲林縣: ['雲林', -28, 4, 1],
+    嘉義市: ['嘉市', -52, -8, 1], 嘉義縣: ['嘉縣', 10, 8], 臺南市: ['臺南', -4, 6],
+    高雄市: ['高雄', 2, 26], 屏東縣: ['屏東', 2, 30], 花蓮縣: ['花蓮', 0, 20],
+    臺東縣: ['臺東', -4, 12], 澎湖縣: ['澎湖', 0, 42],
+  };
+
+  /* ── metrics ────────────────────────────────────────────────────────── */
+  const METRICS = {
+    donePer1000: { label: '已完工／千家戶', ramp: 'seq', breaks: [0.5, 1.5, 3, 5, 8],
+      get: c => c.donePer1000, fmt: v => v.toFixed(2), tick: v => v,
+      sub: `已完工戶數 ÷ 109 年家戶數 × 1000。全國 ${NAT.donePer1000}。灰色為 0 戶` },
+    awardedPer1000: { label: '已決標／千家戶', ramp: 'seq', breaks: [3, 6, 10, 15, 22],
+      get: c => c.awardedPer1000, fmt: v => v.toFixed(2), tick: v => v,
+      sub: '已完工＋興建中＋待開工，代表錢已投入、廠商已定' },
+    totalPer1000: { label: '總計／千家戶', ramp: 'seq', breaks: [3, 7, 12, 18, 26],
+      get: c => c.totalPer1000, fmt: v => v.toFixed(2), tick: v => v,
+      sub: '含規劃中。這是承諾不是存量，看的時候要記得' },
+    centralShare: { label: '中央佔比', ramp: 'sq2', breaks: [25, 45, 60, 80, 99],
+      get: c => c.centralShare, fmt: v => v.toFixed(1) + '%', tick: v => v + '%',
+      sub: `中央興辦占該縣市總計的比例。全國 ${NAT.centralShare}%` },
+  };
+  const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
+    return i === -1 ? m.breaks.length : i; };
+  const fillOf = (m, v) => (v == null || (m === METRICS.donePer1000 && v === 0))
+    ? 'var(--neutral)' : `var(--${m.ramp}-${classOf(m, v)})`;
+  let metric = 'donePer1000', pinned = null, hovered = null;
+
+  /* ── map ────────────────────────────────────────────────────────────── */
+  const svg = document.getElementById('map');
+  const gLand = el('g'), gDeco = el('g'), gLbl = el('g');
+  svg.append(gLand, gDeco, gLbl);
+  for (const c of GEO.counties)
+    gLand.append(el('path', { class: 'county', d: pathOf(c), 'data-name': c.name,
+      tabindex: '0', role: 'button', 'aria-label': c.name }));
+  {
+    const mk = (g, text) => {
+      const [x, y, w, h] = RECTS[g];
+      gDeco.append(el('rect', { class: 'inset-frame', x, y, width: w, height: h, rx: 2 }));
+      gDeco.append(el('text', { class: 'inset-label', x: x + 2, y: y - 6 },
+        `${text} ×${(proj[g].s / proj.main.s).toFixed(1)}`));
+    };
+    mk('matsu', '連江縣（馬祖）'); mk('kinmen', '金門縣');
+    const KM = 50, x0 = 26, y0 = 946, w = KM * proj.main.s / 111.32;
+    gDeco.append(el('path', { class: 'scalebar',
+      d: `M${x0} ${y0 - 5}V${y0}H${x0 + w}V${y0 - 5}M${x0 + w / 2} ${y0}v-4` }));
+    gDeco.append(el('text', { class: 'inset-label', x: x0, y: y0 + 13 }, '0'));
+    gDeco.append(el('text', { class: 'inset-label', x: x0 + w, y: y0 + 13,
+      'text-anchor': 'end' }, `${KM} km`));
+  }
+  for (const c of GEO.counties) {
+    if (!LBL[c.name]) continue;
+    const [nm, dx = 0, dy = 0, lead = 0] = LBL[c.name];
+    const [cx, cy] = centroid(c);
+    if (lead) gLbl.append(el('path', { class: 'leader',
+      d: `M${cx.toFixed(1)} ${cy.toFixed(1)}L${(cx + dx * .82).toFixed(1)} ${(cy + dy * .82 - 4).toFixed(1)}` }));
+    gLbl.append(el('text', {
+      class: 'lbl' + (['基隆市', '新竹市', '嘉義市', '澎湖縣'].includes(c.name) ? ' sm' : ''),
+      x: (cx + dx).toFixed(1), y: (cy + dy).toFixed(1), 'text-anchor': 'middle' }, nm));
+  }
+
+  /* ── header numbers ─────────────────────────────────────────────────── */
+  {
+    const t = NAT.total;
+    const zero = D.counties.filter(c => c.total.done === 0).length;
+    document.getElementById('eyebrow').textContent =
+      `${D.asOf} ・ 22 縣市 ・ 國土管理署`;
+    document.getElementById('k-total').textContent = int(t.total);
+    document.getElementById('k-total2').textContent = int(t.total);
+    document.getElementById('k-done').textContent = int(t.done);
+    document.getElementById('k-zero').textContent = zero;
+    document.getElementById('k-donepct').textContent = (t.done / t.total * 100).toFixed(1);
+    document.getElementById('k-central').textContent = NAT.centralShare;
+    document.getElementById('k-rented').textContent = int(NAT.rented);
+    document.getElementById('k-rentedlive').textContent = int(NAT.rentedLive);
+    const withShare = D.counties.filter(c => c.centralShare != null);
+    const cmax = withShare.reduce((a, b) => a.centralShare >= b.centralShare ? a : b);
+    const cmin = withShare.reduce((a, b) => a.centralShare <= b.centralShare ? a : b);
+    document.getElementById('k-cmax').textContent = `${cmax.name}（${cmax.centralShare}%）`;
+    document.getElementById('k-cmin').textContent = `${cmin.name}（${cmin.centralShare}%）`;
+
+    const stat = (k, v, sub) =>
+      `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
+    document.getElementById('stats').innerHTML =
+      stat('已完工', int(t.done), `占總計 ${(t.done / t.total * 100).toFixed(1)}%，每千家戶 ${NAT.donePer1000} 戶`) +
+      stat('興建中', int(t.building), `已取得建照並開工申報`) +
+      stat('已決標', int(t.awarded), `含待開工 ${int(t.awaiting)} 戶，錢已投入`) +
+      stat('總計', int(t.total), `含規劃中 ${int(t.planning)} 戶，是承諾不是存量`);
+  }
+
+  /* ── panels ─────────────────────────────────────────────────────────── */
+  const STAGES = [
+    ['done', '已完工', 'var(--pri-0)'], ['building', '興建中', 'var(--pri-1)'],
+    ['awaiting', '待開工', 'var(--pri-2)'], ['planning', '規劃中', 'var(--pri-3)'],
+  ];
+  const legendEl = document.getElementById('legend');
+  const funnelEl = document.getElementById('funnel');
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  const tip = document.getElementById('tip');
+  let sortKey = 'done', sortDir = -1;
+
+  function paint() {
+    const m = METRICS[metric];
+    document.getElementById('map-title').textContent = m.label + '分布';
+    document.getElementById('map-sub').textContent = m.sub;
+    document.getElementById('map-desc').textContent =
+      `臺灣 22 縣市社宅${m.label}分布圖。` +
+      D.counties.map(c => `${c.name} ${m.fmt(m.get(c))}`).join('、');
+    for (const p of gLand.children) {
+      const c = C[p.dataset.name];
+      p.style.fill = fillOf(m, m.get(c));
+      p.classList.toggle('zero', metric === 'donePer1000' && c.total.done === 0);
+    }
+    drawLegend(m); drawTable(); mark();
+  }
+
+  function drawLegend(m) {
+    legendEl.innerHTML = '';
+    const cap = document.createElement('div'); cap.className = 'cap';
+    cap.innerHTML = `<span>← 少</span><span>${m.label}</span><span>多 →</span>`;
+    const sws = document.createElement('div'); sws.className = 'swatches';
+    for (let i = 0; i <= m.breaks.length; i++) {
+      const d = document.createElement('div');
+      d.className = 'sw'; d.style.background = `var(--${m.ramp}-${i})`;
+      const n = D.counties.filter(c => m.get(c) != null && classOf(m, m.get(c)) === i).length;
+      d.title = `${n} 個縣市`;
+      if (!n) d.style.opacity = '.34';
+      sws.append(d);
+    }
+    const tk = document.createElement('div'); tk.className = 'ticks';
+    for (const b of m.breaks) { const s = document.createElement('span'); s.textContent = m.tick(b); tk.append(s); }
+    tk.append(document.createElement('span'));
+    legendEl.append(cap, sws, tk);
+    if (metric === 'donePer1000') {
+      const nd = document.createElement('div'); nd.className = 'ndrow';
+      const n = D.counties.filter(c => c.total.done === 0).length;
+      nd.innerHTML = `<i></i><span>已完工 0 戶（${n} 個縣市），但多數有興建中的案子</span>`;
+      legendEl.append(nd);
+    }
+  }
+
+  {   // 階段圖：條長為總計戶數，同一比例尺，所以縣市之間可以直接比
+    const hi = Math.max(...D.counties.map(c => c.total.total));
+    const rows = [...D.counties].sort((a, b) => b.total.total - a.total.total);
+    funnelEl.innerHTML = rows.map(c => {
+      const w = c.total.total / hi * 100;
+      const seg = STAGES.map(([k, , col]) =>
+        `<i style="width:${c.total.total ? c.total[k] / c.total.total * 100 : 0}%;background:${col}"></i>`).join('');
+      return `<div class="frow" data-name="${c.name}">
+        <span class="nm">${c.name.slice(0, 3)}</span>
+        <span style="display:block"><span class="ftrack" style="width:${w}%">${seg}</span></span>
+        <span class="fv">${int(c.total.total)}</span></div>`;
+    }).join('');
+    document.getElementById('fkey').innerHTML = STAGES.map(([, lab, col]) =>
+      `<span><i style="background:${col}"></i>${lab}</span>`).join('');
+  }
+
+  {   // 中央佔比
+    const rows = [...D.counties].sort((a, b) => (b.centralShare ?? -1) - (a.centralShare ?? -1));
+    document.getElementById('central').innerHTML = rows.map(c => `
+      <div class="split2" data-name="${c.name}">
+        <span class="nm">${c.name.slice(0, 3)}</span>
+        <span class="s2track"><i style="width:${c.centralShare ?? 0}%"></i><span class="mid"></span></span>
+        <span class="v">${c.centralShare == null ? '－' : c.centralShare + '%'}</span></div>`).join('');
+  }
+
+  {   // 兩條路
+    const t = NAT.total;
+    document.getElementById('paths').innerHTML = `
+      <div class="path"><h4>直接興建：已完工</h4>
+        <div class="big">${int(t.done)} <small>戶</small></div>
+        <p>政府自己蓋，蓋好了就在那裡。這是<b>存量</b>。</p>
+        <div class="warn">另有興建中 ${int(t.building)} 戶、待開工 ${int(t.awaiting)} 戶尚未完工。</div></div>
+      <div class="path" style="border-left-color:var(--sq2-1)"><h4>包租代管：累計媒合</h4>
+        <div class="big">${int(NAT.rented)} <small>戶次</small></div>
+        <p>向屋主承租再轉租，用的是既有房子。這是<b>累計流量</b>。</p>
+        <div class="warn">仍有效的契約 ${int(NAT.rentedLive)} 戶，占累計
+          ${(NAT.rentedLive / NAT.rented * 100).toFixed(1)}%。</div></div>
+      <div class="path" style="border-left-color:var(--ink-3)"><h4>不要相加</h4>
+        <div class="big">存量 ≠ 流量</div>
+        <p>一個是「現在有多少」，一個是「總共媒合過幾次」。單位不同，相加沒有意義。</p>
+        <div class="warn">要比較兩條路的規模，比已完工對仍有效契約較接近同一口徑。</div></div>`;
+  }
+
+  function drawTable() {
+    const m = METRICS[metric];
+    const get = (c, k) => ['done', 'building', 'awaiting', 'awarded', 'planning', 'total']
+      .includes(k) ? c.total[k] : c[k];
+    const rows = [...D.counties].sort((a, b) => {
+      const x = get(a, sortKey), y = get(b, sortKey);
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    tbody.innerHTML = rows.map(c => `<tr data-name="${c.name}">
+      <td><i class="chip" style="background:${fillOf(m, m.get(c))}"></i>${c.name}</td>
+      <td class="num">${int(c.total.done)}</td><td class="num">${int(c.total.building)}</td>
+      <td class="num">${int(c.total.awaiting)}</td><td class="num">${int(c.total.awarded)}</td>
+      <td class="num">${int(c.total.planning)}</td><td class="num">${int(c.total.total)}</td>
+      <td class="num">${c.donePer1000.toFixed(2)}</td>
+      <td class="num">${c.centralShare == null ? '－' : c.centralShare + '%'}</td>
+      <td class="num">${int(c.rented)}</td></tr>`).join('');
+    const t = NAT.total;
+    tfoot.innerHTML = `<tr><td>全國</td>
+      <td class="num">${int(t.done)}</td><td class="num">${int(t.building)}</td>
+      <td class="num">${int(t.awaiting)}</td><td class="num">${int(t.awarded)}</td>
+      <td class="num">${int(t.planning)}</td><td class="num">${int(t.total)}</td>
+      <td class="num">${NAT.donePer1000}</td><td class="num">${NAT.centralShare}%</td>
+      <td class="num">${int(NAT.rented)}</td></tr>`;
+  }
+
+  /* ── linking ────────────────────────────────────────────────────────── */
+  function mark() {
+    const n = pinned || hovered;
+    svg.classList.toggle('dimmed', !!n);
+    for (const p of gLand.children) p.classList.toggle('active', p.dataset.name === n);
+    for (const r of document.querySelectorAll('[data-name]'))
+      if (!r.classList.contains('county')) r.classList.toggle('active', r.dataset.name === n);
+  }
+  function showTip(e, name) {
+    const c = C[name], t = c.total;
+    tip.innerHTML = `<div class="t-nm">${name}</div><dl>
+      <dt>已完工</dt><dd>${int(t.done)}</dd>
+      <dt>興建中</dt><dd>${int(t.building)}</dd>
+      <dt>待開工</dt><dd>${int(t.awaiting)}</dd>
+      <dt>規劃中</dt><dd>${int(t.planning)}</dd>
+      <dt>總計</dt><dd>${int(t.total)}</dd>
+      <dt>已完工／千家戶</dt><dd>${c.donePer1000.toFixed(2)}</dd>
+      <dt>中央佔比</dt><dd>${c.centralShare == null ? '－' : c.centralShare + '%'}</dd>
+      <dt>包租代管累計</dt><dd>${int(c.rented)}</dd></dl>`;
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 16, innerWidth - r.width - 8) + 'px';
+    tip.style.top = Math.max(8, Math.min(e.clientY - 12, innerHeight - r.height - 8)) + 'px';
+  }
+  function hideTip() { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); }
+
+  for (const host of [gLand, funnelEl, document.getElementById('central'), tbody]) {
+    host.addEventListener('pointerover', e => {
+      const t = e.target.closest('[data-name]'); if (!t) return;
+      hovered = t.dataset.name; showTip(e, hovered); mark();
+    });
+    host.addEventListener('pointermove', e => {
+      const t = e.target.closest('[data-name]'); if (t) showTip(e, t.dataset.name);
+    });
+    host.addEventListener('pointerout', e => {
+      if (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-name]')) return;
+      hovered = null; hideTip(); mark();
+    });
+    host.addEventListener('click', e => {
+      const t = e.target.closest('[data-name]'); if (!t) return;
+      pinned = pinned === t.dataset.name ? null : t.dataset.name; mark();
+    });
+  }
+  addEventListener('keydown', e => { if (e.key === 'Escape') { pinned = null; hideTip(); mark(); } });
+
+  document.getElementById('seg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    metric = b.dataset.k;
+    document.querySelectorAll('#seg button').forEach(x =>
+      x.setAttribute('aria-pressed', String(x === b)));
+    paint();
+  });
+  document.querySelectorAll('#tbl thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.k;
+      sortDir = sortKey === k ? -sortDir : (k === 'name' ? 1 : -1);
+      sortKey = k;
+      document.querySelectorAll('#tbl thead th').forEach(x => x.removeAttribute('aria-sort'));
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable(); mark();
+    });
+  });
+
+  paint();
+  enableMapZoom(svg, { max: 10 });
+})();
+</script>

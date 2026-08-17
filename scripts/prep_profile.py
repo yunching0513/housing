@@ -52,6 +52,7 @@ def main():
     pser = load('tw_pop_series.json')
     town = load('tw_town_data.json')
     sig = load('tw_signal.json')
+    bld = load('tw_social_build.json')
 
     P = {c['name']: c for c in pop['counties']}
     H = {c['name']: c for c in hou['counties']}
@@ -59,6 +60,7 @@ def main():
     S = {c['name']: c for c in soc['counties']}
     A = {c['name']: c for c in aff['counties']}
     Y = {c['name']: c for c in pser['counties']}
+    B = {c['name']: c for c in bld['counties']}
     names = [c['name'] for c in hou['counties']]
 
     i09 = next(i for i, p in enumerate(moi['periods']) if p['short'] == '109H2')
@@ -76,7 +78,7 @@ def main():
 
     rows = []
     for n in names:
-        h, m, a, s, y = H[n], M[n], A[n], S[n], Y[n]
+        h, m, a, s, y, b = H[n], M[n], A[n], S[n], Y[n], B[n]
         ts = sorted(by_county.get(n, []), key=lambda t: t['vacancy'])
         sg = sig_by.get(n)
         rows.append({
@@ -102,6 +104,13 @@ def main():
 
             # 包租代管：19 個縣市有辦，其餘為 None 而不是 0
             'shMatched': s['matched'], 'shPer1000': s['per1000'], 'shLatest': s['latest'],
+
+            # 社宅直接興建：已完工是「現在住得進去的」，總計含規劃中所以是承諾不是存量
+            'shbDone': b['total']['done'], 'shbBuilding': b['total']['building'],
+            'shbAwarded': b['total']['awarded'], 'shbPlanning': b['total']['planning'],
+            'shbTotal': b['total']['total'],
+            'shbDonePer1000': b['donePer1000'], 'shbTotalPer1000': b['totalPer1000'],
+            'shbCentralShare': b['centralShare'],
 
             # 負擔能力：連江縣未列，澎湖金門樣本不足
             'pir': a['pir'], 'burden': a['burden'], 'band': a['band'],
@@ -131,6 +140,8 @@ def main():
         ('moiNow', True, '低度使用率高'), ('moiChange', True, '低度使用上升多'),
         ('pir', True, '房價所得比高'), ('burden', True, '房貸負擔率高'),
         ('shPer1000', True, '包租代管每千家戶多'), ('shMatched', True, '包租代管累計多'),
+        ('shbDonePer1000', True, '社宅已完工每千家戶多'),
+        ('shbTotalPer1000', True, '社宅總計每千家戶多'),
         ('spread', True, '內部差距大'), ('sigRatio', True, '白天淨流入多'),
     ]
     rank_meta = {}
@@ -153,6 +164,11 @@ def main():
         'pir': aff['national']['pir'], 'burden': aff['national']['burden'],
         'band': aff['national']['band'],
         'shPer1000': soc['national']['per1000'], 'shMatched': soc['national']['matched'],
+        'shbDone': bld['national']['total']['done'],
+        'shbTotal': bld['national']['total']['total'],
+        'shbDonePer1000': bld['national']['donePer1000'],
+        'shbTotalPer1000': bld['national']['totalPer1000'],
+        'shbCentralShare': bld['national']['centralShare'],
         'shLive': soc['national']['live'], 'shLiveShare': soc['national']['liveShare'],
         'popSeries': pser['national'],
         'sigRatio': round(sig['national']['dayWork'] / sig['national']['nightWork'], 3),
@@ -162,7 +178,7 @@ def main():
     data = {
         'periods': {
             'census': '民國 109 年 11 月', 'moi': moi['periods'][last]['label'],
-            'social': soc['asOf'], 'afford': aff['period'],
+            'social': soc['asOf'], 'build': bld['asOf'], 'afford': aff['period'],
             'signal': sig['period'], 'pop': f"{pser['years'][-1]} 年",
         },
         'moiPeriods': [p['short'] for p in moi['periods']],

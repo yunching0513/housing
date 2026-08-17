@@ -85,11 +85,11 @@ __SHARED_CSS__
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">22 縣市 ・ 七份資料合併 ・ 選一個看全部</p>
+    <p class="eyebrow">22 縣市 ・ 八份資料合併 ・ 選一個看全部</p>
     <h1>縣市檔案</h1>
     <p class="dek">
-      前面每一頁各看一個切面：空屋、趨勢、包租代管、負擔能力、日夜人口。
-      實際要回答「<b>宜蘭到底怎麼樣</b>」的時候，得把七頁都開起來。
+      前面每一頁各看一個切面：空屋、趨勢、社宅蓋了多少、包租代管、負擔能力、日夜人口。
+      實際要回答「<b>宜蘭到底怎麼樣</b>」的時候，得把八頁都開起來。
       這一頁反過來：<b>選一個縣市，一次看完</b>，每個數字都附上它在 22 縣市裡的名次。
     </p>
   </header>
@@ -116,6 +116,7 @@ __SHARED_CSS__
             <button data-k="moiNow" aria-pressed="false">低度使用</button>
             <button data-k="pir" aria-pressed="false">房價所得比</button>
             <button data-k="shPer1000" aria-pressed="false">包租代管</button>
+            <button data-k="shbDonePer1000" aria-pressed="false">社宅已完工</button>
           </div>
         </div>
       </div>
@@ -169,7 +170,7 @@ __SHARED_CSS__
     <section>
       <h3>七個時間點，不是同一天</h3>
       <p>合併的代價是期別不一致：普查與住宅是 <b id="n-census"></b>，低度使用是
-      <b id="n-moi"></b>，包租代管是 <b id="n-social"></b>，負擔能力是
+      <b id="n-moi"></b>，包租代管與社宅興辦是 <b id="n-social"></b>，負擔能力是
       <b id="n-afford"></b>，電信信令是 <b id="n-signal"></b>，常住人口到
       <b id="n-pop"></b>。同一格裡的比較都在同一份資料內，跨格比較請看期別。</p>
     </section>
@@ -191,10 +192,10 @@ __SHARED_CSS__
       倍數推高：屏東縣 9.98 倍的分母是琉球鄉 2.9%。倍數當線索用，不要當結論。</p>
     </section>
     <section>
-      <h3>還缺直接興建</h3>
-      <p>社宅覆蓋率要有「直接興建戶數 ÷ 需要的家戶數」。分子的一半（包租代管）
-      在這裡，另一半在 pip.moi.gov.tw 與國土署網站，兩站擋機房 IP，要在一般網路
-      環境下載。補進來之後這一頁會多一格。</p>
+      <h3>社宅的兩個數字不要相加</h3>
+      <p>直接興建的「已完工」是<b>存量</b>，蓋好了就在那裡；包租代管的「累計媒合」是
+      <b>累計流量</b>，到期與退出都不扣。兩者資料日相同、來源相同，但單位不同，
+      相加會得到一個沒有意義的數字。「社宅蓋了多少」那一頁有專節說明。</p>
     </section>
     <section>
       <h3>資料來源</h3>
@@ -282,6 +283,9 @@ __MAP_ZOOM_JS__
     shPer1000: { label: '包租代管', ramp: 'seq', breaks: [5, 10, 20, 30, 45],
       get: c => c.shPer1000, fmt: v => v == null ? '未列' : v.toFixed(2), tick: v => v,
       sub: '每千家戶累計媒合戶數，全國 29.01。三離島縣未列' },
+    shbDonePer1000: { label: '社宅已完工', ramp: 'seq', breaks: [0.5, 1.5, 3, 5, 8],
+      get: c => c.shbDonePer1000, fmt: v => v.toFixed(2), tick: v => v,
+      sub: '每千家戶已完工社宅戶數，全國 5.78。9 個縣市為 0' },
   };
   const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
     return i === -1 ? m.breaks.length : i; };
@@ -380,6 +384,13 @@ __MAP_ZOOM_JS__
         c.rank.burden, R.burden.of),
       metric('宅戶比', c.perHousehold.toFixed(3),
         vs(c.perHousehold, NAT.perHousehold, '', 3), c.rank.perHousehold, R.perHousehold.of),
+      metric('社宅已完工（每千家戶）', c.shbDonePer1000.toFixed(2),
+        c.shbDone === 0 ? '<span>本縣市 0 戶完工</span>'
+          : vs(c.shbDonePer1000, NAT.shbDonePer1000, '', 2, false),
+        c.rank.shbDonePer1000, R.shbDonePer1000.of),
+      metric('社宅總計（含規劃中）', int(c.shbTotal) + ' <small>戶</small>',
+        `<span>已完工 ${int(c.shbDone)}・中央佔 ${c.shbCentralShare ?? '－'}%</span>`,
+        c.rank.shbTotalPer1000, R.shbTotalPer1000.of),
       metric('包租代管（每千家戶）',
         c.shPer1000 == null ? '<span class="na">未列</span>' : c.shPer1000.toFixed(2),
         c.shPer1000 == null ? '<span>三離島縣未辦</span>'
@@ -422,6 +433,12 @@ __MAP_ZOOM_JS__
               全國 ${NAT.shPer1000.toFixed(2)}。`);
     else
       v.push(`包租代管<b>未列於原表</b>，不是辦了 0 戶。`);
+    v.push(c.shbDone === 0
+      ? `社宅直接興建<b>尚無已完工案件</b>，但總計 ${int(c.shbTotal)} 戶已在進行
+         （興建中 ${int(c.shbBuilding)}、待開工 ${int(c.shbAwarded - c.shbDone - c.shbBuilding)}、
+         規劃中 ${int(c.shbPlanning)}）。`
+      : `社宅直接興建已完工 <b>${int(c.shbDone)}</b> 戶，每千家戶 ${c.shbDonePer1000.toFixed(2)}
+         （全國 ${NAT.shbDonePer1000}）；總計 ${int(c.shbTotal)} 戶含規劃中，是承諾不是存量。`);
     document.getElementById('verdict').innerHTML =
       '<h3>一句話讀法</h3>' + v.map(t => `<p>${t}</p>`).join('') +
       (c.affThin ? '<p class="warn">★ 房價資料被來源標註「樣本數未達 100 戶」，名次僅供參考。</p>' : '');
@@ -511,6 +528,7 @@ __MAP_ZOOM_JS__
     ['burden', '房貸負擔率 %', v => v.toFixed(0), NAT.burden],
     ['perHousehold', '宅戶比', v => v.toFixed(2), NAT.perHousehold],
     ['shPer1000', '包租代管 戶/千家戶', v => v.toFixed(0), NAT.shPer1000],
+    ['shbDonePer1000', '社宅已完工 戶/千家戶', v => v.toFixed(1), NAT.shbDonePer1000],
     ['sigRatio', '白天／晚上人口比', v => v.toFixed(2), NAT.sigRatio],
     ['since109Pct', '109→115 人口 %', v => v.toFixed(1), null],
   ];

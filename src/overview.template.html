@@ -203,14 +203,15 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
 
   const missing = D.sources.filter(s => !s.have);
   document.getElementById('gapbox').innerHTML =
-    `<h2>還缺 ${missing.length} 份，缺的是同一件事</h2>` +
-    `<p>兩份都跟<b>租</b>有關，而社宅正是租賃政策。
-     <b>社宅直接興建進度</b>缺了，就算不出覆蓋率——分子的一半（包租代管
-     ${int(H.shMatched)} 戶累計、${int(H.shLive)} 戶仍有效）在手上，另一半沒有。
-     <b>租金水準</b>缺了，負擔能力就只能用房價所得比代理，那量的是「買」不是「租」。</p>` +
-    `<p>兩份都在內政部與國土署的網站上，那幾個站用同一套防火牆擋掉機房 IP，
-     任何路徑都回 <code>Request Rejected</code>，也沒有上架到政府資料開放平臺。
-     要在一般家用或辦公室網路下載，工具與步驟寫在 <code>README.md</code>。</p>`;
+    `<h2>還缺 ${missing.length} 項，而且是算出來的不是抓來的</h2>` +
+    `<p>社宅的兩條路現在都有了：<b>直接興建</b>已完工 ${int(H.shbDone)} 戶
+     （總計 ${int(H.shbTotal)} 戶，其餘還在興建、待開工或規劃），
+     <b>包租代管</b>累計媒合 ${int(H.shMatched)} 戶、仍有效 ${int(H.shLive)} 戶。
+     兩者口徑不同，一個是存量一個是累計流量，頁面上分開講、不相加。</p>` +
+    `<p>剩下的缺口是 <b>租金所得比</b>。實價登錄的租賃逐筆資料已經在手，
+     算得出各縣市的租金中位數；但要變成「負擔得起嗎」還需要<b>縣市別的家戶可支配所得</b>，
+     那份還沒接進來。在拿到之前，負擔能力只能用房價所得比代理，
+     而它量的是「買」不是「租」——社宅是租賃政策，這個代理並不貼題。</p>`;
 
   document.getElementById('rules').innerHTML = D.reading.map(r =>
     `<div class="rule-card"><h3>${r.h}</h3><p>${r.p}</p></div>`).join('');

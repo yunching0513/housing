@@ -132,7 +132,7 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 
 ## 二、頁面
 
-`dist/` 下有九頁，`overview.html` 是入口，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
+`dist/` 下有十頁，`overview.html` 是入口，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
 
 | 檔案 | 內容 | 空間單元 |
 |---|---|---|
@@ -144,7 +144,8 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 | `social.html` | 包租代管在哪裡：社宅政策實際落點 | 22 縣市（19 有辦） |
 | `priority.html` | 先蓋在哪裡：三種優先序標準的比較 | 22 縣市（21 有負擔能力資料） |
 | `signal.html` | 白天的臺灣，晚上的臺灣：電信信令日夜人口 | 368 鄉鎮市區 |
-| `county.html` | 縣市檔案：選一個縣市，七份資料一次看完 | 22 縣市 |
+| `build.html` | 社宅蓋了多少：四個階段與中央地方分工 | 22 縣市 |
+| `county.html` | 縣市檔案：選一個縣市，八份資料一次看完 | 22 縣市 |
 | `docs/architecture.html` | 資料站架構草案 | — |
 | `docs/verification.html` | 空屋數字對帳單：與內政部官方文件核對 | — |
 
@@ -337,6 +338,31 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 兩張折線的縱軸處理不同，也寫在標題上：低度使用兩條線**共用刻度**（都是百分比，
 不共用就會誤讀高度），常住人口則是**各自刻度**（一個縣市對全國 2,371 萬人）。
 
+### 2i. 社宅蓋了多少
+
+覆蓋率分子的另一半，這個站從第一頁起就缺的東西。
+
+- 縣市面量圖，可切換四個指標：已完工／已決標／總計每千家戶、中央佔比
+- **階段圖**：一縣市一條，長度為總計戶數（同一比例尺），顏色分四階段
+- 中央佔比橫條，中線 50%
+- 兩條路對照與完整資料表
+
+**全國承諾 149,360 戶，已完工只有 46,765 戶（31.3%）**，其餘在興建中
+（65,255）、待開工（14,636）或還在規劃（22,704）。**9 個縣市一戶都還沒完工**，
+但其中多數有興建中的案子——基隆市 449 戶全部在興建中、嘉義縣 1,006 戶亦然。
+
+中央佔全國 54.8%，縣市之間差距極大：基隆市 100% 由中央興辦，臺北市只有 17.8%。
+這是分工不是效率：地方有土地的自己蓋，沒有的靠中央。
+
+**兩個數字不相加。**直接興建的已完工是存量，包租代管的累計媒合是流量
+（234,596 戶次累計對 116,390 戶仍有效）。單位不同，相加沒有意義，
+頁面上有專節說明。
+
+解析時踩到一個陷阱：**縣市名印在三列的中間那列**（中央／地方／小計的「地方」列），
+所以不能邊讀邊指派——讀到「中央」那列時還不知道它屬於誰。改成湊滿三列再指派。
+寫檔前驗算三個等式（三階段和＝已決標、已決標＋規劃中＝總計、中央＋地方＝小計）
+與縣市加總＝合計，第一版就是被這些 assert 擋下來的。
+
 ### 與內政部用電統計的對帳
 
 `scripts/verify_vacancy.py` 把普查空屋率與內政部低度使用（用電）住宅率逐縣市比對。
@@ -358,6 +384,8 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 | `data/sources/115Q1房價負擔能力指標_縣市.csv` | 內政部不動產資訊平台，115 年第 1 季 |
 | `data/sources/歷次各市縣常住人口_表3.xlsx` | 主計總處，45–115 年 |
 | `data/sources/112年11月行政區電信信令人口統計_鄉鎮市區.csv` | SEGIS，112 年 11 月 |
+| `data_TW/2026_社會住宅興辦情形/` | 國土管理署，115 年 7 月 31 日，全國彙整表＋22 縣市總表 |
+| `data_TW/99-115 不動產買賣及租賃/` | 內政部實價登錄逐筆交易，99–115 年，4.2 GB |
 
 #### 兩期行政區的對齊
 
@@ -382,9 +410,10 @@ python3 scripts/prep_social_housing.py # 包租代管執行情形 -> data/tw_soc
 python3 scripts/prep_affordability.py # 房價負擔能力     -> data/tw_affordability.json
 python3 scripts/prep_pop_series.py    # 歷次常住人口     -> data/tw_pop_series.json
 python3 scripts/prep_signal.py        # 電信信令日夜人口 -> data/tw_signal.json
+python3 scripts/prep_social_build.py  # 社宅興辦進度     -> data/tw_social_build.json
 python3 scripts/prep_profile.py       # 合併成縣市檔案   -> data/tw_county_profile.json
 python3 scripts/prep_overview.py      # 入口頁的摘要數字 -> data/tw_overview.json（最後跑）
-python3 scripts/build.py         # 內嵌並產出九頁     -> dist/*.html
+python3 scripts/build.py         # 內嵌並產出十頁     -> dist/*.html
 python3 scripts/verify_vacancy.py # 與內政部用電統計對帳
 ```
 
