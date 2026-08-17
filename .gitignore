@@ -5,3 +5,9 @@ catalog.csv
 
 # 戶政司村里逐月序列：264 檔約 200 MB，執行 fetch_sources.py 即可取得最新一期
 data_TW/03_人口動態_戶籍/
+
+# fetch_pip.py 與 fetch_pip_browser.mjs 的探查紀錄，是工作檔不是資料
+_discovery.json
+_pip_manifest.json
+_network.json
+_page.html
