@@ -1,0 +1,218 @@
+<title>社宅該蓋在哪</title>
+
+<style>
+__SHARED_CSS__
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.chain { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.link {
+  background: var(--card); border: 1px solid var(--rule); border-top: 3px solid var(--accent);
+  border-radius: 3px; padding: 13px 15px; display: flex; flex-direction: column; gap: 5px;
+}
+.link .n { font-family: var(--f-mono); font-size: 10.5px; color: var(--accent); letter-spacing: .08em; }
+.link h3 { font-size: 14.5px; }
+.link p { margin: 0; font-size: 12.5px; color: var(--ink-2); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(288px, 1fr)); gap: 12px; }
+.card {
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  padding: 15px 17px; display: flex; flex-direction: column; gap: 7px;
+}
+.card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.card h3 { font-size: 16px; }
+.card .unit { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3); white-space: nowrap; }
+.card .asks { font-size: 12.5px; color: var(--ink-3); }
+.card .says { font-size: 13.4px; color: var(--ink); border-left: 2px solid var(--accent);
+              padding-left: 10px; }
+.card .note { font-size: 11.8px; color: var(--ink-3); }
+.card .file { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3); margin-top: auto; }
+
+/* Every column here is text, not a number, so the shared right-alignment
+   default would leave the headers and their cells pointing opposite ways. */
+table.src th, table.src td { text-align: left; }
+table.src td.have { color: var(--div-7); font-weight: 600; }
+table.src td.gap  { color: var(--div-0); font-weight: 600; }
+table.src td:nth-child(2), table.src td:nth-child(6) { white-space: normal; }
+table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34ch; }
+
+/* Sibling pages resolve only when the dist/ folder is opened as files; from a
+   published single page they would 404, so the link is added at runtime. */
+.card .file a { color: var(--accent); text-decoration: none; }
+.card .file a:hover { text-decoration: underline; }
+
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 12px; }
+.rule-card { border: 1px solid var(--rule); border-left: 3px solid var(--sq2-1); border-radius: 3px;
+             background: var(--card); padding: 13px 15px; display: flex; flex-direction: column; gap: 5px; }
+.rule-card h3 { font-size: 14px; }
+.rule-card p { margin: 0; font-size: 12.4px; color: var(--ink-2); }
+
+.gapbox { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--div-0);
+          border-radius: 3px; padding: 15px 18px; display: flex; flex-direction: column; gap: 8px; }
+.gapbox h2 { font-size: 17px; }
+.gapbox p { margin: 0; font-size: 13.4px; color: var(--ink-2); max-width: 76ch; }
+.gapbox p b { color: var(--ink); }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow" id="eyebrow"></p>
+    <h1>社宅該蓋在哪</h1>
+    <p class="dek">
+      這是一組為了回答一個問題而做的資料與圖表：<b>臺灣的社會住宅該蓋在哪、蓋多少</b>。
+      核心不是把統計數字攤開，而是把<b>人實際住在哪</b>跟<b>房子實際空在哪</b>放在同一張圖上。
+      這兩件事在臺灣是錯開的，<b>錯開的地方就是政策該處理的地方</b>。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <section>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">01</span>
+      問題的順序</h2>
+    <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
+      每一頁回答一個問題，而且是上一題逼出來的下一題。照這個順序讀最省力。
+    </p>
+    <div class="chain" id="chain"></div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">02</span>
+      八頁各自回答什麼</h2>
+    <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
+      每一頁都是單一檔案、資料內嵌、無外部請求，可以離線開、可以直接寄給別人。
+      下面每張卡片的粗體那行就是那一頁的主要發現。<span id="linknote"></span>
+    </p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">03</span>
+      資料清單</h2>
+    <div class="tablewrap">
+      <table class="src" id="src">
+        <thead><tr>
+          <th>狀態</th><th>資料</th><th>來源</th><th>資料期</th><th>最細到哪</th><th>用途</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="gapbox" id="gapbox"></div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">04</span>
+      判讀原則</h2>
+    <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
+      這五件事在每一頁上都會再講一次，因為它們是最容易出錯的地方。
+      拿這些圖去做簡報之前，先確認自己沒有踩到。
+    </p>
+    <div class="rules" id="rules"></div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>時間基準為什麼鎖 109 年 11 月</h3>
+      <p>結構分析（誰住哪、房子空多少）一律用 109 年人口及住宅普查：人口與住宅來自
+      同一次調查，分子分母同期才不失真。趨勢則交給有長期數列的資料——
+      低度使用住宅回推到 98 年，常住人口回推到 45 年。</p>
+    </section>
+    <section>
+      <h3>為什麼沒有一頁叫「結論」</h3>
+      <p>因為結論取決於你用哪個標準，而不同標準會給出不同的縣市名單。
+      「先蓋在哪裡」那一頁把三種標準的名次並排畫出來，就是為了讓這件事看得見，
+      而不是替讀者選一個然後假裝那是唯一答案。</p>
+    </section>
+    <section>
+      <h3>怎麼重建</h3>
+      <p>每一頁的資料都由 <code>scripts/prep_*.py</code> 從原始檔解析，
+      <code>scripts/build.py</code> 內嵌後產出 <code>dist/</code>。
+      解析程式一律先與原表的小計列對帳才寫檔，欄序若變動會直接中止而不是默默算錯。</p>
+    </section>
+    <section>
+      <h3>資料在哪</h3>
+      <p>原始檔在 <code>data/sources/</code> 與 <code>data_TW/</code>，
+      解析後的中間檔在 <code>data/</code>。下載工具與各政府網站的已知問題
+      （憑證鏈、防火牆、人機驗證）都寫在 <code>README.md</code>。</p>
+    </section>
+  </div>
+</div>
+
+<script type="application/json" id="ov">__OV_JSON__</script>
+
+<script>
+(() => {
+  'use strict';
+  const D = JSON.parse(document.getElementById('ov').textContent);
+  const H = D.headline;
+  const int = v => Math.round(v).toLocaleString('en-US');
+  // Only link to the sibling pages when they are actually next to this file.
+  const LOCAL = location.protocol === 'file:' || /\/dist\/?$/.test(location.pathname.replace(/[^/]*$/, ''));
+  const man = v => (v / 10000).toFixed(0) + ' 萬';
+
+  document.getElementById('eyebrow').textContent =
+    `${D.built.pages} 頁 ・ ${D.built.sources} 份資料 ・ ` +
+    `${D.built.counties} 縣市 ／ ${D.built.towns} 鄉鎮市區`;
+
+  const stat = (k, v, sub) =>
+    `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
+  document.getElementById('stats').innerHTML =
+    stat('住宅／家戶', `${man(H.houses)} / ${man(H.households)}`,
+         `每戶對到 ${(H.houses / H.households).toFixed(3)} 間住宅（109 年 11 月）`) +
+    stat('沒人使用的住宅', man(H.idle),
+         `占全部住宅 ${H.vacancy}%；用電定義下 ${H.moiNow}%（${H.moiLabel}）`) +
+    stat('房價所得比', H.pir.toFixed(2) + ' 倍',
+         `房貸負擔率 ${H.burden}%，內政部分級「偏低」`) +
+    stat('人口高點', '109 年',
+         `${int(H.popPeak)} → ${H.popYear} 年 ${int(H.popNow)}，六年少 ${man(H.popPeak - H.popNow)}人`);
+
+  const CHAIN = [
+    ['空屋這麼多，還要蓋嗎', '先確認空屋能不能用。答案是多數不能：最空的是新屋與小宅。'],
+    ['那要蓋在哪', '空屋不是均勻分布，人也不是。兩者錯開的地方才是問題所在。'],
+    ['誰最需要', '空屋率排不出優先序，換成負擔能力就換一批縣市。'],
+    ['蓋了沒有', '包租代管那半邊有資料，直接興建那半邊還缺。'],
+  ];
+  document.getElementById('chain').innerHTML = CHAIN.map(([h, p], i) =>
+    `<div class="link"><span class="n">Q${i + 1}</span><h3>${h}</h3><p>${p}</p></div>`).join('');
+
+  document.getElementById('linknote').textContent = LOCAL
+    ? '' : '（在 dist/ 資料夾裡開這一頁時，卡片下方會變成可點的連結）';
+  document.getElementById('cards').innerHTML = D.pages.map(p => `
+    <div class="card">
+      <div class="top"><h3>${p.title}</h3><span class="unit">${p.unit}</span></div>
+      <div class="asks">問：${p.asks}</div>
+      <div class="says">${p.says}</div>
+      <div class="note">${p.note}</div>
+      <div class="file">${LOCAL ? `<a href="${p.file}">開啟 ${p.file} →</a>` : p.file}</div>
+    </div>`).join('');
+
+  document.querySelector('#src tbody').innerHTML = D.sources.map(s => `
+    <tr>
+      <td class="${s.have ? 'have' : 'gap'}">${s.have ? '已在手' : '待補'}</td>
+      <td>${s.name}</td><td>${s.org}</td><td>${s.period}</td>
+      <td>${s.unit}</td><td>${s.use}</td>
+    </tr>`).join('');
+
+  const missing = D.sources.filter(s => !s.have);
+  document.getElementById('gapbox').innerHTML =
+    `<h2>還缺 ${missing.length} 份，缺的是同一件事</h2>` +
+    `<p>兩份都跟<b>租</b>有關，而社宅正是租賃政策。
+     <b>社宅直接興建進度</b>缺了，就算不出覆蓋率——分子的一半（包租代管
+     ${int(H.shMatched)} 戶累計、${int(H.shLive)} 戶仍有效）在手上，另一半沒有。
+     <b>租金水準</b>缺了，負擔能力就只能用房價所得比代理，那量的是「買」不是「租」。</p>` +
+    `<p>兩份都在內政部與國土署的網站上，那幾個站用同一套防火牆擋掉機房 IP，
+     任何路徑都回 <code>Request Rejected</code>，也沒有上架到政府資料開放平臺。
+     要在一般家用或辦公室網路下載，工具與步驟寫在 <code>README.md</code>。</p>`;
+
+  document.getElementById('rules').innerHTML = D.reading.map(r =>
+    `<div class="rule-card"><h3>${r.h}</h3><p>${r.p}</p></div>`).join('');
+})();
+</script>

@@ -23,6 +23,15 @@ python3 scripts/fetch_sources.py --out "/path/to/2026 - housing_TW"
 python3 scripts/make_readme.py --out "/path/to/2026 - housing_TW"
 ```
 
+新資料進來時，先看結構再寫解析程式：
+
+```bash
+python3 scripts/inspect_data.py "data_TW/某個新資料夾"
+```
+
+會逐檔列出編碼、分隔符號、欄位名稱、前幾列、工作表名稱與列數（csv／xlsx／ods／
+json／xml／pdf／zip 都認得）。政府檔案常見的 Big5 誤判與多層表頭，這一步就會現形。
+
 `sources.json` 是凍結後的來源清單（資料集識別碼、名稱、機關、更新頻率、下載網址），
 `_metadata/manifest.csv` 則記錄每次下載的 HTTP 狀態、位元組數與 SHA-256，可據以查核
 來源或偵測上游更新。重跑時會依 manifest 略過已成功的網址，只重試失敗項。
@@ -123,10 +132,11 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 
 ## 二、頁面
 
-`dist/` 下有八頁，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
+`dist/` 下有九頁，`overview.html` 是入口，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
 
 | 檔案 | 內容 | 空間單元 |
 |---|---|---|
+| `overview.html` | **社宅該蓋在哪：入口頁**，問題順序、八頁摘要、資料清單、判讀原則 | — |
 | `index.html` | 臺灣住宅供需圖：人口與住宅供給對照 | 22 縣市 |
 | `town.html` | 臺灣空屋地圖：空屋在哪裡、能不能用 | 368 鄉鎮市區 |
 | `metro.html` | 六都與新竹的內部落差：縣市平均掩蓋了什麼 | 174 鄉鎮市區 |
@@ -137,6 +147,21 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 | `county.html` | 縣市檔案：選一個縣市，七份資料一次看完 | 22 縣市 |
 | `docs/architecture.html` | 資料站架構草案 | — |
 | `docs/verification.html` | 空屋數字對帳單：與內政部官方文件核對 | — |
+
+### 2z. 入口頁
+
+`overview.html` 是唯一從別頁的資料檔即時取數字的頁面：每一頁的主要發現、
+全國的四個關鍵數字、資料清單的在手／待補狀態，全部由
+`scripts/prep_overview.py` 從其他 prep 腳本的產出算出來，不手寫在 HTML 裡。
+這樣前門的數字不可能跟後面的頁面說法不一致。
+
+兩處刻意跟頁面本身對齊而不是取全國極值：`metro.html` 只畫六都與新竹，
+所以它的「內部差距最大」也只在那 8 個裡取；`priority.html` 的兩組名次方向
+與 `prep_profile.py` 相反（該頁「房子夠不夠」是空屋率低者為第 1），
+母體也只有 21 個縣市，因此照它自己的定義重算。
+
+在 `dist/` 資料夾裡開這一頁時，卡片會變成可點的相對連結；
+單獨發布時偵測不到同層檔案，就只顯示檔名不給死連結。
 
 ### 2a. 臺灣住宅供需圖（P1）
 
@@ -357,8 +382,9 @@ python3 scripts/prep_social_housing.py # 包租代管執行情形 -> data/tw_soc
 python3 scripts/prep_affordability.py # 房價負擔能力     -> data/tw_affordability.json
 python3 scripts/prep_pop_series.py    # 歷次常住人口     -> data/tw_pop_series.json
 python3 scripts/prep_signal.py        # 電信信令日夜人口 -> data/tw_signal.json
-python3 scripts/prep_profile.py       # 合併成縣市檔案   -> data/tw_county_profile.json（最後跑）
-python3 scripts/build.py         # 內嵌並產出八頁     -> dist/*.html
+python3 scripts/prep_profile.py       # 合併成縣市檔案   -> data/tw_county_profile.json
+python3 scripts/prep_overview.py      # 入口頁的摘要數字 -> data/tw_overview.json（最後跑）
+python3 scripts/build.py         # 內嵌並產出九頁     -> dist/*.html
 python3 scripts/verify_vacancy.py # 與內政部用電統計對帳
 ```
 

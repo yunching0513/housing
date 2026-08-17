@@ -10,6 +10,9 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # Each page lists the data files it needs. The stylesheet is shared so the two
 # pages cannot drift apart visually.
 PAGES = {
+    'overview.html': ('overview.template.html', {
+        '__OV_JSON__': 'tw_overview.json',
+    }),
     'index.html': ('index.template.html', {
         '__GEO_JSON__': 'tw_counties.json',
         '__POP_JSON__': 'tw_population.json',
