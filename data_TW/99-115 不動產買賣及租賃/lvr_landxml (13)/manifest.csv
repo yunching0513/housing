@@ -1,0 +1,3 @@
+﻿name,schema,description
+h_lvr_land_a.xml,schema-main.csv,桃園市不動產買賣
+h_lvr_land_a_land.xml,schema-land.csv,桃園市土地不動產買賣
