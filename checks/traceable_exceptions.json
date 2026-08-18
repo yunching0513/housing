@@ -7,7 +7,7 @@
    "reason": "圖形簡化（Douglas-Peucker）的容差，單位是度，是方法參數不是統計數字"
   },
   {
-   "file": "index.template.html",
+   "file": "supply.template.html",
    "value": "77.37",
    "reason": "兩種空屋定義的交叉表格位，來自 scripts/verify_vacancy.py 的對照常數，尚未寫進 data/。待辦：把交叉表輸出成中間檔"
   },

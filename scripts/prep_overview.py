@@ -68,7 +68,7 @@ def main():
     rent_have = sum(1 for c in rent['counties'] if c['grid']['whole']['all']['rent'])
 
     pages = [
-        {'file': 'index.html', 'title': '臺灣住宅供需圖', 'unit': '22 縣市',
+        {'file': 'supply.html', 'title': '臺灣住宅供需圖', 'unit': '22 縣市',
          'asks': '人在哪、房子在哪，對得上嗎',
          'says': f"全國 {n_hou['houses']:,} 宅對 {n_hou['households']:,} 戶，"
                  f"空屋率 {n_hou['vacancy']}%",

@@ -22,6 +22,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DIST = ROOT / 'dist'
+SITE = ROOT / 'site'
 LOCAL = {'checks', 'scripts', 'domain'}
 SKIP = {'__pycache__', '.git', '.venv', 'venv', 'node_modules'}
 
@@ -83,7 +84,9 @@ def run():
         problems.append('沒有 dist/：先跑 python3 scripts/build.py')
         return problems
 
-    pages = sorted(DIST.glob('*.html'))
+    # 兩份輸出都要查：artifact 版與網站版是同一份內容的兩種包裝，
+    # 只查其中一份，另一份混進外部請求時不會有人發現。
+    pages = sorted(DIST.glob('*.html')) + sorted(SITE.glob('*.html'))
     if not pages:
         problems.append('dist/ 裡一頁都沒有')
     for page in pages:
@@ -92,14 +95,21 @@ def run():
             m = pat.search(text)
             if m:
                 snippet = text[max(0, m.start() - 30):m.end() + 30].replace('\n', ' ')
-                problems.append(f'dist/{page.name} 有{why}：…{snippet}…')
+                problems.append(f'{page.parent.name}/{page.name} 有{why}：…{snippet}…')
         left = set(re.findall(r'__[A-Z0-9_]+__', text))
         if left:
-            problems.append(f'dist/{page.name} 還留著沒被取代的 token：{sorted(left)}')
+            problems.append(f'{page.parent.name}/{page.name} 還留著沒被取代的 token：'
+                            f'{sorted(left)}')
         for pat in SECRETS:
             if pat.search(text):
-                problems.append(f'dist/{page.name} 疑似含有金鑰')
+                problems.append(f'{page.parent.name}/{page.name} 疑似含有金鑰')
                 break
+    for page in sorted(SITE.glob('*.html')):
+        head = page.read_text(encoding='utf-8')[:400].lower()
+        for need in ('<!doctype html>', '<html lang="zh-hant">', '<meta charset="utf-8">'):
+            if need not in head:
+                problems.append(f'site/{page.name} 少了 {need}：'
+                                f'網站版必須是完整文件，缺編碼宣告中文會變亂碼')
     return problems
 
 

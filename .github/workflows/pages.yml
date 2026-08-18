@@ -1,0 +1,74 @@
+# 把 site/ 部署到 GitHub Pages。
+#
+# 使用者只需要做一件事：Settings → Pages → Source 選「GitHub Actions」。
+# 之後每一次推送到本分支都會重新建置並部署。
+#
+# 刻意用 sparse-checkout：這個 repo 的 data_TW/ 有 4.2 GB 原始檔，
+# 但建置版面只需要 data/（已解析的中間檔）與 src/，抓那 4.2 GB 純屬浪費。
+# 也刻意不裝任何套件：AGENTS.md §4 說只用 Python 內建函式庫，這裡照辦，
+# 所以沒有 pip install 這一步。
+
+name: 部署資料站到 GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - claude/taiwan-population-growth-map-ig103q
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時只跑一個部署，後來的取代排隊中的，但不中斷進行中的
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 取出建置需要的目錄
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            data
+            src
+            scripts
+            schemas
+            checks
+            run_gates.py
+            AGENTS.md
+            CLAUDE.md
+          sparse-checkout-cone-mode: false
+
+      - name: 顯示 Python 版本
+        run: python3 --version
+
+      - name: 建置
+        run: python3 scripts/build.py
+
+      - name: 跑五道閘門
+        run: python3 run_gates.py
+
+      - name: 設定 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上傳網站
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 部署
+        id: deployment
+        uses: actions/deploy-pages@v4

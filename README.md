@@ -132,12 +132,20 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 
 ## 二、頁面
 
-`dist/` 下有十一頁，`overview.html` 是入口，共用 `src/shared.css`，資料在建置時內嵌，無外部請求。
+建置會產出兩份，用途不同，不要合併：
+
+| 目錄 | 是什麼 | 給誰用 |
+|---|---|---|
+| `dist/` | **片段**：沒有 doctype 與 head | artifact 發布。平臺會自己包一層，自己再包一次會被解析器丟掉 |
+| `site/` | **完整文件**：doctype、`lang="zh-Hant"`、charset、分享用的 meta，另加一條跨頁導覽列 | 網站。GitHub Pages 部署的就是這一份 |
+
+兩份都是單一檔案、資料內嵌、零外部請求。`site/` 不入版控，由 CI 現場重建。
+`index.html` 是入口，共用 `src/shared.css`。
 
 | 檔案 | 內容 | 空間單元 |
 |---|---|---|
-| `overview.html` | **社宅該蓋在哪：入口頁**，問題順序、各頁摘要、資料清單、判讀原則 | — |
-| `index.html` | 臺灣住宅供需圖：人口與住宅供給對照 | 22 縣市 |
+| `index.html` | **社宅該蓋在哪：入口頁**，問題順序、各頁摘要、資料清單、判讀原則 | — |
+| `supply.html` | 臺灣住宅供需圖：人口與住宅供給對照 | 22 縣市 |
 | `town.html` | 臺灣空屋地圖：空屋在哪裡、能不能用 | 368 鄉鎮市區 |
 | `metro.html` | 六都與新竹的內部落差：縣市平均掩蓋了什麼 | 174 鄉鎮市區 |
 | `trend.html` | 空屋率的十六年：內政部半年數列 | 22 縣市 ＋ 174 行政區 |
@@ -152,7 +160,7 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 
 ### 2z. 入口頁
 
-`overview.html` 是唯一從別頁的資料檔即時取數字的頁面：每一頁的主要發現、
+`index.html` 是唯一從別頁的資料檔即時取數字的頁面：每一頁的主要發現、
 全國的四個關鍵數字、資料清單的在手／待補狀態，全部由
 `scripts/prep_overview.py` 從其他 prep 腳本的產出算出來，不手寫在 HTML 裡。
 這樣前門的數字不可能跟後面的頁面說法不一致。
@@ -171,7 +179,7 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 
 ### 產出
 
-`dist/index.html` — 單一自帶資料的 HTML 頁面（無外部請求）。內含：
+`site/supply.html` — 單一自帶資料的 HTML 頁面（無外部請求）。內含：
 
 - 縣市面量圖，可切換五個指標：十年成長率、十年增減人數、人口密度、**空屋率**、**宅戶比**
 - 22 縣市排序條圖，與地圖、散布圖、表格四向連動（hover／點選固定）
@@ -601,7 +609,7 @@ python3 checks/seal.py      # 我確定要改，並且會在提交訊息裡說�
 
 1. **`tw_rent.json` 沒接上任何一頁**（流向閘門）。剛產出的中間檔忘了接到版面，
    資料在硬碟上但沒人看得到。
-2. **`overview.html` 印出 NaN**（流向閘門的欄位檢查）。版面在讀 `H.shbDone`
+2. **`index.html` 印出 NaN**（流向閘門的欄位檢查）。版面在讀 `H.shbDone`
    與 `H.shbTotal`，但 `prep_overview.py` 的 headline 根本沒有這兩個 key。
    JavaScript 讀到不存在的欄位不會報錯，它給 `undefined`，然後 `Math.round`
    把它變成 `NaN` 印在頁面上。這種錯只有打開瀏覽器才看得到，
@@ -616,3 +624,41 @@ python3 checks/seal.py      # 我確定要改，並且會在提交訊息裡說�
 版面上真的不是統計數字的東西（例如圖形簡化的容差 0.0009°），
 登記在 `checks/traceable_exceptions.json`，每一筆都要寫為什麼可以留。
 那是受保護檔案，所以新增一筆等於留下一次人為決定的紀錄。
+
+---
+
+## 四、上線
+
+網站由 `.github/workflows/pages.yml` 部署到 GitHub Pages。
+
+**要打開它，只需要一個開關**：repo 的 `Settings` → `Pages` → `Source` 選
+**GitHub Actions**（不要選 Deploy from a branch）。之後每一次推送都會自動重建並部署。
+
+工作流程做四件事：
+
+1. **稀疏取出**（sparse-checkout）`data/`、`src/`、`scripts/`、`schemas/`、`checks/`
+   與兩份規則檔。刻意不抓 `data_TW/`：那裡有 4.2 GB 原始檔，而建置版面只需要
+   已解析的中間檔。
+2. `python3 scripts/build.py` 產生 `site/`。
+3. `python3 run_gates.py`。**五道閘門是部署的守門員**：離開碼不是 0 就不會上線。
+4. 上傳 `site/` 並部署。
+
+刻意沒有 `pip install` 這一步：AGENTS.md §4 說只用 Python 內建函式庫，CI 照辦。
+所以整個工作流程沒有任何相依套件需要鎖版本，也不會有某天 npm 或 PyPI 上的東西
+壞掉導致這個站建不起來。
+
+### 如果部署被擋下來
+
+GitHub 的 `github-pages` 環境預設可能只允許從預設分支部署。若 Actions 顯示
+「Branch is not allowed to deploy」，兩條路二選一：
+
+- `Settings` → `Environments` → `github-pages` → `Deployment branches`，把本分支加進去；
+- 或把本分支合併回 `main`，讓部署從預設分支跑（長期而言這是比較乾淨的狀態）。
+
+### 網站與 artifact 的差別
+
+同一份內容，兩種包裝。網站版多了三樣東西：完整的 HTML 文件結構（沒有它，
+瀏覽器在某些伺服器設定下會把中文顯示成亂碼）、跨頁導覽列、以及分享連結時
+會用到的 `og:` 標籤。artifact 版沒有導覽列，因為那是單獨發布的一頁，
+隔壁沒有其他檔案可以連。頁面本身用 `window.top === window.self` 判斷自己
+處在哪一種情境，決定要不要給出跨頁連結。

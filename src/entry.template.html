@@ -155,7 +155,10 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   const H = D.headline;
   const int = v => Math.round(v).toLocaleString('en-US');
   // Only link to the sibling pages when they are actually next to this file.
-  const LOCAL = location.protocol === 'file:' || /\/dist\/?$/.test(location.pathname.replace(/[^/]*$/, ''));
+  // 在 artifact 裡是單獨一頁，隔壁沒有其他檔案，連過去會 404；
+  // 在網站或本機資料夾裡則一定是整組一起，連結照給。artifact 是嵌在 iframe 裡的，
+  // 用這個判斷比看網址可靠。
+  const LOCAL = window.top === window.self;
   const man = v => (v / 10000).toFixed(0) + ' 萬';
 
   document.getElementById('eyebrow').textContent =

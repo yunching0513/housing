@@ -366,6 +366,20 @@ hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 
+/* ── 跨頁導覽（只出現在網站版，artifact 版沒有兄弟檔案可連）───────────── */
+.sitenav {
+  display: flex; flex-wrap: wrap; gap: 2px 0;
+  margin: 0 0 4px; padding-bottom: 10px; border-bottom: 1px solid var(--rule);
+  font-size: 12.8px;
+}
+.sitenav a {
+  color: var(--ink-3); text-decoration: none; padding: 3px 10px 3px 0;
+  margin-right: 10px; border-right: 1px solid var(--rule-soft); white-space: nowrap;
+}
+.sitenav a:last-child { border-right: 0; }
+.sitenav a:hover { color: var(--ink); text-decoration: underline; }
+.sitenav a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+
 
 /* ── page-specific ─────────────────────────────────────────────────────── */
 .pickbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
