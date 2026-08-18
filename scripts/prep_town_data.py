@@ -89,7 +89,7 @@ def pick(folder, pattern, least):
 
 def main():
     if not BASE.exists():
-        sys.exit(f'缺少 {BASE}\n請先執行 scripts/fetch_sources.py')
+        sys.exit(f'缺少{BASE}\n請先執行scripts/fetch_sources.py')
 
     towns, missing = [], []
     for folder in sorted(BASE.iterdir()):
@@ -171,33 +171,33 @@ def main():
 
     OUT.write_text(json.dumps({
         'period': '民國109年11月',
-        'source': '行政院主計總處 109 年人口及住宅普查 縣市報告表 20、31、37、38、39、41、42',
+        'source': '行政院主計總處109年人口及住宅普查 縣市報告表20、31、37、38、39、41、42',
         'national': national, 'vacancyCut': cut, 'inflowCut': inflowCut,
-        'ageLabels': ['40 年以上', '30–39 年', '20–29 年', '10–19 年', '未滿 10 年'],
-        'areaLabels': ['未滿 60 m²', '60–120', '120–180', '180–300', '300 m² 以上'],
+        'ageLabels': ['40年以上', '30–39年', '20–29年', '10–19年', '未滿10年'],
+        'areaLabels': ['未滿60 m²', '60–120', '120–180', '180–300', '300 m² 以上'],
         'towns': towns,
     }, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
 
-    print(f'鄉鎮市區 {len(towns)} 個 ・ {OUT.name} {OUT.stat().st_size / 1024:.0f} KB')
+    print(f'鄉鎮市區{len(towns)}個 ・ {OUT.name}{OUT.stat().st_size / 1024:.0f} KB')
     if missing:
-        print(f'※ 缺漏 {len(missing)}：{missing[:6]}')
+        print(f'※ 缺漏{len(missing)}：{missing[:6]}')
     n = national
-    print(f"\n全國 住宅 {n['houses']:,} 宅 ・ 住戶 {n['households']:,} 戶 ・ "
-          f"目前沒有使用 {n['idle']:,} 宅（{n['vacancy']}%）")
-    print(f"空閒住宅 {n['vacant']:,} 宅 = 偶爾自住 {n['occasional']:,} + 目前沒有使用 {n['idle']:,}")
+    print(f"\n全國 住宅{n['houses']:,}宅 ・ 住戶{n['households']:,}戶 ・ "
+          f"目前沒有使用{n['idle']:,}宅（{n['vacancy']}%）")
+    print(f"空閒住宅{n['vacant']:,}宅 = 偶爾自住{n['occasional']:,} +目前沒有使用{n['idle']:,}")
     lab = ['40年以上', '30-39年', '20-29年', '10-19年', '未滿10年']
     print('\n空屋的屋齡結構：')
     for i, l in enumerate(lab):
         v, a = n['ageVacant'][i], n['ageAll'][i]
-        print(f"  {l:8s} 空屋 {v:>9,} 宅（占空屋 {v/n['vacant']*100:5.1f}%）"
-              f"　全部住宅同齡層的空屋率 {v/a*100:5.1f}%")
+        print(f"  {l:8s}空屋{v:>9,}宅（占空屋{v/n['vacant']*100:5.1f}%）"
+              f"　全部住宅同齡層的空屋率{v/a*100:5.1f}%")
     print('\n空屋的坪數結構：')
     al = ['未滿60m²', '60-120', '120-180', '180-300', '300m²以上']
     for i, l in enumerate(al):
         v, a = n['areaVacant'][i], n['areaAll'][i]
-        print(f"  {l:10s} 空屋 {v:>9,} 宅（占空屋 {v/n['vacant']*100:5.1f}%）"
-              f"　該坪數的空屋率 {v/a*100:5.1f}%")
-    print(f"\n遷入率中位數 {inflowCut}% ・ 空屋率分界 {cut}%")
+        print(f"  {l:10s}空屋{v:>9,}宅（占空屋{v/n['vacant']*100:5.1f}%）"
+              f"　該坪數的空屋率{v/a*100:5.1f}%")
+    print(f"\n遷入率中位數{inflowCut}% ・ 空屋率分界{cut}%")
     import collections
     for q, c in collections.Counter(t['quadrant'] for t in towns).most_common():
         print(f'  {q}: {c}')

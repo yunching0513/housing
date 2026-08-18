@@ -60,7 +60,7 @@ def land_areas():
                 continue
             rows.append((name, float(val)))
         if not rows:
-            sys.exit(f'{f.name} 一列都讀不到，欄位名可能改了')
+            sys.exit(f'{f.name}一列都讀不到，欄位名可能改了')
         county, total = rows[0]              # 第一列是縣市合計
         county_tot[county] = total
         for name, area in rows[1:]:
@@ -69,11 +69,11 @@ def land_areas():
         tol = 0.05 * len(rows[1:]) + 0.05
         got = sum(a for _, a in rows[1:])
         if abs(got - total) > tol:
-            sys.exit(f'{county}的鄉鎮市區面積加總 {got:.1f} 對不上合計 {total:.1f}'
-                     f'（容差 {tol:.2f}）')
+            sys.exit(f'{county}的鄉鎮市區面積加總{got:.1f}對不上合計{total:.1f}'
+                     f'（容差{tol:.2f}）')
     nation = sum(county_tot.values())
     if abs(nation - 36197) > 22 * 0.05 + 1:
-        sys.exit(f'22 縣市面積加總 {nation:.1f} 對不上臺灣土地面積 36,197 平方公里')
+        sys.exit(f'22縣市面積加總{nation:.1f}對不上臺灣土地面積36,197平方公里')
     return out
 
 
@@ -108,7 +108,7 @@ def main():
         mwe, awe = int(r[COL['morningWeekend']]), int(r[COL['afternoonWeekend']])
         area = areas.get(key)
         if area is None:
-            sys.exit(f'{key} 沒有土地面積，無法算密度')
+            sys.exit(f'{key}沒有土地面積，無法算密度')
         trips = lambda a, b: sum(int(r[i]) for i in range(a, b))
         out.append({
             'key': key, 'county': t['county'], 'name': t['name'],
@@ -149,10 +149,10 @@ def main():
     med = statistics.median(o['ratio'] for o in out)
 
     data = {
-        'period': '民國 112 年 11 月',
-        'censusPeriod': '民國 109 年 11 月',
+        'period': '民國112年11月',
+        'censusPeriod': '民國109年11月',
         'source': '社會經濟資料服務平臺（SEGIS）行政區電信信令人口統計，'
-                  f'資料時間 {period}',
+                  f'資料時間{period}',
         'national': nat,
         'medianRatio': round(med, 3),
         'medianMorningRatio': round(statistics.median(o['morningRatio'] for o in out), 3),
@@ -162,23 +162,23 @@ def main():
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')),
                    encoding='utf-8')
 
-    print(f'{OUT.relative_to(ROOT)}：{len(out)} 個鄉鎮市區')
-    print(f'  全國平日夜間停留 {nat["nightWork"]:,}　普查常住 {nat["residents"]:,}'
-          f'　比 {nat["signalRatio"]}')
-    print(f'  全國日夜比 {nat["ratio"]}　鄉鎮市區中位數 {data["medianRatio"]}')
+    print(f'{OUT.relative_to(ROOT)}：{len(out)}個鄉鎮市區')
+    print(f'全國平日夜間停留{nat["nightWork"]:,}　普查常住{nat["residents"]:,}'
+          f'　比{nat["signalRatio"]}')
+    print(f'全國日夜比{nat["ratio"]}　鄉鎮市區中位數{data["medianRatio"]}')
     hi = sorted(out, key=lambda o: -o['ratio'])[:5]
     lo = sorted(out, key=lambda o: o['ratio'])[:5]
-    print('  白天湧入最多：' + '、'.join(f'{o["county"]}{o["name"]} {o["ratio"]}' for o in hi))
-    print('  白天淨流出最多：' + '、'.join(f'{o["county"]}{o["name"]} {o["ratio"]}' for o in lo))
+    print('白天湧入最多：' + '、'.join(f'{o["county"]}{o["name"]}{o["ratio"]}' for o in hi))
+    print('白天淨流出最多：' + '、'.join(f'{o["county"]}{o["name"]}{o["ratio"]}' for o in lo))
     hm = sorted(out, key=lambda o: -o['morningDensity'])[:5]
-    print('  上午活動密度最高：' + '、'.join(
-        f'{o["county"]}{o["name"]} {o["morningDensity"]:,}/km²' for o in hm))
+    print('上午活動密度最高：' + '、'.join(
+        f'{o["county"]}{o["name"]}{o["morningDensity"]:,}/km²' for o in hm))
     hn = sorted(out, key=lambda o: -o['morningNet'])[:5]
-    print('  上午淨流入最多：' + '、'.join(
-        f'{o["county"]}{o["name"]} {o["morningNet"]:+,}' for o in hn))
+    print('上午淨流入最多：' + '、'.join(
+        f'{o["county"]}{o["name"]}{o["morningNet"]:+,}' for o in hn))
     odd = sorted(out, key=lambda o: -abs(o['signalRatio'] - 1))[:4]
-    print('  信令與普查差最大：' + '、'.join(
-        f'{o["county"]}{o["name"]} {o["signalRatio"]}' for o in odd))
+    print('信令與普查差最大：' + '、'.join(
+        f'{o["county"]}{o["name"]}{o["signalRatio"]}' for o in odd))
 
 
 if __name__ == '__main__':

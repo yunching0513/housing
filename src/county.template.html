@@ -85,12 +85,12 @@ __SHARED_CSS__
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">22 縣市 ・ 八份資料合併 ・ 選一個看全部</p>
+    <p class="eyebrow">22縣市 ・ 八份資料合併 ・ 選一個看全部</p>
     <h1>縣市檔案</h1>
     <p class="dek">
       前面每一頁各看一個切面：空屋、趨勢、社宅蓋了多少、包租代管、負擔能力、日夜人口。
       實際要回答「<b>宜蘭到底怎麼樣</b>」的時候，得把八頁都開起來。
-      這一頁反過來：<b>選一個縣市，一次看完</b>，每個數字都附上它在 22 縣市裡的名次。
+      這一頁反過來：<b>選一個縣市，一次看完</b>，每個數字都附上它在22縣市裡的名次。
     </p>
   </header>
 
@@ -131,7 +131,7 @@ __SHARED_CSS__
       </section>
 
       <section class="panel">
-        <header><h2>關鍵指標</h2><p>每格右下角是它在 22 縣市裡的名次，橫條是位置</p></header>
+        <header><h2>關鍵指標</h2><p>每格右下角是它在22縣市裡的名次，橫條是位置</p></header>
         <div class="body"><dl class="mgrid" id="metrics"></dl></div>
       </section>
     </div>
@@ -141,7 +141,7 @@ __SHARED_CSS__
 
   <div class="split">
     <section class="panel">
-      <header><h2 id="sp1-title">低度使用住宅：98 – 114 下半年</h2>
+      <header><h2 id="sp1-title">低度使用住宅：98–114下半年</h2>
         <p>灰線為全國。左段為推估值，虛線標出</p></header>
       <div class="body">
         <svg class="spark" id="sp-moi" viewBox="0 0 560 180" role="img" aria-label="低度使用住宅比率長期折線"></svg>
@@ -150,7 +150,7 @@ __SHARED_CSS__
     </section>
 
     <section class="panel">
-      <header><h2>常住人口：45 – 115 年</h2><p>灰線為全國（另一比例尺）</p></header>
+      <header><h2>常住人口：45–115年</h2><p>灰線為全國（另一比例尺）</p></header>
       <div class="body">
         <svg class="spark" id="sp-pop" viewBox="0 0 560 180" role="img" aria-label="常住人口長期折線"></svg>
         <p class="bandnote" id="sp2-note" style="font-size:12.5px;color:var(--ink-2);margin-top:10px"></p>
@@ -159,7 +159,7 @@ __SHARED_CSS__
   </div>
 
   <section class="panel">
-    <header><h2 id="strip-title">在 22 縣市裡的位置</h2>
+    <header><h2 id="strip-title">在22縣市裡的位置</h2>
       <p>每一列是一項指標，大點是目前選的縣市，細線是全國值</p></header>
     <div class="body"><div id="strips"></div></div>
   </section>
@@ -169,45 +169,39 @@ __SHARED_CSS__
   <div class="notes">
     <section>
       <h3>八個時間點，不是同一天</h3>
-      <p>合併的代價是期別不一致：普查與住宅是 <b id="n-census"></b>，低度使用是
-      <b id="n-moi"></b>，包租代管與社宅興辦是 <b id="n-social"></b>，負擔能力是
-      <b id="n-afford"></b>，電信信令是 <b id="n-signal"></b>，租金是
-      <b id="n-rent"></b>，常住人口到
-      <b id="n-pop"></b>。同一格裡的比較都在同一份資料內，跨格比較請看期別。</p>
+      <p>合併的代價是期別不一致：普查與住宅是<b id="n-census"></b>，低度使用是<b id="n-moi"></b>，包租代管與社宅興辦是<b id="n-social"></b>，負擔能力是<b id="n-afford"></b>，電信信令是<b id="n-signal"></b>，租金是<b id="n-rent"></b>，常住人口到<b id="n-pop"></b>。同一格裡的比較都在同一份資料內，跨格比較請看期別。</p>
     </section>
     <section>
       <h3>租金那兩格不是市場租金</h3>
       <p>實價登錄的租賃申報義務主要落在租賃住宅服務業經手的案件上，房東自租
-      不在裡面；114 年的申報案件有六成是社宅包租代管，那是政策價。
+      不在裡面；114年的申報案件有六成是社宅包租代管，那是政策價。
       名次仍然可比（同一套申報制度底下的相對高低），但絕對值不要當成
       「這個縣市租一戶要多少錢」。細節在租金那一頁。</p>
     </section>
     <section>
       <h3>名次不等於好壞</h3>
-      <p>名次只講「在 22 個裡排第幾」，方向寫在每一項旁邊。空屋率第 1 名是空屋率
-      最高，不是最好；包租代管第 1 名是辦最多，不代表辦得最對——那要看它有沒有
+      <p>名次只講「在22個裡排第幾」，方向寫在每一項旁邊。空屋率第1名是空屋率
+      最高，不是最好；包租代管第1名是辦最多，不代表辦得最對：那要看它有沒有
       落在需要的地方，「包租代管在哪裡」那一頁有交叉檢查。</p>
     </section>
     <section>
       <h3>三種缺漏</h3>
-      <p><b>包租代管</b>：澎湖、金門、連江不在原表上，顯示為「未列」而不是 0。
-      <b>負擔能力</b>：連江縣不在發布裡；澎湖、金門被來源標「樣本數未達 100 戶」，
+      <p><b>包租代管</b>：澎湖、金門、連江不在原表上，顯示為「未列」而不是0。<b>負擔能力</b>：連江縣不在發布裡；澎湖、金門被來源標「樣本數未達100戶」，
       標了星號。<b>鄉鎮市區細分</b>：用電統計只公布六都與新竹縣市。</p>
     </section>
     <section>
       <h3>內部差距是最高除以最低</h3>
       <p>用普查空屋率算，分母是該縣市空屋率最低的鄉鎮市區。基數小的山地鄉會把
-      倍數推高：屏東縣 9.98 倍的分母是琉球鄉 2.9%。倍數當線索用，不要當結論。</p>
+      倍數推高：屏東縣9.98倍的分母是琉球鄉2.9%。倍數當線索用，不要當結論。</p>
     </section>
     <section>
       <h3>社宅的兩個數字不要相加</h3>
-      <p>直接興建的「已完工」是<b>存量</b>，蓋好了就在那裡；包租代管的「累計媒合」是
-      <b>累計流量</b>，到期與退出都不扣。兩者資料日相同、來源相同，但單位不同，
+      <p>直接興建的「已完工」是<b>存量</b>，蓋好了就在那裡；包租代管的「累計媒合」是<b>累計流量</b>，到期與退出都不扣。兩者資料日相同、來源相同，但單位不同，
       相加會得到一個沒有意義的數字。「社宅蓋了多少」那一頁有專節說明。</p>
     </section>
     <section>
       <h3>資料來源</h3>
-      <p>合併程式為 <code>scripts/prep_profile.py</code>，讀取其他六支 prep 腳本的
+      <p>合併程式為<code>scripts/prep_profile.py</code>，讀取其他六支prep腳本的
       產出，不另外解析原始檔。各項來源見各自的頁面。</p>
     </section>
   </div>
@@ -234,7 +228,7 @@ __MAP_ZOOM_JS__
   const int = v => v == null ? '－' : Math.round(v).toLocaleString('en-US');
   const sgn = (v, d = 2) => v == null ? '－'
     : (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v).toFixed(d);
-  const man = v => v == null ? '－' : (v / 10000).toFixed(v >= 1e6 ? 0 : 1) + ' 萬';
+  const man = v => v == null ? '－' : (v / 10000).toFixed(v >= 1e6 ? 0 : 1) + '萬';
 
   /* ── projection: identical framing to the other county maps ─────────── */
   const MAIN = [258, 8, 724, 984];
@@ -281,19 +275,19 @@ __MAP_ZOOM_JS__
   const PAINT = {
     vacancy: { label: '空屋率', ramp: 'sq2', breaks: [11, 12.5, 14, 16, 18],
       get: c => c.vacancy, fmt: v => v.toFixed(2) + '%', tick: v => v + '%',
-      sub: '普查 109 年 11 月「目前沒有使用」占比，全國 13.05%' },
+      sub: '普查109年11月「目前沒有使用」占比，全國13.05%' },
     moiNow: { label: '低度使用', ramp: 'sq2', breaks: [8, 10, 11.5, 13, 15],
       get: c => c.moiNow, fmt: v => v.toFixed(2) + '%', tick: v => v + '%',
-      sub: '內政部用電統計 114 年下半年，全國 9.44%' },
+      sub: '內政部用電統計114年下半年，全國9.44%' },
     pir: { label: '房價所得比', ramp: 'sq2', breaks: [7.5, 8.4, 9, 11, 13],
-      get: c => c.pir, fmt: v => v == null ? '未列' : v.toFixed(2) + ' 倍', tick: v => v,
-      sub: '115 年第 1 季，全國 9.47 倍。連江縣未列' },
+      get: c => c.pir, fmt: v => v == null ? '未列' : v.toFixed(2) + '倍', tick: v => v,
+      sub: '115年第1季，全國9.47倍。連江縣未列' },
     shPer1000: { label: '包租代管', ramp: 'seq', breaks: [5, 10, 20, 30, 45],
       get: c => c.shPer1000, fmt: v => v == null ? '未列' : v.toFixed(2), tick: v => v,
-      sub: '每千家戶累計媒合戶數，全國 29.01。三離島縣未列' },
+      sub: '每千家戶累計媒合戶數，全國29.01。三離島縣未列' },
     shbDonePer1000: { label: '社宅已完工', ramp: 'seq', breaks: [0.5, 1.5, 3, 5, 8],
       get: c => c.shbDonePer1000, fmt: v => v.toFixed(2), tick: v => v,
-      sub: '每千家戶已完工社宅戶數，全國 5.78。9 個縣市為 0' },
+      sub: '每千家戶已完工社宅戶數，全國5.78。9個縣市為0' },
   };
   const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
     return i === -1 ? m.breaks.length : i; };
@@ -337,8 +331,8 @@ __MAP_ZOOM_JS__
     }
     svg.classList.add('picking');
     document.getElementById('map-desc').textContent =
-      `臺灣 22 縣市${m.label}分布圖，目前選取 ${sel}。` +
-      D.counties.map(c => `${c.name} ${m.fmt(m.get(c))}`).join('、');
+      `臺灣22縣市${m.label}分布圖，目前選取${sel}。` +
+      D.counties.map(c => `${c.name}${m.fmt(m.get(c))}`).join('、');
     const lg = document.getElementById('legend');
     lg.innerHTML = '';
     const cap = document.createElement('div'); cap.className = 'cap';
@@ -348,7 +342,7 @@ __MAP_ZOOM_JS__
       const d = document.createElement('div');
       d.className = 'sw'; d.style.background = `var(--${m.ramp}-${i})`;
       const n = D.counties.filter(c => m.get(c) != null && classOf(m, m.get(c)) === i).length;
-      d.title = `${n} 個縣市`;
+      d.title = `${n}個縣市`;
       if (!n) d.style.opacity = '.34';
       sws.append(d);
     }
@@ -362,30 +356,30 @@ __MAP_ZOOM_JS__
   const metric = (dt, value, cmp, rank, of) => {
     const bar = rank ? `<div class="rk"><i style="left:${(rank - 1) / (of - 1) * 100}%"></i></div>` : '';
     return `<div class="m"><dt>${dt}</dt><span class="v">${value}</span>
-      <span class="cmp">${cmp}${rank ? `<b>第 ${rank} / ${of}</b>` : ''}</span>${bar}</div>`;
+      <span class="cmp">${cmp}${rank ? `<b>第${rank} / ${of}</b>` : ''}</span>${bar}</div>`;
   };
   const vs = (mine, nat, unit = '', d = 2, higherIsWorse = true) => {
     if (mine == null || nat == null) return '<span>全國 －</span>';
     const diff = mine - nat;
     const cls = diff === 0 ? '' : (diff > 0) === higherIsWorse ? 'hi' : 'lo';
-    return `<span>全國 ${nat.toFixed(d)}${unit} <b class="${cls}">${sgn(diff, d)}</b></span>`;
+    return `<span>全國${nat.toFixed(d)}${unit} <b class="${cls}">${sgn(diff, d)}</b></span>`;
   };
 
   function drawProfile() {
     const c = C[sel], q = D.quadrants[c.quadrant], R = D.rankMeta;
     document.getElementById('hero').innerHTML =
       `<h2>${sel}</h2><span class="tag">${q.label}</span>` +
-      `<span class="sub">${c.region || ''}　常住人口 ${man(c.p109)}人（109）　` +
-      `住宅 ${man(c.houses)}宅　家戶 ${man(c.households)}戶</span>`;
+      `<span class="sub">${c.region || ''}　常住人口${man(c.p109)}人（109）　` +
+      `住宅${man(c.houses)}宅　家戶${man(c.households)}戶</span>`;
 
     document.getElementById('metrics').innerHTML = [
-      metric('空屋率（普查 109/11）', c.vacancy.toFixed(2) + '%',
+      metric('空屋率（普查109/11）', c.vacancy.toFixed(2) + '%',
         vs(c.vacancy, NAT.vacancy, '%'), c.rank.vacancy, R.vacancy.of),
-      metric('低度使用（用電 114 下）', c.moiNow.toFixed(2) + '%',
+      metric('低度使用（用電114下）', c.moiNow.toFixed(2) + '%',
         vs(c.moiNow, NAT.moiNow, '%'), c.rank.moiNow, R.moiNow.of),
       metric('房價所得比（115Q1）',
         c.pir == null ? '<span class="na">未列</span>' : c.pir.toFixed(2) + ' <small>倍</small>',
-        vs(c.pir, NAT.pir, ' 倍'), c.rank.pir, R.pir.of),
+        vs(c.pir, NAT.pir, '倍'), c.rank.pir, R.pir.of),
       metric('房貸負擔率（115Q1）',
         c.burden == null ? '<span class="na">未列</span>' : c.burden.toFixed(2) + '%',
         c.burden == null ? '<span>－</span>' : `<span>${c.band}${c.affThin ? ' ★樣本不足' : ''}</span>`,
@@ -393,25 +387,25 @@ __MAP_ZOOM_JS__
       metric('整戶月租金中位數（實價登錄）',
         c.rentWhole == null ? '<span class="na">樣本不足</span>'
           : int(c.rentWhole) + ' <small>元/月</small>',
-        c.rentWhole == null ? `<span>只有 ${int(c.rentN)} 筆申報</span>`
-          : `<span>中位面積 ${c.rentArea} 坪　全國 ${int(NAT.rentWhole)} 元</span>`,
+        c.rentWhole == null ? `<span>只有${int(c.rentN)}筆申報</span>`
+          : `<span>中位面積${c.rentArea}坪　全國${int(NAT.rentWhole)}元</span>`,
         c.rank.rentWhole, R.rentWhole.of),
       metric('每坪租金（整棟戶出租）',
         c.rentPing == null ? '<span class="na">樣本不足</span>'
           : int(c.rentPing) + ' <small>元/坪</small>',
         c.rentGap == null
           ? `<span>社宅與非社宅其中一邊樣本不足，算不出價差</span>`
-          : `<span>社宅 ${int(c.rentSocialPing)}・非社宅 ${int(c.rentMarketPing)}，` +
-            `差 ${c.rentGap.toFixed(0)}%</span>`,
+          : `<span>社宅${int(c.rentSocialPing)}・非社宅${int(c.rentMarketPing)}，` +
+            `差${c.rentGap.toFixed(0)}%</span>`,
         c.rank.rentPing, R.rentPing.of),
       metric('宅戶比', c.perHousehold.toFixed(3),
         vs(c.perHousehold, NAT.perHousehold, '', 3), c.rank.perHousehold, R.perHousehold.of),
       metric('社宅已完工（每千家戶）', c.shbDonePer1000.toFixed(2),
-        c.shbDone === 0 ? '<span>本縣市 0 戶完工</span>'
+        c.shbDone === 0 ? '<span>本縣市0戶完工</span>'
           : vs(c.shbDonePer1000, NAT.shbDonePer1000, '', 2, false),
         c.rank.shbDonePer1000, R.shbDonePer1000.of),
       metric('社宅總計（含規劃中）', int(c.shbTotal) + ' <small>戶</small>',
-        `<span>已完工 ${int(c.shbDone)}・中央佔 ${c.shbCentralShare ?? '－'}%</span>`,
+        `<span>已完工${int(c.shbDone)}・中央佔${c.shbCentralShare ?? '－'}%</span>`,
         c.rank.shbTotalPer1000, R.shbTotalPer1000.of),
       metric('包租代管（每千家戶）',
         c.shPer1000 == null ? '<span class="na">未列</span>' : c.shPer1000.toFixed(2),
@@ -420,7 +414,7 @@ __MAP_ZOOM_JS__
       metric('十年人口變化（99→109）', sgn(c.pct) + '%',
         vs(c.pct, NAT.pct, '%', 2, false), c.rank.pct, R.pct.of),
       metric('近年人口（109→115）', sgn(c.since109Pct, 1) + '%',
-        `<span>高點 ${c.peakYear} 年</span>`, c.rank.since109Pct, R.since109Pct.of),
+        `<span>高點${c.peakYear}年</span>`, c.rank.since109Pct, R.since109Pct.of),
       metric('白天／晚上人口比', c.sigRatio.toFixed(3),
         vs(c.sigRatio, NAT.sigRatio, '', 3, false), c.rank.sigRatio, R.sigRatio.of),
       // A township with 0% vacancy makes the ratio undefined rather than
@@ -429,7 +423,7 @@ __MAP_ZOOM_JS__
         c.spread == null ? '<span class="na">算不出</span>' : c.spread.toFixed(2) + ' <small>倍</small>',
         c.townMin == null ? '<span>－</span>'
           : c.spread == null
-            ? `<span>${c.townMinName} 空屋率 0%，無法相除</span>`
+            ? `<span>${c.townMinName}空屋率0%，無法相除</span>`
             : `<span>${c.townMinName} ${c.townMin.toFixed(1)}% → ${c.townMaxName} ${c.townMax.toFixed(1)}%</span>`,
         c.rank.spread, R.spread.of),
     ].join('');
@@ -439,31 +433,30 @@ __MAP_ZOOM_JS__
     const v = [];
     v.push(`<b>${q.label}</b>：${q.cond}。建議做法是${q.act}。`);
     if (Math.abs(c.margin ?? 9) < 0.5)
-      v.push(`但它離全國空屋率分界只有 <b>${Math.abs(c.margin).toFixed(2)} 個百分點</b>，
+      v.push(`但它離全國空屋率分界只有<b>${Math.abs(c.margin).toFixed(2)}個百分點</b>，
               分型隨時可能翻面，不宜當成硬結論。`);
-    v.push(`空屋率在 22 縣市排第 <b>${c.rank.vacancy}</b>，
-            房價所得比排第 <b>${c.rank.pir ?? '－'}</b>。` +
+    v.push(`空屋率在22縣市排第<b>${c.rank.vacancy}</b>，
+            房價所得比排第<b>${c.rank.pir ?? '－'}</b>。` +
       (c.rank.pir && Math.abs(c.rank.vacancy - c.rank.pir) >= 8
-        ? `兩者差 <b>${Math.abs(c.rank.vacancy - c.rank.pir)}</b> 個名次：
+        ? `兩者差<b>${Math.abs(c.rank.vacancy - c.rank.pir)}</b>個名次：
            空屋鬆緊與買得起買不起在這裡講的不是同一件事。`
         : '兩者名次接近。'));
-    v.push(`用電定義下，109 下半年到 114 下半年由 ${c.moi109.toFixed(2)}% 變成
-            <b>${c.moiNow.toFixed(2)}%</b>（${sgn(c.moiChange)} 個百分點），
-            同期全國 ${sgn(NAT.moiNow - NAT.moi109)}。`);
+    v.push(`用電定義下，109下半年到114下半年由${c.moi109.toFixed(2)}%變成<b>${
+            c.moiNow.toFixed(2)}%</b>（${sgn(c.moiChange)}個百分點），`
+           + `同期全國${sgn(NAT.moiNow - NAT.moi109)}。`);
     if (c.shPer1000 != null)
-      v.push(`包租代管累計媒合 <b>${int(c.shMatched)}</b> 戶，每千家戶 ${c.shPer1000.toFixed(2)}，
-              全國 ${NAT.shPer1000.toFixed(2)}。`);
+      v.push(`包租代管累計媒合<b>${int(c.shMatched)}</b>戶，每千家戶${c.shPer1000.toFixed(2)}，
+              全國${NAT.shPer1000.toFixed(2)}。`);
     else
-      v.push(`包租代管<b>未列於原表</b>，不是辦了 0 戶。`);
+      v.push(`包租代管<b>未列於原表</b>，不是辦了0戶。`);
     v.push(c.shbDone === 0
-      ? `社宅直接興建<b>尚無已完工案件</b>，但總計 ${int(c.shbTotal)} 戶已在進行
-         （興建中 ${int(c.shbBuilding)}、待開工 ${int(c.shbAwarded - c.shbDone - c.shbBuilding)}、
-         規劃中 ${int(c.shbPlanning)}）。`
-      : `社宅直接興建已完工 <b>${int(c.shbDone)}</b> 戶，每千家戶 ${c.shbDonePer1000.toFixed(2)}
-         （全國 ${NAT.shbDonePer1000}）；總計 ${int(c.shbTotal)} 戶含規劃中，是承諾不是存量。`);
+      ? `社宅直接興建<b>尚無已完工案件</b>，但總計${int(c.shbTotal)}戶已在進行
+         （興建中${int(c.shbBuilding)}、待開工${int(c.shbAwarded - c.shbDone - c.shbBuilding)}、
+         規劃中${int(c.shbPlanning)}）。`
+      : `社宅直接興建已完工<b>${int(c.shbDone)}</b>戶，每千家戶${c.shbDonePer1000.toFixed(2)}（全國${NAT.shbDonePer1000}）；總計${int(c.shbTotal)}戶含規劃中，是承諾不是存量。`);
     document.getElementById('verdict').innerHTML =
       '<h3>一句話讀法</h3>' + v.map(t => `<p>${t}</p>`).join('') +
-      (c.affThin ? '<p class="warn">★ 房價資料被來源標註「樣本數未達 100 戶」，名次僅供參考。</p>' : '');
+      (c.affThin ? '<p class="warn">★ 房價資料被來源標註「樣本數未達100戶」，名次僅供參考。</p>' : '');
 
     drawSparks(c);
     drawStrips(c);
@@ -478,7 +471,7 @@ __MAP_ZOOM_JS__
     const natv = (nat || []).filter(v => v != null);
     // Both lines are percentages on the vacancy chart, so they must share one
     // axis or comparing their heights gives the wrong answer. Population is the
-    // opposite case — a county against 23 million — so it keeps two scales and
+    // opposite case：a county against 23 million：so it keeps two scales and
     // the panel header says so.
     const pool = opts.shared ? vals.concat(natv) : vals;
     const lo = Math.min(...pool) * .96, hi = Math.max(...pool) * 1.04;
@@ -526,9 +519,9 @@ __MAP_ZOOM_JS__
       ticks: [[0, '98'], [eraTo, '108'], [P.length - 1, '114下']],
     });
     document.getElementById('sp1-note').innerHTML =
-      `98 年 ${c.moiSeries[0].toFixed(2)}% → 114 下半年 <b>${c.moiNow.toFixed(2)}%</b>。` +
-      `最低 ${Math.min(...c.moiSeries).toFixed(2)}%，最高 ${Math.max(...c.moiSeries).toFixed(2)}%。` +
-      `98–107 年為推估值，灰底標出。`;
+      `98年${c.moiSeries[0].toFixed(2)}% → 114下半年<b>${c.moiNow.toFixed(2)}%</b>。` +
+      `最低${Math.min(...c.moiSeries).toFixed(2)}%，最高${Math.max(...c.moiSeries).toFixed(2)}%。` +
+      `98–107年為推估值，灰底標出。`;
 
     const yrs = D.popYears;
     line(document.getElementById('sp-pop'), c.popSeries, NAT.popSeries, {
@@ -537,9 +530,9 @@ __MAP_ZOOM_JS__
     });
     const first = c.popSeries.find(v => v != null);
     document.getElementById('sp2-note').innerHTML =
-      `高點在 <b>${c.peakYear} 年</b>，109 → ${yrs.at(-1)} 年 ${sgn(c.since109Pct, 1)}%。` +
-      `全國高點同為 109 年。` +
-      (c.popSeries[0] == null ? `${yrs[0]}–69 年併在母縣，因此前段空白。` : '');
+      `高點在<b>${c.peakYear}年</b>，109 → ${yrs.at(-1)}年${sgn(c.since109Pct, 1)}%。` +
+      `全國高點同為109年。` +
+      (c.popSeries[0] == null ? `${yrs[0]}–69年併在母縣，因此前段空白。` : '');
   }
 
   /* ── position strips ────────────────────────────────────────────────── */
@@ -553,7 +546,7 @@ __MAP_ZOOM_JS__
     ['shbDonePer1000', '社宅已完工 戶/千家戶', v => v.toFixed(1), NAT.shbDonePer1000],
     ['rentPing', '每坪租金 元', v => v.toFixed(0), NAT.rentPing],
     ['sigRatio', '白天／晚上人口比', v => v.toFixed(2), NAT.sigRatio],
-    ['since109Pct', '109→115 人口 %', v => v.toFixed(1), null],
+    ['since109Pct', '109→115人口 %', v => v.toFixed(1), null],
   ];
   function drawStrips(c) {
     document.getElementById('strips').innerHTML = STRIPS.map(([k, label, fmt, natv]) => {

@@ -36,7 +36,7 @@ STAGE_LABEL = {'done': '已完工', 'building': '興建中', 'awaiting': '已決
 
 def text_of(pdf):
     if not shutil.which('pdftotext'):
-        sys.exit('需要 pdftotext（poppler-utils）：apt-get install -y poppler-utils')
+        sys.exit('需要pdftotext（poppler-utils）：apt-get install -y poppler-utils')
     with tempfile.TemporaryDirectory() as d:
         txt = pathlib.Path(d) / 'p.txt'
         subprocess.run(['pdftotext', '-layout', str(pdf), str(txt)],
@@ -53,11 +53,11 @@ def main():
         sys.exit(f'缺少來源檔：{SRC}')
     lines = text_of(SRC)
 
-    date = '民國 115 年 7 月 31 日'
+    date = '民國115年7月31日'
     for ln in lines:
         m = re.search(r'截至\s*(\d{4})\s*年\s*(\d+)\s*月\s*(\d+)\s*日', ln)
         if m:
-            date = f'民國 {int(m.group(1)) - 1911} 年 {int(m.group(2))} 月 {int(m.group(3))} 日'
+            date = f'民國{int(m.group(1)) - 1911}年{int(m.group(2))}月{int(m.group(3))}日'
             break
 
     # 縣市名印在三列的**中間**那列（地方），不是第一列。所以不能邊讀邊指派：
@@ -84,7 +84,7 @@ def main():
         group[subject] = dict(zip(STAGES, (num(v) for v in vals)))
         if subject == '小計':                      # 每一組都由「小計」結尾
             assert group_name, f'讀到一組沒有縣市名的資料：{group}'
-            assert set(group) == set(SUBJECTS), f'{group_name} 只有 {sorted(group)}'
+            assert set(group) == set(SUBJECTS), f'{group_name}只有{sorted(group)}'
             if group_name == '合計':
                 national.update(group)
             else:
@@ -100,16 +100,16 @@ def main():
         for subject, v in by.items():
             got = v['done'] + v['building'] + v['awaiting']
             assert got == v['awarded'], \
-                f'{name}/{subject} 已決標 {v["awarded"]} ≠ 三階段和 {got}'
+                f'{name}/{subject}已決標{v["awarded"]} ≠ 三階段和{got}'
             assert v['awarded'] + v['planning'] == v['total'], \
-                f'{name}/{subject} 總計 {v["total"]} ≠ 已決標＋規劃中'
+                f'{name}/{subject}總計{v["total"]} ≠ 已決標＋規劃中'
         for k in STAGES:
             assert by['中央'][k] + by['地方'][k] == by['小計'][k], \
-                f'{name} 的 {k}：中央＋地方 ≠ 小計'
+                f'{name}的{k}：中央＋地方 ≠ 小計'
     for k in STAGES:
         got = sum(rows[c]['小計'][k] for c in COUNTIES)
         assert got == national['小計'][k], \
-            f'{STAGE_LABEL[k]} 縣市加總 {got:,} ≠ 合計 {national["小計"][k]:,}'
+            f'{STAGE_LABEL[k]}縣市加總{got:,} ≠ 合計{national["小計"][k]:,}'
 
     hou = json.loads((ROOT / 'data' / 'tw_housing.json').read_text(encoding='utf-8'))
     households = {c['name']: c['households'] for c in hou['counties']}
@@ -162,18 +162,18 @@ def main():
                    encoding='utf-8')
 
     n = data['national']
-    print(f'{OUT.relative_to(ROOT)}：{len(counties)} 縣市，資料日 {date}')
-    print(f"  全國已完工 {n['total']['done']:,} 戶　興建中 {n['total']['building']:,}"
-          f"　待開工 {n['total']['awaiting']:,}")
-    print(f"  已決標 {n['total']['awarded']:,}　規劃中 {n['total']['planning']:,}"
-          f"　總計 {n['total']['total']:,}")
-    print(f"  中央佔 {n['centralShare']}%　每千家戶已完工 {n['donePer1000']} 戶")
+    print(f'{OUT.relative_to(ROOT)}：{len(counties)}縣市，資料日{date}')
+    print(f"全國已完工{n['total']['done']:,}戶　興建中{n['total']['building']:,}"
+          f"　待開工{n['total']['awaiting']:,}")
+    print(f"已決標{n['total']['awarded']:,}　規劃中{n['total']['planning']:,}"
+          f"　總計{n['total']['total']:,}")
+    print(f"中央佔{n['centralShare']}%　每千家戶已完工{n['donePer1000']}戶")
     top = sorted(counties, key=lambda c: -c['donePer1000'])
     for c in top[:5]:
-        print(f"  {c['name']:5s}已完工 {c['total']['done']:>7,} 戶"
-              f"　每千家戶 {c['donePer1000']:>6.2f}　中央佔 {c['centralShare']}%")
+        print(f"  {c['name']:5s}已完工{c['total']['done']:>7,}戶"
+              f"　每千家戶{c['donePer1000']:>6.2f}　中央佔{c['centralShare']}%")
     zero = [c['name'] for c in counties if c['total']['done'] == 0]
-    print(f"  已完工 0 戶的縣市（{len(zero)} 個）：{'、'.join(zero)}")
+    print(f"已完工0戶的縣市（{len(zero)}個）：{'、'.join(zero)}")
 
 
 if __name__ == '__main__':

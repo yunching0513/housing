@@ -132,12 +132,12 @@ def main():
               ensure_ascii=False, indent=1)
 
     # Cross-check the derived totals against the grand-total rows in the sources.
-    print(f'99  總計 derived={t99:,}  (檔案 23,123,866)')
-    print(f'109 總計 derived={t109:,}  (檔案 23,829,897)')
-    print(f'增減 {totals["delta"]:+,} ({totals["pct"]:+.2f}%)  成長 {totals["grew"]} 縣市 / 衰退 {totals["shrank"]} 縣市\n')
+    print(f'99總計derived={t99:,}  (檔案23,123,866)')
+    print(f'109總計derived={t109:,}  (檔案23,829,897)')
+    print(f'增減{totals["delta"]:+,} ({totals["pct"]:+.2f}%)成長{totals["grew"]}縣市 / 衰退{totals["shrank"]}縣市\n')
     for c in sorted(out, key=lambda c: -c['pct']):
-        print(f'{c["name"]:5s} {c["region"]:2s} {c["p99"]:>9,} -> {c["p109"]:>9,}  '
-              f'{c["delta"]:>+8,}  {c["pct"]:>+6.2f}%  密度 {c["density109"]:>7,.1f}')
+        print(f'{c["name"]:5s}{c["region"]:2s}{c["p99"]:>9,} -> {c["p109"]:>9,}  '
+              f'{c["delta"]:>+8,}{c["pct"]:>+6.2f}%密度{c["density109"]:>7,.1f}')
 
 
 if __name__ == '__main__':

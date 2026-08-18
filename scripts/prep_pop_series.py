@@ -86,7 +86,7 @@ def main():
         if any(v is None for v in vals):
             continue
         got, want_v = sum(vals), series['總計'][j]
-        assert abs(got - want_v) <= TOL, f'{y} 年加總 {got:,} ≠ 總計 {want_v:,}'
+        assert abs(got - want_v) <= TOL, f'{y}年加總{got:,} ≠ 總計{want_v:,}'
 
     prelim = years[-1]
     latest = len(years) - 1
@@ -106,29 +106,29 @@ def main():
         })
 
     data = {
-        'source': '行政院主計總處 表 3 歷次各市縣常住人口（單位原為千人，此處還原為人）',
-        'unitNote': '原表單位為千人，因此每個數字的解析度是 1,000 人',
+        'source': '行政院主計總處 表3歷次各市縣常住人口（單位原為千人，此處還原為人）',
+        'unitNote': '原表單位為千人，因此每個數字的解析度是1,000人',
         'years': years,
         'prelimYear': prelim,
         'censusYears': [99, 109],
         'baseIndex': i109,
         'national': series['總計'],
         'counties': counties,
-        'splitNote': '69 年以前新竹縣含新竹市、嘉義縣含嘉義市，兩市在前三欄為空值',
+        'splitNote': '69年以前新竹縣含新竹市、嘉義縣含嘉義市，兩市在前三欄為空值',
     }
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')),
                    encoding='utf-8')
 
-    print(f'{OUT.relative_to(ROOT)}：{len(years)} 個年度 × {len(names)} 縣市'
-          f'（{years[0]}–{years[-1]} 年，{prelim} 年為初步統計）')
-    print(f'  全國 {years[0]} 年 {series["總計"][0]:,} → {years[-1]} 年 {series["總計"][-1]:,}')
+    print(f'{OUT.relative_to(ROOT)}：{len(years)}個年度 × {len(names)}縣市'
+          f'（{years[0]}–{years[-1]}年，{prelim}年為初步統計）')
+    print(f'全國{years[0]}年{series["總計"][0]:,} → {years[-1]}年{series["總計"][-1]:,}')
     peak = max(range(len(years)), key=lambda j: series['總計'][j])
-    print(f'  全國高點 {years[peak]} 年 {series["總計"][peak]:,}')
+    print(f'全國高點{years[peak]}年{series["總計"][peak]:,}')
     grow = sorted(counties, key=lambda c: -c['since109Pct'])
-    print(f'  109 → {years[-1]} 年增最多：'
-          + '、'.join(f'{c["name"]} {c["since109Pct"]:+.1f}%' for c in grow[:3]))
-    print(f'  減最多：'
-          + '、'.join(f'{c["name"]} {c["since109Pct"]:+.1f}%' for c in grow[-3:]))
+    print(f'  109 → {years[-1]}年增最多：'
+          + '、'.join(f'{c["name"]}{c["since109Pct"]:+.1f}%' for c in grow[:3]))
+    print(f'減最多：'
+          + '、'.join(f'{c["name"]}{c["since109Pct"]:+.1f}%' for c in grow[-3:]))
 
 
 if __name__ == '__main__':

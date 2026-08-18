@@ -56,8 +56,8 @@ __SHARED_CSS__
     <h1>社宅蓋了多少</h1>
     <p class="dek">
       前面幾頁都在問「該蓋在哪」。這一頁問的是<b>已經蓋了多少、蓋到哪個階段了</b>。
-      全國承諾 <b id="k-total"></b> 戶，但<b>現在住得進去的只有 <span id="k-done"></span> 戶</b>，
-      而且有 <b id="k-zero"></b> 個縣市一戶都還沒完工。
+      全國承諾<b id="k-total"></b>戶，但<b>現在住得進去的只有<span id="k-done"></span>戶</b>，
+      而且有<b id="k-zero"></b>個縣市一戶都還沒完工。
     </p>
   </header>
 
@@ -65,13 +65,11 @@ __SHARED_CSS__
 
   <div class="lede">
     <h2>四個階段差很多，不要當成同一個數字</h2>
-    <p><b>已完工</b>是新建社宅取得使用執照、修繕社宅修繕完成——這是唯一「現在有人住得進去」的。
-    <b>興建中</b>是已取得建照並完成開工申報。<b>待開工</b>是已決標但還沒動工。
-    這三個加起來叫<b>已決標</b>，代表錢已經花下去、廠商已經定了。
-    <b>規劃中</b>則是還沒決標，最不確定。</p>
+    <p><b>已完工</b>是新建社宅取得使用執照、修繕社宅修繕完成：這是唯一「現在有人住得進去」的。<b>興建中</b>是已取得建照並完成開工申報。<b>待開工</b>是已決標但還沒動工。
+    這三個加起來叫<b>已決標</b>，代表錢已經花下去、廠商已經定了。<b>規劃中</b>則是還沒決標，最不確定。</p>
     <p>新聞上常見的「社宅XX萬戶」多半引用的是<b>總計</b>（含規劃中），
-    那是<b>承諾</b>不是<b>存量</b>。全國總計 <b id="k-total2"></b> 戶裡，
-    已完工只占 <b id="k-donepct"></b>%。這一頁預設用已完工著色，就是為了不讓承諾看起來像成果。</p>
+    那是<b>承諾</b>不是<b>存量</b>。全國總計<b id="k-total2"></b>戶裡，
+    已完工只占<b id="k-donepct"></b>%。這一頁預設用已完工著色，就是為了不讓承諾看起來像成果。</p>
   </div>
 
   <hr class="rule">
@@ -118,15 +116,14 @@ __SHARED_CSS__
   <section class="panel">
     <header>
       <h2>誰在蓋</h2>
-      <p>中央（國家住宅及都市更新中心、國產署）佔總計的比例。中線為 50%</p>
+      <p>中央（國家住宅及都市更新中心、國產署）佔總計的比例。中線為50%</p>
     </header>
     <div class="body">
       <div id="central"></div>
       <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:14px;max-width:78ch">
-        全國中央佔 <b id="k-central"></b>%，但縣市之間差距極大。
-        <b id="k-cmax"></b> 幾乎全由中央興辦，<b id="k-cmin"></b> 則以地方為主。
+        全國中央佔<b id="k-central"></b>%，但縣市之間差距極大。<b id="k-cmax"></b>幾乎全由中央興辦，<b id="k-cmin"></b>則以地方為主。
         這不是效率問題而是分工：<b>地方有土地的縣市自己蓋，沒有的靠中央</b>。
-        臺北市地方佔 82.2% 是因為市有地多；九個已完工掛零的縣市裡有八個是中央佔 100%，
+        臺北市地方佔82.2%是因為市有地多；九個已完工掛零的縣市裡有八個是中央佔100%，
         代表當地幾乎沒有自辦。
       </p>
     </div>
@@ -145,8 +142,8 @@ __SHARED_CSS__
         <b>為什麼不把兩個數字加起來。</b>直接興建的「已完工」是<b>存量</b>：
         蓋好了就在那裡。包租代管的「累計媒合」是<b>流量</b>：五輪計畫每次媒合都記一筆，
         到期、退出都不扣，同一戶跨期續約算兩次。官方自己給的對照是
-        累計 <b id="k-rented"></b> 戶對仍有效 <b id="k-rentedlive"></b> 戶。
-        把 4.7 萬戶存量加上 23.5 萬戶流量會得到一個沒有意義的數字。
+        累計<b id="k-rented"></b>戶對仍有效<b id="k-rentedlive"></b>戶。
+        把4.7萬戶存量加上23.5萬戶流量會得到一個沒有意義的數字。
       </p>
     </div>
   </section>
@@ -184,33 +181,32 @@ __SHARED_CSS__
       總計只適合講政策目標，而且要說清楚那是承諾。</p>
     </section>
     <section>
-      <h3>分母是 109 年家戶數</h3>
-      <p>每千家戶用的分母是 109 年 11 月普查的一般家戶數，與社宅資料差近 6 年。
+      <h3>分母是109年家戶數</h3>
+      <p>每千家戶用的分母是109年11月普查的一般家戶數，與社宅資料差近6年。
       這段期間家戶數是增加的，所以這裡算出來的比率會<b>略為高估</b>。
-      更貼題的分母是租屋家戶或所得後 20% 家戶，兩者都還沒拿到縣市別資料。</p>
+      更貼題的分母是租屋家戶或所得後20%家戶，兩者都還沒拿到縣市別資料。</p>
     </section>
     <section>
       <h3>已完工掛零不等於沒在做</h3>
-      <p>九個縣市已完工為 0，但其中多數有興建中或已決標的案子。
-      基隆市 449 戶全在興建中、嘉義縣 1,006 戶全在興建中。
+      <p>九個縣市已完工為0，但其中多數有興建中或已決標的案子。
+      基隆市449戶全在興建中、嘉義縣1,006戶全在興建中。
       看階段圖比看單一數字準確。</p>
     </section>
     <section>
       <h3>中央的兩個來源</h3>
-      <p>中央 70,359 戶裡，國家住宅及都市更新中心 70,136 戶、財政部國有財產署 223 戶。
-      另外中央的興辦方式分兩種：直接興辦 66,249 戶、其他多元方式 4,110 戶，
+      <p>中央70,359戶裡，國家住宅及都市更新中心70,136戶、財政部國有財產署223戶。
+      另外中央的興辦方式分兩種：直接興辦66,249戶、其他多元方式4,110戶，
       後者含包租、代管以外的合作模式。原表備註有列，本頁未拆。</p>
     </section>
     <section>
       <h3>與包租代管口徑不同</h3>
-      <p>這兩份資料的資料日相同（115 年 7 月 31 日），來源也同為國土管理署，
-      但一個是存量、一個是累計流量。頁面上分開放、分開講，
-      <code>data/tw_social_build.json</code> 裡也是兩個獨立欄位。</p>
+      <p>這兩份資料的資料日相同（115年7月31日），來源也同為國土管理署，
+      但一個是存量、一個是累計流量。頁面上分開放、分開講，<code>data/tw_social_build.json</code>裡也是兩個獨立欄位。</p>
     </section>
     <section>
       <h3>資料來源</h3>
-      <p>內政部國土管理署《全國社會住宅興辦進度統計表》，截至 2026 年 7 月 31 日。
-      解析程式為 <code>scripts/prep_social_build.py</code>：縣市名印在三列的中間那列，
+      <p>內政部國土管理署《全國社會住宅興辦進度統計表》，截至2026年7月31日。
+      解析程式為<code>scripts/prep_social_build.py</code>：縣市名印在三列的中間那列，
       因此改為湊滿中央／地方／小計三列再指派；寫檔前逐列驗算三個等式
       （三階段和＝已決標、已決標＋規劃中＝總計、中央＋地方＝小計）與縣市加總＝合計。</p>
     </section>
@@ -281,7 +277,7 @@ __MAP_ZOOM_JS__
   const METRICS = {
     donePer1000: { label: '已完工／千家戶', ramp: 'seq', breaks: [0.5, 1.5, 3, 5, 8],
       get: c => c.donePer1000, fmt: v => v.toFixed(2), tick: v => v,
-      sub: `已完工戶數 ÷ 109 年家戶數 × 1000。全國 ${NAT.donePer1000}。灰色為 0 戶` },
+      sub: `已完工戶數 ÷ 109年家戶數 × 1000。全國${NAT.donePer1000}。灰色為0戶` },
     awardedPer1000: { label: '已決標／千家戶', ramp: 'seq', breaks: [3, 6, 10, 15, 22],
       get: c => c.awardedPer1000, fmt: v => v.toFixed(2), tick: v => v,
       sub: '已完工＋興建中＋待開工，代表錢已投入、廠商已定' },
@@ -290,7 +286,7 @@ __MAP_ZOOM_JS__
       sub: '含規劃中。這是承諾不是存量，看的時候要記得' },
     centralShare: { label: '中央佔比', ramp: 'sq2', breaks: [25, 45, 60, 80, 99],
       get: c => c.centralShare, fmt: v => v.toFixed(1) + '%', tick: v => v + '%',
-      sub: `中央興辦占該縣市總計的比例。全國 ${NAT.centralShare}%` },
+      sub: `中央興辦占該縣市總計的比例。全國${NAT.centralShare}%` },
   };
   const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
     return i === -1 ? m.breaks.length : i; };
@@ -336,7 +332,7 @@ __MAP_ZOOM_JS__
     const t = NAT.total;
     const zero = D.counties.filter(c => c.total.done === 0).length;
     document.getElementById('eyebrow').textContent =
-      `${D.asOf} ・ 22 縣市 ・ 國土管理署`;
+      `${D.asOf} ・ 22縣市 ・ 國土管理署`;
     document.getElementById('k-total').textContent = int(t.total);
     document.getElementById('k-total2').textContent = int(t.total);
     document.getElementById('k-done').textContent = int(t.done);
@@ -354,10 +350,10 @@ __MAP_ZOOM_JS__
     const stat = (k, v, sub) =>
       `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
     document.getElementById('stats').innerHTML =
-      stat('已完工', int(t.done), `占總計 ${(t.done / t.total * 100).toFixed(1)}%，每千家戶 ${NAT.donePer1000} 戶`) +
+      stat('已完工', int(t.done), `占總計${(t.done / t.total * 100).toFixed(1)}%，每千家戶${NAT.donePer1000}戶`) +
       stat('興建中', int(t.building), `已取得建照並開工申報`) +
-      stat('已決標', int(t.awarded), `含待開工 ${int(t.awaiting)} 戶，錢已投入`) +
-      stat('總計', int(t.total), `含規劃中 ${int(t.planning)} 戶，是承諾不是存量`);
+      stat('已決標', int(t.awarded), `含待開工${int(t.awaiting)}戶，錢已投入`) +
+      stat('總計', int(t.total), `含規劃中${int(t.planning)}戶，是承諾不是存量`);
   }
 
   /* ── panels ─────────────────────────────────────────────────────────── */
@@ -377,8 +373,8 @@ __MAP_ZOOM_JS__
     document.getElementById('map-title').textContent = m.label + '分布';
     document.getElementById('map-sub').textContent = m.sub;
     document.getElementById('map-desc').textContent =
-      `臺灣 22 縣市社宅${m.label}分布圖。` +
-      D.counties.map(c => `${c.name} ${m.fmt(m.get(c))}`).join('、');
+      `臺灣22縣市社宅${m.label}分布圖。` +
+      D.counties.map(c => `${c.name}${m.fmt(m.get(c))}`).join('、');
     for (const p of gLand.children) {
       const c = C[p.dataset.name];
       p.style.fill = fillOf(m, m.get(c));
@@ -396,7 +392,7 @@ __MAP_ZOOM_JS__
       const d = document.createElement('div');
       d.className = 'sw'; d.style.background = `var(--${m.ramp}-${i})`;
       const n = D.counties.filter(c => m.get(c) != null && classOf(m, m.get(c)) === i).length;
-      d.title = `${n} 個縣市`;
+      d.title = `${n}個縣市`;
       if (!n) d.style.opacity = '.34';
       sws.append(d);
     }
@@ -407,7 +403,7 @@ __MAP_ZOOM_JS__
     if (metric === 'donePer1000') {
       const nd = document.createElement('div'); nd.className = 'ndrow';
       const n = D.counties.filter(c => c.total.done === 0).length;
-      nd.innerHTML = `<i></i><span>已完工 0 戶（${n} 個縣市），但多數有興建中的案子</span>`;
+      nd.innerHTML = `<i></i><span>已完工0戶（${n}個縣市），但多數有興建中的案子</span>`;
       legendEl.append(nd);
     }
   }
@@ -443,12 +439,11 @@ __MAP_ZOOM_JS__
       <div class="path"><h4>直接興建：已完工</h4>
         <div class="big">${int(t.done)} <small>戶</small></div>
         <p>政府自己蓋，蓋好了就在那裡。這是<b>存量</b>。</p>
-        <div class="warn">另有興建中 ${int(t.building)} 戶、待開工 ${int(t.awaiting)} 戶尚未完工。</div></div>
+        <div class="warn">另有興建中${int(t.building)}戶、待開工${int(t.awaiting)}戶尚未完工。</div></div>
       <div class="path" style="border-left-color:var(--sq2-1)"><h4>包租代管：累計媒合</h4>
         <div class="big">${int(NAT.rented)} <small>戶次</small></div>
         <p>向屋主承租再轉租，用的是既有房子。這是<b>累計流量</b>。</p>
-        <div class="warn">仍有效的契約 ${int(NAT.rentedLive)} 戶，占累計
-          ${(NAT.rentedLive / NAT.rented * 100).toFixed(1)}%。</div></div>
+        <div class="warn">仍有效的契約${int(NAT.rentedLive)}戶，占累計${(NAT.rentedLive / NAT.rented * 100).toFixed(1)}%。</div></div>
       <div class="path" style="border-left-color:var(--ink-3)"><h4>不要相加</h4>
         <div class="big">存量 ≠ 流量</div>
         <p>一個是「現在有多少」，一個是「總共媒合過幾次」。單位不同，相加沒有意義。</p>

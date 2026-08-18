@@ -35,12 +35,12 @@ __SHARED_CSS__
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">資料日期 115 年 7 月 31 日 ・ 包租代管 ・ 19 縣市有辦</p>
+    <p class="eyebrow">資料日期115年7月31日 ・ 包租代管 ・ 19縣市有辦</p>
     <h1>包租代管在哪裡</h1>
     <p class="dek">
       社宅有兩條路：一條是<b>蓋</b>，一條是<b>租下別人已經蓋好的房子再轉租</b>。
       後者叫包租代管，是唯一能直接吃掉現有空屋的工具。這一頁看它實際落在哪裡：
-      全國累計媒合 <b>23.5 萬戶</b>，但其中 <b>30.5% 集中在桃園市一個縣市</b>。
+      全國累計媒合<b>23.5萬戶</b>，但其中<b>30.5%集中在桃園市一個縣市</b>。
     </p>
   </header>
 
@@ -48,11 +48,10 @@ __SHARED_CSS__
 
   <div class="lede">
     <h2>這個數字不是「現在有多少戶在住」</h2>
-    <p>表上的是<b>累計媒合戶數</b>：第 1 期到第 5 期五輪計畫，每一次媒合成功都記一筆，
+    <p>表上的是<b>累計媒合戶數</b>：第1期到第5期五輪計畫，每一次媒合成功都記一筆，
     然後全部加起來。房東收回、房客搬走、契約到期都不會扣掉，同一戶跨期續約會被算兩次。
-    官方自己在同一張表的footer給了對照：全國累計 <b id="k-cum"></b> 戶，
-    <b>目前仍有效的契約只有 <span id="k-live"></span> 戶</b>，剩不到一半。</p>
-    <p>有效契約數<b>只公布全國一個數字</b>，沒有縣市別。所以這一頁不會拿 49.6% 去乘各縣市：
+    官方自己在同一張表的footer給了對照：全國累計<b id="k-cum"></b>戶，<b>目前仍有效的契約只有<span id="k-live"></span>戶</b>，剩不到一半。</p>
+    <p>有效契約數<b>只公布全國一個數字</b>，沒有縣市別。所以這一頁不會拿49.6%去乘各縣市：
     那會假設每個縣市的存活率一樣，而早開辦的縣市累計裡本來就有比較多過期案。
     地圖看的是<b>累計投入的相對強度</b>，不是現有存量。</p>
   </div>
@@ -63,7 +62,7 @@ __SHARED_CSS__
     <div class="seg" id="seg" role="group" aria-label="切換指標">
       <button data-k="per1000" aria-pressed="true">每千家戶</button>
       <button data-k="matched" aria-pressed="false">累計戶數</button>
-      <button data-k="latest" aria-pressed="false">第 5 期（現行）</button>
+      <button data-k="latest" aria-pressed="false">第5期（現行）</button>
     </div>
     <span class="hint">滑過或點選任一縣市，地圖、長條與表格同步</span>
   </div>
@@ -81,7 +80,7 @@ __SHARED_CSS__
     </section>
 
     <section class="panel">
-      <header><h2>19 縣市排序</h2><p id="bars-sub"></p></header>
+      <header><h2>19縣市排序</h2><p id="bars-sub"></p></header>
       <div class="body"><div class="bars" id="bars"></div></div>
     </section>
   </div>
@@ -96,12 +95,9 @@ __SHARED_CSS__
     <div class="body">
       <div class="qgrid" id="qgrid"></div>
       <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:78ch">
-        分型是另外兩頁用 109 年普查算的，跟這份包租代管資料完全獨立。
-        對起來的結果是<b>一致的</b>：「有房子，但租不起或不合用」這一型的中位數
-        <b id="k-sg"></b> 戶／千家戶，是「房子多到用不完」那一型的
-        <b id="k-ratio"></b> 倍。包租代管確實集中在<b>房子有空、人卻還在進來</b>的地方，
-        而不是撒在全國。卡片依中位數由高到低排，「真的不夠住」那一型
-        <b>只有臺南市一個縣市</b>，中位數等於它自己，不宜當成一組的代表值。
+        分型是另外兩頁用109年普查算的，跟這份包租代管資料完全獨立。
+        對起來的結果是<b>一致的</b>：「有房子，但租不起或不合用」這一型的中位數<b id="k-sg"></b>戶／千家戶，是「房子多到用不完」那一型的<b id="k-ratio"></b>倍。包租代管確實集中在<b>房子有空、人卻還在進來</b>的地方，
+        而不是撒在全國。卡片依中位數由高到低排，「真的不夠住」那一型<b>只有臺南市一個縣市</b>，中位數等於它自己，不宜當成一組的代表值。
       </p>
       <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:10px;max-width:78ch">
         但這個一致不能全記在政策精準度上。包租代管要有<b>租賃市場</b>才辦得起來：
@@ -123,11 +119,11 @@ __SHARED_CSS__
             <th data-k="name">縣市</th>
             <th data-k="matched">累計媒合</th>
             <th data-k="per1000">每千家戶</th>
-            <th data-k="latest">第 5 期</th>
-            <th data-k="r4">第 4 期</th>
-            <th data-k="r3">第 3 期</th>
-            <th data-k="r2">第 2 期</th>
-            <th data-k="r1">第 1 期</th>
+            <th data-k="latest">第5期</th>
+            <th data-k="r4">第4期</th>
+            <th data-k="r3">第3期</th>
+            <th data-k="r2">第2期</th>
+            <th data-k="r1">第1期</th>
             <th data-k="households">家戶數</th>
             <th data-k="quadrant">普查分型</th>
           </tr></thead>
@@ -143,38 +139,37 @@ __SHARED_CSS__
   <div class="notes">
     <section>
       <h3>三個縣市根本不在表上</h3>
-      <p>澎湖縣、金門縣、連江縣在原表中沒有列。這跟「辦了但媒合 0 戶」不一樣，
-      所以地圖上畫成灰色的「未列」，不是畫成最低那一級。高雄市與臺東縣的第 5 期
-      標「未開辦」，同樣不併入 0 計算。</p>
+      <p>澎湖縣、金門縣、連江縣在原表中沒有列。這跟「辦了但媒合0戶」不一樣，
+      所以地圖上畫成灰色的「未列」，不是畫成最低那一級。高雄市與臺東縣的第5期
+      標「未開辦」，同樣不併入0計算。</p>
     </section>
     <section>
-      <h3>只有第 5 期還在動</h3>
-      <p>原表footer註明第 1 至 4 期的媒合期間已截止、數據不再更新。所以「累計」
-      這一欄裡有四期是<b>凍結的歷史</b>，只有第 5 期反映現在的辦理速度。
-      要看當前投入，切到「第 5 期」那個指標。</p>
+      <h3>只有第5期還在動</h3>
+      <p>原表footer註明第1至4期的媒合期間已截止、數據不再更新。所以「累計」
+      這一欄裡有四期是<b>凍結的歷史</b>，只有第5期反映現在的辦理速度。
+      要看當前投入，切到「第5期」那個指標。</p>
     </section>
     <section>
       <h3>中央與地方是兩套執行</h3>
       <p>每期分「地方」與「中央」兩欄，中央指國家住宅及都市更新中心偕同各地
       租賃住宅服務商業同業公會執行。本頁把兩者相加，因為對租屋家庭而言是同一件事；
-      原始分欄仍保留在 <code>data/tw_social_housing.json</code> 裡。</p>
+      原始分欄仍保留在<code>data/tw_social_housing.json</code>裡。</p>
     </section>
     <section>
       <h3>分母是普查家戶數</h3>
-      <p>每千家戶用的分母是 109 年 11 月普查的一般家戶數，跟包租代管資料
-      差了近 6 年。這段期間家戶數是增加的，所以這裡算出來的比率會<b>略為高估</b>。
-      更貼題的分母是租屋家戶數，但那要 114 年的權屬資料，還沒拿到。</p>
+      <p>每千家戶用的分母是109年11月普查的一般家戶數，跟包租代管資料
+      差了近6年。這段期間家戶數是增加的，所以這裡算出來的比率會<b>略為高估</b>。
+      更貼題的分母是租屋家戶數，但那要114年的權屬資料，還沒拿到。</p>
     </section>
     <section>
       <h3>還缺直接興建</h3>
-      <p>社宅的另一半是政府直接興建（已完工、興建中、待開工）。那份資料在
-      pip.moi.gov.tw 與國土署網站上，兩站都用同一套防火牆擋掉機房 IP，
+      <p>社宅的另一半是政府直接興建（已完工、興建中、待開工）。那份資料在pip.moi.gov.tw與國土署網站上，兩站都用同一套防火牆擋掉機房IP，
       這邊抓不到，也沒有上架到政府資料開放平臺。補進來之後才能算完整的社宅覆蓋率。</p>
     </section>
     <section>
       <h3>資料來源</h3>
-      <p>內政部國土管理署《社會住宅包租代管計畫執行情形》，資料日期 115 年 7 月 31 日。
-      解析程式為 <code>scripts/prep_social_housing.py</code>，每一期的縣市加總都與原表
+      <p>內政部國土管理署《社會住宅包租代管計畫執行情形》，資料日期115年7月31日。
+      解析程式為<code>scripts/prep_social_housing.py</code>，每一期的縣市加總都與原表
       小計列對帳後才寫檔。</p>
     </section>
   </div>
@@ -200,7 +195,7 @@ __MAP_ZOOM_JS__
     for (const k in a) n.setAttribute(k, a[k]); return n; };
   const int = v => Math.round(v).toLocaleString('en-US');
 
-  // ── projection (same geometry and framing as the 住宅供需圖) ───────────
+  // ── projection (same geometry and framing as the住宅供需圖) ───────────
   const MAIN = [258, 8, 724, 984];
   const INSETS = { matsu: { mag: 1.5, x: 14, y: 40 }, kinmen: { mag: 2.0, x: 14, y: 292 } };
   const RECTS = { main: MAIN };
@@ -244,7 +239,7 @@ __MAP_ZOOM_JS__
 
   // ── metrics ───────────────────────────────────────────────────────────
   // All three are counts of the same thing, so all three use the sequential
-  // ramp. 每千家戶 is the default because the counties differ 500-fold in size:
+  // ramp. 每千家戶is the default because the counties differ 500-fold in size:
   // an absolute-count choropleth of anything in Taiwan just redraws population.
   const METRICS = {
     per1000: {
@@ -252,7 +247,7 @@ __MAP_ZOOM_JS__
       breaks: [5, 10, 20, 30, 45],
       get: c => c.per1000, fmt: v => v.toFixed(2),
       tick: v => String(v),
-      sub: '累計媒合戶數 ÷ 109 年普查家戶數 × 1000。全國 29.01',
+      sub: '累計媒合戶數 ÷ 109年普查家戶數 × 1000。全國29.01',
       lo: '少', hi: '多',
     },
     matched: {
@@ -260,15 +255,15 @@ __MAP_ZOOM_JS__
       breaks: [600, 1700, 2500, 10000, 30000],
       get: c => c.matched, fmt: v => int(v),
       tick: v => v >= 10000 ? (v / 10000) + '萬' : int(v),
-      sub: '第 1 期至第 5 期五輪計畫的媒合次數總和，未扣除已到期契約',
+      sub: '第1期至第5期五輪計畫的媒合次數總和，未扣除已到期契約',
       lo: '少', hi: '多',
     },
     latest: {
-      label: '第 5 期媒合戶數', unit: '戶',
+      label: '第5期媒合戶數', unit: '戶',
       breaks: [200, 400, 1300, 4000, 10000],
       get: c => c.latest, fmt: v => int(v),
       tick: v => v >= 10000 ? (v / 10000) + '萬' : int(v),
-      sub: '115 年開辦的現行這期。第 1 至 4 期媒合期間已截止，數據不再更新',
+      sub: '115年開辦的現行這期。第1至4期媒合期間已截止，數據不再更新',
       lo: '少', hi: '多',
     },
   };
@@ -343,11 +338,11 @@ __MAP_ZOOM_JS__
     const stat = (k, v, sub) =>
       `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
     document.getElementById('stats').innerHTML =
-      stat('累計媒合戶數', int(n.matched), `第 1 期至第 5 期，${S.asOf}`) +
-      stat('其中仍有效', int(n.live), `僅 ${n.liveShare}%，且只有全國一個數字`) +
-      stat('全國每千家戶', n.per1000.toFixed(2), '以 109 年普查家戶數為分母') +
+      stat('累計媒合戶數', int(n.matched), `第1期至第5期，${S.asOf}`) +
+      stat('其中仍有效', int(n.live), `僅${n.liveShare}%，且只有全國一個數字`) +
+      stat('全國每千家戶', n.per1000.toFixed(2), '以109年普查家戶數為分母') +
       stat('桃園市占比', (tao.matched / n.matched * 100).toFixed(1) + '%',
-           `一個縣市 ${int(tao.matched)} 戶，全國最多`);
+           `一個縣市${int(tao.matched)}戶，全國最多`);
     document.getElementById('k-cum').textContent = int(n.matched);
     document.getElementById('k-live').textContent = int(n.live);
   }
@@ -363,9 +358,9 @@ __MAP_ZOOM_JS__
   function paint() {
     const m = METRICS[metric];
     document.getElementById('map-sub').textContent = m.sub;
-    document.getElementById('bars-sub').textContent = `依${m.label}排序 ・ 單位 ${m.unit}`;
+    document.getElementById('bars-sub').textContent = `依${m.label}排序 ・ 單位${m.unit}`;
     document.getElementById('map-desc').textContent =
-      `臺灣${m.label}分布圖。` + LISTED.map(c => `${c.name} ${m.fmt(m.get(c))}`).join('、') +
+      `臺灣${m.label}分布圖。` + LISTED.map(c => `${c.name}${m.fmt(m.get(c))}`).join('、') +
       `。${S.notListed.join('、')}未列於本表。`;
     for (const p of gLand.children) {
       const c = C[p.dataset.name];
@@ -383,7 +378,7 @@ __MAP_ZOOM_JS__
       const d = document.createElement('div');
       d.className = 'sw'; d.style.background = `var(--seq-${i})`;
       const cnt = LISTED.filter(c => classOf(m, m.get(c)) === i).length;
-      d.title = `${cnt} 個縣市`;
+      d.title = `${cnt}個縣市`;
       if (!cnt) d.style.opacity = '.34';
       sws.append(d);
     }
@@ -393,7 +388,7 @@ __MAP_ZOOM_JS__
     }
     tk.append(document.createElement('span'));
     const nd = document.createElement('div'); nd.className = 'ndrow';
-    nd.innerHTML = `<i></i><span>未列於本表：${S.notListed.join('、')}（不等於 0 戶）</span>`;
+    nd.innerHTML = `<i></i><span>未列於本表：${S.notListed.join('、')}（不等於0戶）</span>`;
     legendEl.append(cap, sws, tk, nd);
   }
 
@@ -456,7 +451,7 @@ __MAP_ZOOM_JS__
       <td class="num">${int(n.byRound[6] + n.byRound[7])}</td>
       <td class="num">${int(n.byRound[8])}</td>
       <td class="num">${int(n.households)}</td>
-      <td>有效契約 ${int(n.live)} 戶</td></tr>`;
+      <td>有效契約${int(n.live)}戶</td></tr>`;
   }
 
   // ── quadrant cross-check ──────────────────────────────────────────────
@@ -479,7 +474,7 @@ __MAP_ZOOM_JS__
         <h4>${q.label}</h4>
         <div class="med">${meds[k].toFixed(2)} <small>戶／千家戶（中位數）</small></div>
         <div class="qbar"><i style="width:${meds[k] / hi * 100}%;background:${col}"></i></div>
-        <div class="who">${g.length} 縣市：${g.map(c => c.name.slice(0, 3)).join('、')}</div>
+        <div class="who">${g.length}縣市：${g.map(c => c.name.slice(0, 3)).join('、')}</div>
         <div class="act">建議做法：${q.act}</div>
       </div>`;
     }).join('');
@@ -501,9 +496,9 @@ __MAP_ZOOM_JS__
     tip.innerHTML = `<div class="t-nm">${name}</div>` +
       (c.listed
         ? `<dl><dt>${m.label}</dt><dd>${m.fmt(m.get(c))}</dd>
-             <dt>累計媒合</dt><dd>${int(c.matched)} 戶</dd>
+             <dt>累計媒合</dt><dd>${int(c.matched)}戶</dd>
              <dt>每千家戶</dt><dd>${c.per1000.toFixed(2)}</dd>
-             <dt>第 5 期</dt><dd>${dash(c.latest)}</dd>
+             <dt>第5期</dt><dd>${dash(c.latest)}</dd>
              <dt>普查分型</dt><dd style="font-family:var(--f-body)">${QLAB[Q[name]].label}</dd></dl>`
         : `<dl><dt>狀態</dt><dd style="font-family:var(--f-body)">未列於本表</dd></dl>`);
     tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');

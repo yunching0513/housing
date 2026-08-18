@@ -85,8 +85,8 @@ def page_meta():
     meta['index.html'] = (
         SITE_NAME,
         f"把人實際住在哪跟房子實際空在哪放在同一張圖上。"
-        f"{ov['built']['pages']} 頁、{ov['built']['sources']} 份政府資料、"
-        f"{ov['built']['counties']} 縣市與 {ov['built']['towns']} 鄉鎮市區。")
+        f"{ov['built']['pages']}頁、{ov['built']['sources']}份政府資料、"
+        f"{ov['built']['counties']}縣市與{ov['built']['towns']}鄉鎮市區。")
     return meta
 
 

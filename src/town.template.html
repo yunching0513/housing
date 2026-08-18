@@ -42,13 +42,11 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">民國 109 年 11 月 ・ 368 鄉鎮市區 ・ 人口及住宅普查</p>
+    <p class="eyebrow">民國109年11月 ・ 368鄉鎮市區 ・ 人口及住宅普查</p>
     <h1>臺灣空屋地圖</h1>
     <p class="dek">
-      臺灣有 <b>117 萬間住宅沒有人使用</b>。那為什麼還要蓋社會住宅？
-      因為空屋不是均勻的、也不是都能用：空屋率最高的是<b>屋齡未滿 10 年的新屋</b>與
-      <b>未滿 60 平方公尺的小宅</b>，而它們多半不在人正在搬進去的地方。這一頁把
-      368 個鄉鎮市區攤開來看。
+      臺灣有<b>117萬間住宅沒有人使用</b>。那為什麼還要蓋社會住宅？
+      因為空屋不是均勻的、也不是都能用：空屋率最高的是<b>屋齡未滿10年的新屋</b>與<b>未滿60平方公尺的小宅</b>，而它們多半不在人正在搬進去的地方。這一頁把368個鄉鎮市區攤開來看。
     </p>
   </header>
 
@@ -57,8 +55,8 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
   <div class="lede">
     <h2>先回答那個問題：空屋這麼多，為什麼還要蓋？</h2>
     <p>把空屋按<b>屋齡</b>和<b>坪數</b>拆開，會看到兩件事。第一，空屋率最高的不是老屋，
-    是<b>剛蓋好的新屋</b>：屋齡未滿 10 年的住宅空屋率 <b id="k-new"></b>，明顯高於中間屋齡。
-    第二，<b>小宅的空屋率遠高於大宅</b>：未滿 60 平方公尺（約 18 坪）的住宅空屋率 <b id="k-small"></b>。
+    是<b>剛蓋好的新屋</b>：屋齡未滿10年的住宅空屋率<b id="k-new"></b>，明顯高於中間屋齡。
+    第二，<b>小宅的空屋率遠高於大宅</b>：未滿60平方公尺（約18坪）的住宅空屋率<b id="k-small"></b>。
     前者是投資置產留下的餘屋，後者則是社宅可以透過包租代管接手的目標，兩者都不是
     「拆掉空屋就不用蓋」那麼簡單。</p>
   </div>
@@ -79,7 +77,7 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
   <div class="controls">
     <div class="seg" role="group" aria-label="選擇指標">
       <button type="button" data-metric="vacancy" aria-pressed="true">空屋率</button>
-      <button type="button" data-metric="inflow"  aria-pressed="false">近 5 年遷入率</button>
+      <button type="button" data-metric="inflow"  aria-pressed="false">近5年遷入率</button>
       <button type="button" data-metric="perhh"   aria-pressed="false">宅戶比</button>
       <button type="button" data-metric="houses"  aria-pressed="false">住宅存量</button>
     </div>
@@ -100,8 +98,8 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
     <div class="panel">
       <header>
         <h2 id="sc-title">人跟房子有沒有對上</h2>
-        <p>橫軸是近 5 年從外縣市或國外遷入的人口占比，縱軸是空屋率。
-           虛線分別是 368 個鄉鎮市區的遷入率中位數與全國空屋率。</p>
+        <p>橫軸是近5年從外縣市或國外遷入的人口占比，縱軸是空屋率。
+           虛線分別是368個鄉鎮市區的遷入率中位數與全國空屋率。</p>
       </header>
       <div class="body">
         <svg class="scatter" id="scatter" viewBox="0 0 700 560" role="img"
@@ -122,7 +120,7 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
       </div>
       <div class="tablewrap tallwrap">
         <table id="tbl">
-          <caption>民國 109 年 11 月，單位：宅／戶。點欄位標題可換排序。</caption>
+          <caption>民國109年11月，單位：宅／戶。點欄位標題可換排序。</caption>
           <thead><tr>
             <th data-sort="county"       scope="col">縣市</th>
             <th data-sort="name"         scope="col">鄉鎮市區</th>
@@ -147,56 +145,51 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
       <h3>兩種空屋，不要混用</h3>
       <p>普查裡有兩個不同的「空」，這一頁兩個都用到：</p>
       <ul>
-        <li><b>目前沒有使用</b>（117 萬宅，13.1%）：完全沒在用。地圖與散布圖的空屋率用這個。</li>
-        <li><b>空閒住宅</b>（166 萬宅）＝ 偶爾自住 ＋ 目前沒有使用，不含當辦公室或倉庫用的。
+        <li><b>目前沒有使用</b>（117萬宅，13.1%）：完全沒在用。地圖與散布圖的空屋率用這個。</li>
+        <li><b>空閒住宅</b>（166萬宅）＝ 偶爾自住 ＋ 目前沒有使用，不含當辦公室或倉庫用的。
         屋齡與坪數的分析用這個，因為普查只有對這個口徑做交叉統計。</li>
       </ul>
-      <p>另外還有內政部用台電電表推估的<b>低度使用住宅</b>（最新為 114 年下半年 9.44%），
-      定義又不同，這一頁沒有用到。內政部拿 109 年資料逐筆比對過兩者，公布的一致率 84.08%
-      其實是被「兩者都認定不是空屋」的 77.37% 撐起來的：普查認定的空閒住宅裡，
+      <p>另外還有內政部用台電電表推估的<b>低度使用住宅</b>（最新為114年下半年9.44%），
+      定義又不同，這一頁沒有用到。內政部拿109年資料逐筆比對過兩者，公布的一致率84.08%其實是被「兩者都認定不是空屋」的77.37%撐起來的：普查認定的空閒住宅裡，
       只有約三分之一同時被電表法認定為低度使用。</p>
     </section>
     <section>
       <h3>遷入率是流入，不是淨遷移</h3>
-      <p>普查問的是「現在住這裡的人，5 年前住哪裡」，所以只算得出<b>搬進來的人</b>，
+      <p>普查問的是「現在住這裡的人，5年前住哪裡」，所以只算得出<b>搬進來的人</b>，
       算不出搬走的人。一個地方可以同時大量遷入又大量遷出。用這個指標是因為它與住宅資料同期，
       而且對社宅來說「有沒有人正在搬進來」本來就比十年淨變化更貼題。</p>
-      <p><b>最高的幾個要當成雜訊看。</b>連江縣東引鄉 57.8%、金門縣烏坵鄉 46.5%、
-      連江縣北竿鄉 36.1% 反映的是<b>駐軍輪調</b>；花蓮縣壽豐鄉 36.1%、嘉義縣大林鎮 21.7%
-      則是<b>大學城的學生</b>。這些都不是一般意義的居住遷入，不宜當成住宅需求的證據。
-      散布圖的橫軸採平方根刻度，就是為了不讓這幾點把其他 360 個鄉鎮市區擠成一團。</p>
+      <p><b>最高的幾個要當成雜訊看。</b>連江縣東引鄉57.8%、金門縣烏坵鄉46.5%、
+      連江縣北竿鄉36.1%反映的是<b>駐軍輪調</b>；花蓮縣壽豐鄉36.1%、嘉義縣大林鎮21.7%則是<b>大學城的學生</b>。這些都不是一般意義的居住遷入，不宜當成住宅需求的證據。
+      散布圖的橫軸採平方根刻度，就是為了不讓這幾點把其他360個鄉鎮市區擠成一團。</p>
     </section>
     <section>
       <h3>圖資缺漏</h3>
-      <p>普查有 368 個鄉鎮市區，地圖畫得出 <b>366</b> 個。
-      <b>高雄市那瑪夏區</b>與<b>金門縣烏坵鄉</b>在可取得的圖資中沒有對應範圍，
+      <p>普查有368個鄉鎮市區，地圖畫得出<b>366</b>個。<b>高雄市那瑪夏區</b>與<b>金門縣烏坵鄉</b>在可取得的圖資中沒有對應範圍，
       因此地圖上是空白，但表格與散布圖仍有它們的資料。</p>
-      <p>釣魚臺列嶼在來源圖資中掛在基隆市中正區、位置達東經 123.7 度，
+      <p>釣魚臺列嶼在來源圖資中掛在基隆市中正區、位置達東經123.7度，
       畫進去會讓本島縮到看不清楚，因此排除於繪圖範圍外。</p>
     </section>
     <section>
       <h3>製圖說明</h3>
       <ul>
-        <li>圖資為 g0v <code>twgeojson</code> 鄉鎮市區界，已用 Douglas–Peucker 簡化
-        （容差 0.0009°，約 100 公尺），並移除 0.4 km² 以下島礁；20 MB 降為 594 KB。</li>
-        <li>來源名稱早於桃園 103 年升格，已將桃園的市／鎮／鄉改為區，
-        員林鎮與頭份鎮改為市，並把 11 個獨立的海域圖塊併回所屬鄉鎮市區。</li>
+        <li>圖資為g0v <code>twgeojson</code>鄉鎮市區界，已用Douglas–Peucker簡化
+        （容差0.0009°，約100公尺），並移除0.4 km² 以下島礁；20 MB降為594 KB。</li>
+        <li>來源名稱早於桃園103年升格，已將桃園的市／鎮／鄉改為區，
+        員林鎮與頭份鎮改為市，並把11個獨立的海域圖塊併回所屬鄉鎮市區。</li>
         <li>色階為單一色相、明度單調的循序式，已通過明度單調性、相鄰階差與對比檢核。</li>
-        <li>散布圖 368 點不加標籤：滑過時才顯示，否則會糊成一片。</li>
+        <li>散布圖368點不加標籤：滑過時才顯示，否則會糊成一片。</li>
       </ul>
     </section>
     <section>
       <h3>與內政部用電統計的對照</h3>
-      <p>本頁的屋齡與坪數結論，方向與內政部的用電統計一致：內政部 114 年下半年報告明確
+      <p>本頁的屋齡與坪數結論，方向與內政部的用電統計一致：內政部114年下半年報告明確
       指出「<b>屋齡較新或較老之住宅有低度使用住宅比率較高的現象</b>」，且面積以
-      「20 坪以下」16.77% 最高，六都中有五都以屋齡「5 年以下」最高。</p>
+      「20坪以下」16.77%最高，六都中有五都以屋齡「5年以下」最高。</p>
       <p>但<b>水準與排序都不會一樣</b>。以縣市排序比較，普查空屋率與用電低度使用率的
-      等級相關僅 0.50：兩者在極端一致（金門、臺東最高，臺北最低），中段分歧不小，
+      等級相關僅0.50：兩者在極端一致（金門、臺東最高，臺北最低），中段分歧不小，
       新竹縣市、新北、臺中、桃園在普查排中段、在用電排最低段。</p>
-      <p>另外新屋空屋率變動很快：用電定義下「5 年以下」的低度使用比率由 113 年下半年
-      22.91% 降到 114 年下半年 12.39%，一年降 10.52 個百分點，交屋潮正在消化。
-      本頁是 109 年 11 月的單一時點，看不到這個變化；時間方向請看
-      <b>「空屋率的十六年」</b>那一頁，它接的是內政部 98 年到 114 年下半年的半年數列。</p>
+      <p>另外新屋空屋率變動很快：用電定義下「5年以下」的低度使用比率由113年下半年22.91%降到114年下半年12.39%，一年降10.52個百分點，交屋潮正在消化。
+      本頁是109年11月的單一時點，看不到這個變化；時間方向請看<b>「空屋率的十六年」</b>那一頁，它接的是內政部98年到114年下半年的半年數列。</p>
       <ul>
       </ul>
     </section>
@@ -260,15 +253,15 @@ __MAP_ZOOM_JS__
   const METRICS = {
     vacancy: { label: '空屋率', unit: '%', ramp: 'sq2', breaks: [8, 11, 14, 18, 24],
       get: t => t.vacancy, fmt: v => v.toFixed(1) + '%', tick: v => v + '%',
-      sub: '普查認定「目前沒有使用」的住宅占比，全國 13.1%', lo: '低', hi: '高' },
-    inflow: { label: '近 5 年遷入率', unit: '%', ramp: 'seq', breaks: [2, 3.5, 5, 7, 10],
+      sub: '普查認定「目前沒有使用」的住宅占比，全國13.1%', lo: '低', hi: '高' },
+    inflow: { label: '近5年遷入率', unit: '%', ramp: 'seq', breaks: [2, 3.5, 5, 7, 10],
       get: t => t.inflow, fmt: v => v.toFixed(1) + '%', tick: v => v + '%',
-      sub: '現住人口中，5 年前住在其他縣市或國外者的占比', lo: '低', hi: '高' },
+      sub: '現住人口中，5年前住在其他縣市或國外者的占比', lo: '低', hi: '高' },
     perhh: { label: '宅戶比', unit: '宅/戶', ramp: 'sq2', breaks: [1.02, 1.08, 1.15, 1.25, 1.45],
       get: t => t.perHousehold, fmt: v => v.toFixed(3), tick: v => v.toFixed(2),
-      sub: '每一戶家庭對到幾間住宅，全國 1.112', lo: '緊', hi: '寬鬆' },
+      sub: '每一戶家庭對到幾間住宅，全國1.112', lo: '緊', hi: '寬鬆' },
     houses: { label: '住宅存量', unit: '宅', ramp: 'seq', breaks: [5000, 12000, 25000, 50000, 90000],
-      get: t => t.houses, fmt: v => int(v) + ' 宅', tick: v => v >= 10000 ? (v / 10000) + '萬' : int(v),
+      get: t => t.houses, fmt: v => int(v) + '宅', tick: v => v >= 10000 ? (v / 10000) + '萬' : int(v),
       sub: '該鄉鎮市區的住宅總數', lo: '少', hi: '多' },
   };
   const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
@@ -292,8 +285,8 @@ __MAP_ZOOM_JS__
       </div>`).join('');
     const top = rates.indexOf(Math.max(...rates));
     document.getElementById(noteId).textContent =
-      `最高為「${labels[top]}」${rates[top].toFixed(1)}%，全體平均 ${avg.toFixed(1)}%。`
-      + `空屋合計 ${int(vacant.reduce((a, b) => a + b, 0))} 宅。`;
+      `最高為「${labels[top]}」${rates[top].toFixed(1)}%，全體平均${avg.toFixed(1)}%。`
+      + `空屋合計${int(vacant.reduce((a, b) => a + b, 0))}宅。`;
   }
 
   // ── map ───────────────────────────────────────────────────────────────
@@ -342,8 +335,8 @@ __MAP_ZOOM_JS__
   function drawScatter() {
     const L = 56, R = 676, TT = 24, B = 470;
     const xs = D.towns.map(t => t.inflow), ys = D.towns.map(t => t.vacancy);
-    // Square-root x scale. 遷入率 is heavily right-skewed — the top of the tail is
-    // offshore garrison rotation and university towns, not ordinary moving — and on a
+    // Square-root x scale. 遷入率is heavily right-skewed：the top of the tail is
+    // offshore garrison rotation and university towns, not ordinary moving：and on a
     // linear axis those few points squash everyone else into the left third. The
     // uneven tick spacing is what tells the reader the axis is not linear.
     const x1 = Math.max(...xs) * 1.03;
@@ -368,10 +361,10 @@ __MAP_ZOOM_JS__
         'text-anchor': 'middle' }), { textContent: v + '%' }));
     }
     gA.append(Object.assign(el('text', { class: 'sc-axlabel', x: (L + R) / 2, y: B + 40,
-      'text-anchor': 'middle' }), { textContent: '近 5 年遷入率（平方根刻度）' }));
+      'text-anchor': 'middle' }), { textContent: '近5年遷入率（平方根刻度）' }));
     gA.append(Object.assign(el('text', { class: 'sc-axlabel', x: 13, y: (TT + B) / 2,
       'text-anchor': 'middle', transform: `rotate(-90 13 ${(TT + B) / 2})` }),
-      { textContent: '空屋率（109 年 11 月）' }));
+      { textContent: '空屋率（109年11月）' }));
     gC.append(el('line', { class: 'sc-cut', x1: X(D.inflowCut), y1: TT, x2: X(D.inflowCut), y2: B }));
     gC.append(el('line', { class: 'sc-cut', x1: L, y1: Y(D.vacancyCut), x2: R, y2: Y(D.vacancyCut) }));
 
@@ -381,7 +374,7 @@ __MAP_ZOOM_JS__
       const n = D.towns.filter(t => t.quadrant === k).length;
       const tx = el('text', { x, y, 'text-anchor': anchor });
       tx.append(document.createTextNode(ZONES[k].label + ' '));
-      tx.append(Object.assign(el('tspan', { class: 'c' }), { textContent: `${n} 個` }));
+      tx.append(Object.assign(el('tspan', { class: 'c' }), { textContent: `${n}個` }));
       gZ.append(tx);
     }
     // 368 points: no permanent labels, they would turn into a smear. Names appear
@@ -390,18 +383,18 @@ __MAP_ZOOM_JS__
       gD.append(el('circle', { class: 'dot', cx: X(t.inflow).toFixed(1), cy: Y(t.vacancy).toFixed(1),
         r: (2.2 + 7 * Math.sqrt(t.households / maxH)).toFixed(1),
         'data-key': t.key, tabindex: '0', role: 'button',
-        'aria-label': `${t.county}${t.name} 遷入率 ${t.inflow}% 空屋率 ${t.vacancy}%` }));
+        'aria-label': `${t.county}${t.name}遷入率${t.inflow}%空屋率${t.vacancy}%` }));
     }
     scEl.querySelectorAll('.dot').forEach(d => { d.style.fillOpacity = .55; });
     document.getElementById('sc-desc').textContent =
-      D.towns.map(t => `${t.county}${t.name} 遷入率 ${t.inflow}%、空屋率 ${t.vacancy}%`).join('；') + '。';
+      D.towns.map(t => `${t.county}${t.name}遷入率${t.inflow}%、空屋率${t.vacancy}%`).join('；') + '。';
 
     document.getElementById('zones').innerHTML = ORDER.map(k => {
       const z = ZONES[k], list = D.towns.filter(t => t.quadrant === k);
       const worst = [...list].sort((a, b) => b.households - a.households).slice(0, 4);
       return `<div class="zone" style="border-left-color:var(--${z.v})">
         <span class="cond">${z.cond}</span>
-        <h4>${z.label}<span class="n">${list.length} 個</span></h4>
+        <h4>${z.label}<span class="n">${list.length}個</span></h4>
         <span class="who">住戶數最多：${worst.map(t => t.county.replace(/[市縣]$/, '') + t.name).join('、')}</span>
         <span class="act">→ ${z.act}</span></div>`;
     }).join('');
@@ -423,7 +416,7 @@ __MAP_ZOOM_JS__
       const d = document.createElement('div');
       d.className = 'sw'; d.style.background = `var(--${m.ramp}-${i})`;
       const c = D.towns.filter(t => classOf(m, m.get(t)) === i).length;
-      d.title = `${c} 個鄉鎮市區`;
+      d.title = `${c}個鄉鎮市區`;
       if (!c) d.style.opacity = '.34';
       sws.append(d);
     }
@@ -460,7 +453,7 @@ __MAP_ZOOM_JS__
         <td class="num">${t.perHousehold.toFixed(3)}</td>
         <td>${ZONES[t.quadrant].label}</td>
       </tr>`).join('');
-    document.getElementById('f-count').textContent = `顯示 ${rows.length} / ${D.towns.length} 個鄉鎮市區`;
+    document.getElementById('f-count').textContent = `顯示${rows.length} / ${D.towns.length}個鄉鎮市區`;
   }
 
   const active = () => pinned || hovered;
@@ -483,7 +476,7 @@ __MAP_ZOOM_JS__
         <dt>住戶數</dt><dd>${int(t.households)}</dd>
         <dt>沒人使用</dt><dd>${int(t.idle)}</dd>
         <dt>空屋率</dt><dd>${t.vacancy.toFixed(1)}%</dd>
-        <dt>近 5 年遷入率</dt><dd>${t.inflow.toFixed(1)}%</dd>
+        <dt>近5年遷入率</dt><dd>${t.inflow.toFixed(1)}%</dd>
         <dt>宅戶比</dt><dd>${t.perHousehold.toFixed(3)}</dd>
       </dl>`;
     tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
@@ -517,7 +510,7 @@ __MAP_ZOOM_JS__
     const m = METRICS[metric];
     document.getElementById('map-sub').textContent = m.sub;
     document.getElementById('map-desc').textContent =
-      `368 鄉鎮市區${m.label}分布圖。` + D.towns.map(t => `${t.county}${t.name} ${m.fmt(m.get(t))}`).join('、') + '。';
+      `368鄉鎮市區${m.label}分布圖。` + D.towns.map(t => `${t.county}${t.name} ${m.fmt(m.get(t))}`).join('、') + '。';
     for (const p of gLand.children) {
       const t = T[p.dataset.key];
       p.style.fill = t ? fillOf(m, m.get(t)) : 'var(--neutral)';
@@ -567,10 +560,10 @@ __MAP_ZOOM_JS__
 
     const hi = D.towns.filter(t => t.vacancy >= 20).length;
     document.getElementById('stats').innerHTML = [
-      ['全國沒人使用的住宅', int(n.idle) + ' 宅', `占全部住宅 ${n.vacancy.toFixed(1)}%`, 'down'],
-      ['空屋率最高的屋齡', '未滿 10 年', `新屋空屋率 ${newRate.toFixed(1)}%，高於全體 ${avgAge.toFixed(1)}%`, 'down'],
-      ['空屋率最高的坪數', '未滿 60 m²', `小宅空屋率 ${smallRate.toFixed(1)}%，約 18 坪以下`, 'down'],
-      ['空屋率超過 20% 的鄉鎮市區', `${hi} / 368`, '多在東部、離島與山區', ''],
+      ['全國沒人使用的住宅', int(n.idle) + '宅', `占全部住宅${n.vacancy.toFixed(1)}%`, 'down'],
+      ['空屋率最高的屋齡', '未滿10年', `新屋空屋率${newRate.toFixed(1)}%，高於全體${avgAge.toFixed(1)}%`, 'down'],
+      ['空屋率最高的坪數', '未滿60 m²', `小宅空屋率${smallRate.toFixed(1)}%，約18坪以下`, 'down'],
+      ['空屋率超過20%的鄉鎮市區', `${hi} / 368`, '多在東部、離島與山區', ''],
     ].map(([k, v, s, cls]) =>
       `<div class="stat"><dt>${k}</dt><dd class="${cls}">${v}</dd><dd class="sub">${s}</dd></div>`).join('');
   }

@@ -77,7 +77,7 @@ def main():
     use, hh = base / '表87 住宅使用情形.ods', base / '表66 住戶數、常住人口數及平均每戶人口數.ods'
     for f in (use, hh):
         if not f.exists():
-            sys.exit(f'缺少 {f}\n請先執行 scripts/fetch_sources.py')
+            sys.exit(f'缺少{f}\n請先執行scripts/fetch_sources.py')
 
     pop = {c['name']: c for c in
            json.loads((ROOT / 'data' / 'tw_population.json').read_text(encoding='utf-8'))['counties']}
@@ -119,7 +119,7 @@ def main():
 
     payload = {
         'period': '民國109年11月',
-        'source': '行政院主計總處 109 年人口及住宅普查 表87、表66',
+        'source': '行政院主計總處109年人口及住宅普查 表87、表66',
         'national': national,
         'vacancyCut': cut,
         'quadrants': QUADRANTS,
@@ -129,16 +129,16 @@ def main():
         json.dumps(payload, ensure_ascii=False, indent=1), encoding='utf-8')
 
     print(f'{args.out}')
-    print(f"全國 {national['houses']:,} 宅 / {national['households']:,} 戶 ・ "
-          f"空置率 {cut}% ・ 宅戶比 {national['perHousehold']}\n")
+    print(f"全國{national['houses']:,}宅 / {national['households']:,}戶 ・ "
+          f"空置率{cut}% ・ 宅戶比{national['perHousehold']}\n")
     order = {'tight_growing': 0, 'slack_growing': 1, 'tight_shrinking': 2, 'slack_shrinking': 3}
     for q in sorted(QUADRANTS, key=lambda k: order[k]):
         members = [c for c in counties if c['quadrant'] == q]
-        print(f"{QUADRANTS[q]['label']}（{QUADRANTS[q]['cond']}）: {len(members)} 個")
+        print(f"{QUADRANTS[q]['label']}（{QUADRANTS[q]['cond']}）: {len(members)}個")
         for c in sorted(members, key=lambda c: -pop[c['name']]['pct']):
             flag = ' ←貼近分界' if abs(c['margin']) < 0.5 else ''
-            print(f"   {c['name']:5s} 人口{pop[c['name']]['pct']:+6.1f}%  "
-                  f"空置{c['vacancy']:5.1f}%  宅戶比{c['perHousehold']:.3f}{flag}")
+            print(f"   {c['name']:5s}人口{pop[c['name']]['pct']:+6.1f}%  "
+                  f"空置{c['vacancy']:5.1f}%宅戶比{c['perHousehold']:.3f}{flag}")
 
 
 if __name__ == '__main__':

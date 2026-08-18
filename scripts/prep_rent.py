@@ -130,7 +130,7 @@ def read_batch(folder, year, tally):
     for xml in sorted(folder.glob('?_lvr_land_c.xml')):
         county = names.get(xml.name)
         if not county:
-            sys.exit(f'{folder.name}/{xml.name} 不在 manifest 裡')
+            sys.exit(f'{folder.name}/{xml.name}不在manifest裡')
         for _, el in ET.iterparse(xml, events=('end',)):
             if el.tag != '租賃':
                 continue          # 不要 clear 子元素，會把父元素的內容一起清掉
@@ -138,11 +138,11 @@ def read_batch(folder, year, tally):
 
             subject = (el.findtext('交易標的') or '').strip()
             if subject not in SUBJECT_KNOWN:
-                sys.exit(f'{year} 年出現沒看過的交易標的「{subject}」，'
+                sys.exit(f'{year}年出現沒看過的交易標的「{subject}」，'
                          f'欄位定義可能改了，先確認再放行')
             kind = (el.findtext('建物型態') or '').strip()
             if kind and kind not in RESIDENTIAL and kind not in NON_RESIDENTIAL:
-                sys.exit(f'{year} 年出現沒看過的建物型態「{kind}」，先確認再放行')
+                sys.exit(f'{year}年出現沒看過的建物型態「{kind}」，先確認再放行')
 
             if subject in SUBJECT_DROP:
                 tally['排除：純土地或純車位'] += 1
@@ -185,7 +185,7 @@ def stats(rows):
     # 中位數必須落在最小與最大之間。這一條抓的是分組寫錯、把兩組資料混在一起。
     for key in ('rent', 'ping'):
         lo, hi = min(r[key] for r in rows), max(r[key] for r in rows)
-        assert lo <= out[key] <= hi, f'{key} 的中位數 {out[key]} 落在 [{lo}, {hi}] 之外'
+        assert lo <= out[key] <= hi, f'{key}的中位數{out[key]}落在 [{lo}, {hi}]之外'
     return out
 
 
@@ -213,7 +213,7 @@ def grid(rows):
 
 def main():
     if not SRC.is_dir():
-        sys.exit(f'找不到 {SRC.relative_to(ROOT)}')
+        sys.exit(f'找不到{SRC.relative_to(ROOT)}')
 
     global ALL_COUNTIES
     ALL_COUNTIES = all_counties()
@@ -222,9 +222,9 @@ def main():
     for folder_name, year in sorted(BATCH_YEAR.items(), key=lambda kv: kv[1]):
         folder = SRC / folder_name
         if not folder.is_dir():
-            sys.exit(f'找不到批次資料夾 {folder_name}')
+            sys.exit(f'找不到批次資料夾{folder_name}')
         by_year[year] = read_batch(folder, year, tally)
-        print(f'  {year} 年（{PERIODS[year]}）：納入 {len(by_year[year]):,} 筆')
+        print(f'  {year}年（{PERIODS[year]}）：納入{len(by_year[year]):,}筆')
 
     assert set(by_year) == set(PERIODS), '批次年份與期間對照表對不上'
     latest = max(by_year)
@@ -232,7 +232,7 @@ def main():
 
     # 對帳①：讀入的每一筆都必須落在「納入」或某一個排除原因裡，不能憑空消失。
     moved = sum(v for k, v in tally.items() if k != '讀入')
-    assert moved == tally['讀入'], f'讀入 {tally["讀入"]:,} 筆，只交代了 {moved:,} 筆'
+    assert moved == tally['讀入'], f'讀入{tally["讀入"]:,}筆，只交代了{moved:,}筆'
 
     counties = []
     for name in sorted({r['county'] for r in rows}):
@@ -288,13 +288,13 @@ def main():
     for k in ('讀入', '納入', '排除：純土地或純車位', '排除：非住宅類建物',
               '排除：租金低於一千元', '排除：面積小於三平方公尺'):
         print(f'  {k:<22}{tally[k]:>9,}')
-    print(f'\n{OUT.relative_to(ROOT)}：{len(counties)} 縣市、{len(towns)} 鄉鎮市區'
+    print(f'\n{OUT.relative_to(ROOT)}：{len(counties)}縣市、{len(towns)}鄉鎮市區'
           f'（樣本 ≥ {MIN_SAMPLE}）')
-    print(f'  {latest} 年全國月租金中位數 {national["rent"]:,} 元、'
-          f'每坪 {national["ping"]:,} 元、面積 {national["area"]} 坪')
+    print(f'  {latest}年全國月租金中位數{national["rent"]:,}元、'
+          f'每坪{national["ping"]:,}元、面積{national["area"]}坪')
     w = national['grid']['whole']
-    print(f'  整棟（戶）出租 {w["all"]["n"]:,} 筆：社宅包租代管每坪 {w["social"]["ping"]:,} 元、'
-          f'非社宅每坪 {w["nonSocial"]["ping"]:,} 元')
+    print(f'整棟（戶）出租{w["all"]["n"]:,}筆：社宅包租代管每坪{w["social"]["ping"]:,}元、'
+          f'非社宅每坪{w["nonSocial"]["ping"]:,}元')
 
 
 if __name__ == '__main__':

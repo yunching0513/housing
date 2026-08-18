@@ -91,11 +91,11 @@ svg.chart { display: block; width: 100%; height: auto; }
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">民國 98 年 – 114 年下半年 ・ 23 期 ・ 內政部用電統計</p>
+    <p class="eyebrow">民國98年–114年下半年 ・ 23期 ・ 內政部用電統計</p>
     <h1>空屋率的十六年</h1>
     <p class="dek">
       普查十年才做一次，只能給一張很細的定格照。內政部用電統計相反：欄位少，
-      但<b>每半年一期、回推到民國 98 年</b>。把它接上來，就看得到方向。
+      但<b>每半年一期、回推到民國98年</b>。把它接上來，就看得到方向。
       而方向講了一件平均值藏起來的事：<b>全國空屋率五年幾乎沒動，底下卻正在分裂</b>：
       六都和新竹全部往下，南部農業縣和離島全部往上。
     </p>
@@ -105,31 +105,28 @@ svg.chart { display: block; width: 100%; height: auto; }
 
   <div class="lede">
     <h2>先講這份資料是什麼</h2>
-    <p>內政部每半年拿全國房屋稅籍的住宅，去比對台電抄表：一戶如果 11、12 月
-    平均每月用電<b>不到 60 度</b>，就算「低度使用（用電）住宅」。這跟普查問屋主
-    「這間現在有沒有在用」是兩套不同的認定，數字本來就不會一樣：
-    109 年同一個時點，普查說 <b>13.05%</b>、用電說 <b>9.23%</b>。
-    <b>不要把兩個數字相減</b>，要分開讀：普查給結構，用電給趨勢。</p>
+    <p>內政部每半年拿全國房屋稅籍的住宅，去比對台電抄表：一戶如果11、12月
+    平均每月用電<b>不到60度</b>，就算「低度使用（用電）住宅」。這跟普查問屋主
+    「這間現在有沒有在用」是兩套不同的認定，數字本來就不會一樣：109年同一個時點，普查說<b>13.05%</b>、用電說<b>9.23%</b>。<b>不要把兩個數字相減</b>，要分開讀：普查給結構，用電給趨勢。</p>
   </div>
 
   <hr class="rule">
 
   <section class="panel">
     <header>
-      <h2>全國：98 年到 114 年下半年</h2>
-      <p>低度使用（用電）住宅占房屋稅籍住宅的比率。縱軸未從 0 起，範圍 8%–11%</p>
+      <h2>全國：98年到114年下半年</h2>
+      <p>低度使用（用電）住宅占房屋稅籍住宅的比率。縱軸未從0起，範圍8%–11%</p>
     </header>
     <div class="body">
       <svg class="chart" id="natline" viewBox="0 0 840 300" role="img"
-           aria-label="全國低度使用住宅比率 98 年至 114 年下半年折線圖"></svg>
+           aria-label="全國低度使用住宅比率98年至114年下半年折線圖"></svg>
       <div class="keyrow">
-        <span><i class="dash"></i>98–107 年：比率推估法</span>
-        <span><i></i>108 年起：實際勾稽</span>
+        <span><i class="dash"></i>98–107年：比率推估法</span>
+        <span><i></i>108年起：實際勾稽</span>
         <span>灰底 = 原始資料已不可得，只能推估</span>
       </div>
       <p class="bandnote" style="font-size:12px;color:var(--ink-3);margin-top:10px">
-        98–108 年只有年值，本頁擺在年底位置（用電基準本來就是 11、12 月抄表）；
-        109 年起才分上下半年。所以左半段的點是一年一個，右半段是半年一個。
+        98–108年只有年值，本頁擺在年底位置（用電基準本來就是11、12月抄表）；109年起才分上下半年。所以左半段的點是一年一個，右半段是半年一個。
       </p>
     </div>
   </section>
@@ -137,18 +134,18 @@ svg.chart { display: block; width: 100%; height: auto; }
   <section class="panel">
     <header>
       <h2>平均不動，底下在分裂</h2>
-      <p>從普查基準 109 年下半年到 114 年下半年，各縣市的變化。全國只 +0.21 個百分點</p>
+      <p>從普查基準109年下半年到114年下半年，各縣市的變化。全國只+0.21個百分點</p>
     </header>
     <div class="body">
       <div id="dumbbell"></div>
       <div class="dbscale" id="dbscale"></div>
       <div class="keyrow">
-        <span><i class="dot"></i>109 年下半年（普查同期）</span>
-        <span><i class="dot f"></i>114 年下半年</span>
+        <span><i class="dot"></i>109年下半年（普查同期）</span>
+        <span><i class="dot f"></i>114年下半年</span>
         <span>細灰線 = 該期全國值</span>
       </div>
       <p class="bandnote" style="font-size:12.5px;color:var(--ink-2);margin-top:12px;max-width:74ch">
-        <b id="k-up"></b> 個縣市上升、<b id="k-dn"></b> 個下降。上升的幾乎全在南部與離島，
+        <b id="k-up"></b>個縣市上升、<b id="k-dn"></b>個下降。上升的幾乎全在南部與離島，
         下降的幾乎全是六都與新竹。這對社宅選址是直接的：<b>空屋在變多的地方，
         跟人在移入的地方不是同一批</b>。
       </p>
@@ -157,17 +154,17 @@ svg.chart { display: block; width: 100%; height: auto; }
 
   <section class="panel">
     <header>
-      <h2>22 縣市各自的十六年</h2>
-      <p>縱軸統一為 5%–20%，所以格子之間可以直接比。灰線為全國</p>
+      <h2>22縣市各自的十六年</h2>
+      <p>縱軸統一為5%–20%，所以格子之間可以直接比。灰線為全國</p>
     </header>
     <div class="body">
       <div class="controls" style="margin-bottom:12px">
         <div class="seg" id="smsort" role="group" aria-label="排序">
-          <button data-k="delta" aria-pressed="true">依 109→114 變化</button>
+          <button data-k="delta" aria-pressed="true">依109→114變化</button>
           <button data-k="level" aria-pressed="false">依最新比率</button>
           <button data-k="name" aria-pressed="false">依縣市</button>
         </div>
-        <span class="hint">每格右上角是 109 年下半年到 114 年下半年的變化</span>
+        <span class="hint">每格右上角是109年下半年到114年下半年的變化</span>
       </div>
       <div class="sm-grid" id="smgrid"></div>
     </div>
@@ -177,8 +174,8 @@ svg.chart { display: block; width: 100%; height: auto; }
 
   <section class="panel">
     <header>
-      <h2>新屋空屋率一年掉了 10 個百分點</h2>
-      <p>依屋齡與坪數分，113 年下半年 → 114 年上半年 → 114 年下半年</p>
+      <h2>新屋空屋率一年掉了10個百分點</h2>
+      <p>依屋齡與坪數分，113年下半年 → 114年上半年 → 114年下半年</p>
     </header>
     <div class="body">
       <div class="slope-grid">
@@ -192,12 +189,10 @@ svg.chart { display: block; width: 100%; height: auto; }
         </div>
       </div>
       <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:14px;max-width:74ch">
-        普查說「屋齡未滿 10 年的新屋空屋率最高」，用電統計同意，但也顯示這件事
-        <b>變得很快</b>：5 年以下的低度使用比率從 <b>22.91%</b>（113 年下半年）
-        掉到 <b>12.39%</b>（114 年下半年），一年降 10.52 個百分點。這是交屋潮在被消化，
-        不是空屋問題被解決：同期全國住宅存量仍從 <b id="k-stock0"></b> 增到
-        <b id="k-stock1"></b>。<b>用「新屋空屋很多」當作不必蓋社宅的理由，
-        會被一年的資料推翻</b>；用「小坪數空屋率最高」則站得住，20 坪以下三期都是最高的一群。
+        普查說「屋齡未滿10年的新屋空屋率最高」，用電統計同意，但也顯示這件事<b>變得很快</b>：5年以下的低度使用比率從<b>22.91%</b>（113年下半年）
+        掉到<b>12.39%</b>（114年下半年），一年降10.52個百分點。這是交屋潮在被消化，
+        不是空屋問題被解決：同期全國住宅存量仍從<b id="k-stock0"></b>增到<b id="k-stock1"></b>。<b>用「新屋空屋很多」當作不必蓋社宅的理由，
+        會被一年的資料推翻</b>；用「小坪數空屋率最高」則站得住，20坪以下三期都是最高的一群。
       </p>
     </div>
   </section>
@@ -206,8 +201,8 @@ svg.chart { display: block; width: 100%; height: auto; }
 
   <section class="panel">
     <header>
-      <h2>六都與新竹：174 個行政區的近三期</h2>
-      <p>用電統計只公布這 8 個縣市的行政區細分，剛好對上「六都與新竹的內部落差」那一頁</p>
+      <h2>六都與新竹：174個行政區的近三期</h2>
+      <p>用電統計只公布這8個縣市的行政區細分，剛好對上「六都與新竹的內部落差」那一頁</p>
     </header>
     <div class="body">
       <div class="filters" style="margin-bottom:10px">
@@ -225,14 +220,14 @@ svg.chart { display: block; width: 100%; height: auto; }
           <thead><tr>
             <th data-k="county">縣市</th><th data-k="name">行政區</th>
             <th data-k="r0">113H2</th><th data-k="r1">114H1</th><th data-k="r2">114H2</th>
-            <th data-k="yRate">較上年同期</th><th data-k="c2">114H2 宅數</th>
+            <th data-k="yRate">較上年同期</th><th data-k="c2">114H2宅數</th>
             <th data-k="yCount">宅數增減</th>
           </tr></thead>
           <tbody></tbody>
         </table>
       </div>
       <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:12px">
-        H1 為上半年、H2 為下半年。「較上年同期」是 114 年下半年減 113 年下半年，單位為百分點。
+        H1為上半年、H2為下半年。「較上年同期」是114年下半年減113年下半年，單位為百分點。
       </p>
     </div>
   </section>
@@ -242,40 +237,38 @@ svg.chart { display: block; width: 100%; height: auto; }
   <div class="notes">
     <section>
       <h3>這份數列有三段方法</h3>
-      <p>內政部自己在附註裡講了：110 年上半年起改用精進的地址比對法，並回頭
-      重算 108 年與 109 年上、下半年；98 到 107 年的原始資料已經取不到，
+      <p>內政部自己在附註裡講了：110年上半年起改用精進的地址比對法，並回頭
+      重算108年與109年上、下半年；98到107年的原始資料已經取不到，
       只能用「比率推估法」推估。所以左半段的線是<b>推估值</b>，圖上以虛線與灰底標出。
-      拿 98 年跟 114 年直接相減，等於把兩種方法的差當成真實變化。</p>
+      拿98年跟114年直接相減，等於把兩種方法的差當成真實變化。</p>
     </section>
     <section>
-      <h3>只比對到 81.67%</h3>
-      <p>114 年下半年，房屋稅籍住宅資料與台電資料勾稽成功率是 81.67%。
+      <h3>只比對到81.67%</h3>
+      <p>114年下半年，房屋稅籍住宅資料與台電資料勾稽成功率是81.67%。
       比率是<b>就比對成功者</b>算出來的，不是全國所有住宅。剩下的近兩成
       不是隨機缺失（門牌整編、非典型地址較容易失敗），所以比率有系統性誤差的空間。</p>
     </section>
     <section>
-      <h3>60 度是一條硬線</h3>
-      <p>用電低於每月 60 度就算低度使用。這會把「有人住但很省電」、「只住週末」
+      <h3>60度是一條硬線</h3>
+      <p>用電低於每月60度就算低度使用。這會把「有人住但很省電」、「只住週末」
       算進去，也會把「沒人住但冰箱一直開著」漏掉。它測的是<b>用電低</b>，
       不是<b>沒人住</b>；長期趨勢可信，單一戶的判定不可信。</p>
     </section>
     <section>
-      <h3>為什麼結構分析仍鎖 109 年 11 月</h3>
+      <h3>為什麼結構分析仍鎖109年11月</h3>
       <p>用電統計只有比率、宅數、屋齡、坪數，沒有人口、戶數、遷入、住宅權屬。
       要把「空屋在哪裡」跟「人在哪裡」放在一起看，只有普查做得到。
-      所以另外兩頁維持 109 年 11 月的基準，這一頁負責時間方向。</p>
+      所以另外兩頁維持109年11月的基準，這一頁負責時間方向。</p>
     </section>
     <section>
       <h3>那瑪夏區在這裡有資料</h3>
-      <p>普查頁上高雄市那瑪夏區因為缺圖資畫不出來，用電統計則有：
-      113 年下半年 30.25% → 114 年下半年 18.86%，是 174 區裡降幅最大的。
-      小基數（不到 1,200 宅）變動劇烈，不宜單獨解讀。</p>
+      <p>普查頁上高雄市那瑪夏區因為缺圖資畫不出來，用電統計則有：113年下半年30.25% → 114年下半年18.86%，是174區裡降幅最大的。
+      小基數（不到1,200宅）變動劇烈，不宜單獨解讀。</p>
     </section>
     <section>
       <h3>資料來源</h3>
-      <p>內政部不動產資訊平台《低度使用(用電)住宅、待售新成屋統計資訊簡冊》，
-      115 年 7 月出刊，資料期 114 年下半年。取表 1、2、6、7 與表 8–15。
-      解析程式為 <code>scripts/prep_moi_series.py</code>。</p>
+      <p>內政部不動產資訊平台《低度使用(用電)住宅、待售新成屋統計資訊簡冊》，115年7月出刊，資料期114年下半年。取表1、2、6、7與表8–15。
+      解析程式為<code>scripts/prep_moi_series.py</code>。</p>
     </section>
   </div>
 </div>
@@ -301,7 +294,7 @@ svg.chart { display: block; width: 100%; height: auto; }
     return n;
   };
 
-  // 98–108 年只有年值；用電基準是 11、12 月抄表，所以擺在年底。109 年起分半年。
+  // 98–108年只有年值；用電基準是11、12月抄表，所以擺在年底。109年起分半年。
   const tx = p => p.year + (p.half === null ? 0.75 : p.half === 1 ? 0.25 : 0.75);
   const TX = P.map(tx), T0 = TX[0], T1 = TX[N - 1];
 
@@ -334,7 +327,7 @@ svg.chart { display: block; width: 100%; height: auto; }
     // 普查基準線
     const xc = X(TX[I09]);
     svg.appendChild(el('line', { class: 'mark', x1: xc, x2: xc, y1: TP, y2: Y(y0) }));
-    svg.appendChild(el('text', { class: 'marklbl', x: xc + 5, y: TP + 12 }, '普查基準 109/11'));
+    svg.appendChild(el('text', { class: 'marklbl', x: xc + 5, y: TP + 12 }, '普查基準109/11'));
 
     const seg = (from, to, cls) => {
       const d = [];
@@ -342,7 +335,7 @@ svg.chart { display: block; width: 100%; height: auto; }
       svg.appendChild(el('path', { class: 'ln nat ' + cls, d: d.join(' ') }));
     };
     seg(0, IDX['108'], 'est');                 // 推估
-    seg(IDX['108'], LAST, '');                 // 實際勾稽（從 108 接上，線不斷）
+    seg(IDX['108'], LAST, '');                 // 實際勾稽（從108接上，線不斷）
 
     const lo = r.indexOf(Math.min(...r)), hi = r.indexOf(Math.max(...r));
     const hiN = r.indexOf(Math.max(...r.slice(IDX['109H1'])));
@@ -359,10 +352,10 @@ svg.chart { display: block; width: 100%; height: auto; }
         'text-anchor': anchor || 'start', fill: 'var(--ink)'
       }, txt));
     };
-    note(hi, `98 年 ${fmt(r[hi])}%（相對高點）`, -11);
-    note(lo, `110 下 ${fmt(r[lo])}%（長期低點）`, 17, 'end');
-    note(hiN, `114 上 ${fmt(r[hiN])}%`, -11, 'end');
-    note(LAST, `114 下 ${fmt(r[LAST])}%`, 26, 'end');
+    note(hi, `98年${fmt(r[hi])}%（相對高點）`, -11);
+    note(lo, `110下${fmt(r[lo])}%（長期低點）`, 17, 'end');
+    note(hiN, `114上${fmt(r[hiN])}%`, -11, 'end');
+    note(LAST, `114下${fmt(r[LAST])}%`, 26, 'end');
   }
 
   /* ── 2. stats ──────────────────────────────────────────────────────── */
@@ -374,16 +367,16 @@ svg.chart { display: block; width: 100%; height: auto; }
     const stat = (k, v, cls, sub) =>
       `<div class="stat"><dt>${k}</dt><dd class="${cls || ''}">${v}</dd><span class="sub">${sub}</span></div>`;
     document.getElementById('stats').innerHTML =
-      stat('114 年下半年', fmt(r[LAST]) + '%', '', `較上期 ${sign(dPrev)} 個百分點`) +
+      stat('114年下半年', fmt(r[LAST]) + '%', '', `較上期${sign(dPrev)}個百分點`) +
       stat('對照普查基準', sign(d09), d09 > 0 ? 'down' : 'up',
-           `109 下 ${fmt(r[I09])}% → 114 下 ${fmt(r[LAST])}%`) +
-      stat('長期低點', fmt(Math.min(...r)) + '%', '', '110 年下半年') +
-      stat('新屋（5 年以下）', fmt(age0[2]) + '%', 'up',
-           `一年前 ${fmt(age0[0])}%，降 ${fmt(age0[0] - age0[2])} 個百分點`);
+           `109下${fmt(r[I09])}% → 114下${fmt(r[LAST])}%`) +
+      stat('長期低點', fmt(Math.min(...r)) + '%', '', '110年下半年') +
+      stat('新屋（5年以下）', fmt(age0[2]) + '%', 'up',
+           `一年前${fmt(age0[0])}%，降${fmt(age0[0] - age0[2])}個百分點`);
     document.getElementById('k-stock0').textContent =
-      (S.national.stockRecent[0] / 10000).toFixed(0) + ' 萬宅';
+      (S.national.stockRecent[0] / 10000).toFixed(0) + '萬宅';
     document.getElementById('k-stock1').textContent =
-      (S.national.stockRecent[4] / 10000).toFixed(0) + ' 萬宅';
+      (S.national.stockRecent[4] / 10000).toFixed(0) + '萬宅';
   }
 
   /* ── 3. dumbbell 109H2 → 114H2 ─────────────────────────────────────── */
@@ -418,7 +411,7 @@ svg.chart { display: block; width: 100%; height: auto; }
     document.querySelectorAll('.dbrow').forEach(row => {
       row.addEventListener('pointerenter', e => {
         const r = rows.find(x => x.name === row.dataset.n);
-        tipAt(e, `${r.name}<br>109 下 ${fmt(r.a)}% → 114 下 ${fmt(r.b)}%`);
+        tipAt(e, `${r.name}<br>109下${fmt(r.a)}% → 114下${fmt(r.b)}%`);
       });
       row.addEventListener('pointerleave', hideTip);
     });
@@ -453,7 +446,7 @@ svg.chart { display: block; width: 100%; height: auto; }
             <path class="ln nat est" style="stroke-width:1.6" d="${est}"></path>
             <path class="ln nat" style="stroke-width:1.6" d="${act}"></path>
           </svg>
-          <div class="ft"><span>109下 ${fmt(c.rates[I09], 1)}%</span><span>114下 ${fmt(c.rates[LAST], 1)}%</span></div>
+          <div class="ft"><span>109下${fmt(c.rates[I09], 1)}%</span><span>114下${fmt(c.rates[LAST], 1)}%</span></div>
         </div>`;
       }).join('');
     };
@@ -554,7 +547,7 @@ svg.chart { display: block; width: 100%; height: auto; }
         <td class="num">${r.c2.toLocaleString('zh-TW')}</td>
         <td class="num ${r.yCount > 0 ? 'down' : 'up'}">${r.yCount > 0 ? '+' : r.yCount < 0 ? '−' : '±'}${Math.abs(r.yCount).toLocaleString('zh-TW')}</td>
       </tr>`).join('');
-      document.getElementById('f-count').textContent = `${out.length} / ${rows.length} 個行政區`;
+      document.getElementById('f-count').textContent = `${out.length} / ${rows.length}個行政區`;
     };
     document.querySelectorAll('#dtab thead th').forEach(th => {
       th.addEventListener('click', () => {

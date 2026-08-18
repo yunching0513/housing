@@ -7,13 +7,11 @@ __SHARED_CSS__
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">民國 109 年 11 月 ・ 人口及住宅普查 ・ 行政院主計總處</p>
+    <p class="eyebrow">民國109年11月 ・ 人口及住宅普查 ・ 行政院主計總處</p>
     <h1>臺灣住宅供需圖</h1>
     <p class="dek">
-      臺灣有 <b>899 萬間住宅</b>、<b>809 萬戶家庭</b>，房子比家庭多 11%，其中
-      <b>117 萬間目前沒有人使用</b>。但空屋不是均勻分布的：人口正在成長的 8 個縣市裡，
-      有 <b>7 個空屋率高於全國平均</b>。這代表問題多半不是房子不夠，而是
-      <b>房子不在需要的地方、或不是負擔得起的那種</b>。
+      臺灣有<b>899萬間住宅</b>、<b>809萬戶家庭</b>，房子比家庭多11%，其中<b>117萬間目前沒有人使用</b>。但空屋不是均勻分布的：人口正在成長的8個縣市裡，
+      有<b>7個空屋率高於全國平均</b>。這代表問題多半不是房子不夠，而是<b>房子不在需要的地方、或不是負擔得起的那種</b>。
     </p>
   </header>
 
@@ -46,7 +44,7 @@ __SHARED_CSS__
 
     <div class="panel">
       <header>
-        <h2 id="bars-title">22 縣市排序</h2>
+        <h2 id="bars-title">22縣市排序</h2>
         <p id="bars-sub"></p>
       </header>
       <div class="body"><div class="bars" id="bars"></div></div>
@@ -56,8 +54,7 @@ __SHARED_CSS__
   <div class="panel">
     <header>
       <h2 id="sc-title">人跟房子有沒有對上</h2>
-      <p>橫軸是十年人口變化，縱軸是空屋率。虛線是分界：人口零成長，以及全國空屋率
-         <b id="sc-cut"></b>。落在哪一區，決定該蓋房子還是該做別的事。</p>
+      <p>橫軸是十年人口變化，縱軸是空屋率。虛線是分界：人口零成長，以及全國空屋率<b id="sc-cut"></b>。落在哪一區，決定該蓋房子還是該做別的事。</p>
     </header>
     <div class="body">
       <div class="scatter-wrap">
@@ -77,11 +74,11 @@ __SHARED_CSS__
           <thead><tr>
             <th data-sort="name"       scope="col">縣市</th>
             <th data-sort="region"     scope="col">區域</th>
-            <th data-sort="p99"        scope="col">99 年</th>
-            <th data-sort="p109"       scope="col">109 年</th>
+            <th data-sort="p99"        scope="col">99年</th>
+            <th data-sort="p109"       scope="col">109年</th>
             <th data-sort="delta"      scope="col">增減</th>
             <th data-sort="pct"        scope="col" aria-sort="descending">成長率</th>
-            <th data-sort="density109" scope="col">密度 109</th>
+            <th data-sort="density109" scope="col">密度109</th>
             <th data-sort="houses"     scope="col">住宅數</th>
             <th data-sort="households" scope="col">住戶數</th>
             <th data-sort="vacancy"    scope="col">空屋率</th>
@@ -99,22 +96,20 @@ __SHARED_CSS__
   <div class="notes">
     <section>
       <h3>資料與定義</h3>
-      <p><b>常住人口</b>是實際住在這裡的人，跟戶口名簿上登記的人不一樣。
-      <b>住戶</b>是一起生活的一群人，通常就是一個家庭。<b>住宅</b>是一間可以住人的房子。
+      <p><b>常住人口</b>是實際住在這裡的人，跟戶口名簿上登記的人不一樣。<b>住戶</b>是一起生活的一群人，通常就是一個家庭。<b>住宅</b>是一間可以住人的房子。
       評估住宅需求要用住戶數，因為房子是一戶一戶在用的，不是一人一間。</p>
-      <p>來源：行政院主計總處 109 年人口及住宅普查（表 87 住宅使用情形、表 66 住戶數）
-      與 99 年普查常住人口。</p>
+      <p>來源：行政院主計總處109年人口及住宅普查（表87住宅使用情形、表66住戶數）
+      與99年普查常住人口。</p>
     </section>
     <section>
       <h3>兩種空屋率，數字為什麼不一樣</h3>
       <ul>
-        <li>這一頁用的是<b>普查的算法</b>：普查員上門問這間房子現在有沒有人住。
-        109 年 11 月全國 13.1%，約 117 萬宅。</li>
-        <li>新聞上常見的是<b>內政部的算法</b>：看台電的電表，一個月平均用電不到 60 度就算沒住人。
-        最新一期是 <b>114 年下半年 9.44%</b>（115 年 7 月出刊），每半年更新一次。</li>
+        <li>這一頁用的是<b>普查的算法</b>：普查員上門問這間房子現在有沒有人住。109年11月全國13.1%，約117萬宅。</li>
+        <li>新聞上常見的是<b>內政部的算法</b>：看台電的電表，一個月平均用電不到60度就算沒住人。
+        最新一期是<b>114年下半年9.44%</b>（115年7月出刊），每半年更新一次。</li>
         <li>電表法會誤判的地方：很省電的獨居長者可能被算成空屋；放除濕機的空屋可能被算成有人住。</li>
-        <li><b>兩者的交集比想像中小。</b>內政部拿 109 年逐筆比對過，公布的一致率是 84.08%，
-        但那個數字是被「兩者都認定不是空屋」的 77.37% 撐起來的。真正被認定為空屋的部分：
+        <li><b>兩者的交集比想像中小。</b>內政部拿109年逐筆比對過，公布的一致率是84.08%，
+        但那個數字是被「兩者都認定不是空屋」的77.37%撐起來的。真正被認定為空屋的部分：
         普查認定的空閒住宅裡，只有約三分之一同時被電表法認定為低度使用。</li>
         <li>所以不是誰對誰錯，是問的問題不同。看趨勢用電表法（更新快），看結構用普查法（可以再拆屋齡與坪數）。</li>
       </ul>
@@ -124,22 +119,21 @@ __SHARED_CSS__
       <ul>
         <li><b>空屋多不等於不用蓋社宅。</b>空屋裡有很多是偏鄉的老房子和投資型新成屋，
         這兩種都不是社宅能直接接手來用的。要下結論前必須先按屋齡和位置拆開看。</li>
-        <li><b>分界線附近的縣市要小心解讀。</b>22 個縣市裡有 5 個離全國空屋率分界不到
-        0.5 個百分點，例如新北市 13.1% 對全國 13.05%。它們被分到哪一邊，換個算法就可能翻過去。</li>
-        <li>連江縣人口十年減少 19.1% 主要來自駐軍精簡，離島基數小，變動要謹慎解讀。</li>
+        <li><b>分界線附近的縣市要小心解讀。</b>22個縣市裡有5個離全國空屋率分界不到0.5個百分點，例如新北市13.1%對全國13.05%。它們被分到哪一邊，換個算法就可能翻過去。</li>
+        <li>連江縣人口十年減少19.1%主要來自駐軍精簡，離島基數小，變動要謹慎解讀。</li>
       </ul>
     </section>
     <section>
       <h3>製圖說明</h3>
       <ul>
-        <li><b>時間基準鎖民國 109 年 11 月。</b>人口與住宅都取自同一次普查，
-        分子分母同期才不會失真。十年變化則是 99 年 11 月到 109 年 11 月。</li>
-        <li><b>分型用散布圖不用四色地圖。</b>因為有 5 個縣市貼近分界，
+        <li><b>時間基準鎖民國109年11月。</b>人口與住宅都取自同一次普查，
+        分子分母同期才不會失真。十年變化則是99年11月到109年11月。</li>
+        <li><b>分型用散布圖不用四色地圖。</b>因為有5個縣市貼近分界，
         四色地圖會把「剛好在線上」畫得跟「明顯在某一區」一樣確定。散布圖把分界線本身畫出來，
         讀者看得到誰接近邊緣。</li>
         <li>散布圖上圓點大小代表住戶數，顏色只有一種：橫軸已經表示人口變化，
         再用顏色講同一件事只會變成雜訊。</li>
-        <li>縣市界圖資為 g0v <code>twgeojson</code>，已簡化並移除 0.15 km² 以下島礁。
+        <li>縣市界圖資為g0v <code>twgeojson</code>，已簡化並移除0.15 km² 以下島礁。
         金門與馬祖是插圖，比例尺與本島不同，框上有標放大倍率。</li>
       </ul>
     </section>
@@ -197,7 +191,7 @@ __MAP_ZOOM_JS__
     'M' + r.map(([lo, la]) => `${px(c.group, lo).toFixed(1)} ${py(c.group, la).toFixed(1)}`).join('L') + 'Z'
   ).join('');
 
-  /** Area-weighted centroid of a county's largest ring — where its label goes. */
+  /** Area-weighted centroid of a county's largest ring：where its label goes. */
   const centroid = (c) => {
     const r = c.rings[0]; let a = 0, cx = 0, cy = 0;
     for (let i = 0; i < r.length - 1; i++) {
@@ -232,7 +226,7 @@ __MAP_ZOOM_JS__
       tick: (v) => (v ? (v > 0 ? '+' : '−') + Math.abs(v) : '0') + '%',
       get: (c) => c.pct,
       fmt: (v) => sign(v) + Math.abs(v).toFixed(1) + '%',
-      sub: '以 99 年為基期的十年累計增減率，0% 為色階中點',
+      sub: '以99年為基期的十年累計增減率，0%為色階中點',
       lo: '衰退', hi: '成長',
     },
     delta: {
@@ -245,7 +239,7 @@ __MAP_ZOOM_JS__
       lo: '減少', hi: '增加',
     },
     density: {
-      label: '人口密度（109 年）', unit: '人/km²', kind: 'seq', ramp: 'seq',
+      label: '人口密度（109年）', unit: '人/km²', kind: 'seq', ramp: 'seq',
       breaks: [150, 400, 1000, 2500, 5000],
       tick: (v) => int(v),
       get: (c) => c.density109,
@@ -254,21 +248,21 @@ __MAP_ZOOM_JS__
       lo: '低', hi: '高',
     },
     vacancy: {
-      label: '空屋率（109 年 11 月）', unit: '%', kind: 'seq', ramp: 'sq2',
+      label: '空屋率（109年11月）', unit: '%', kind: 'seq', ramp: 'sq2',
       breaks: [11, 12.5, 14, 16, 18],
       tick: (v) => v + '%',
       get: (c) => H[c.name].vacancy,
       fmt: (v) => v.toFixed(1) + '%',
-      sub: '普查認定「目前沒有使用」的住宅占比，全國 13.1%',
+      sub: '普查認定「目前沒有使用」的住宅占比，全國13.1%',
       lo: '低', hi: '高',
     },
     perhh: {
-      label: '宅戶比（109 年 11 月）', unit: '宅/戶', kind: 'seq', ramp: 'sq2',
+      label: '宅戶比（109年11月）', unit: '宅/戶', kind: 'seq', ramp: 'sq2',
       breaks: [1.05, 1.10, 1.15, 1.20, 1.25],
       tick: (v) => v.toFixed(2),
       get: (c) => H[c.name].perHousehold,
       fmt: (v) => v.toFixed(3),
-      sub: '每一戶家庭對到幾間住宅，全國 1.112。愈高代表住宅相對家庭數愈寬鬆',
+      sub: '每一戶家庭對到幾間住宅，全國1.112。愈高代表住宅相對家庭數愈寬鬆',
       lo: '緊', hi: '寬鬆',
     },
   };
@@ -324,7 +318,7 @@ __MAP_ZOOM_JS__
     mk('kinmen', '金門縣');
   }
 
-  { // scale bar — main map only; the insets carry their own magnification
+  { // scale bar：main map only; the insets carry their own magnification
     const KM = 50, x0 = 26, y0 = 946;
     const w = KM * proj.main.s / 111.32;
     gDeco.append(el('path', { class: 'scalebar',
@@ -360,10 +354,10 @@ __MAP_ZOOM_JS__
   function paint() {
     const m = METRICS[metric];
     document.getElementById('map-sub').textContent = m.sub;
-    document.getElementById('bars-sub').textContent = `依${m.label}排序 ・ 單位 ${m.unit}`;
+    document.getElementById('bars-sub').textContent = `依${m.label}排序 ・ 單位${m.unit}`;
     document.getElementById('map-desc').textContent =
-      `臺灣 22 縣市${m.label}分布圖。` +
-      POP.counties.map(c => `${c.name} ${m.fmt(m.get(c))}`).join('、') + '。';
+      `臺灣22縣市${m.label}分布圖。` +
+      POP.counties.map(c => `${c.name}${m.fmt(m.get(c))}`).join('、') + '。';
 
     for (const p of gLand.children) {
       p.style.fill = fillOf(m, m.get(byName.get(p.dataset.name)));
@@ -380,14 +374,14 @@ __MAP_ZOOM_JS__
     legendEl.innerHTML = '';
     const cap = document.createElement('div'); cap.className = 'cap';
     cap.innerHTML = `<span>← ${m.lo}</span>` +
-      (m.kind === 'div' ? `<span class="zero">0 為中點</span>` : '') +
+      (m.kind === 'div' ? `<span class="zero">0為中點</span>` : '') +
       `<span>${m.hi} →</span>`;
     const sws = document.createElement('div'); sws.className = 'swatches';
     for (let i = 0; i < n; i++) {
       const d = document.createElement('div');
       d.className = 'sw'; d.style.background = `var(--${pre}-${i})`;
       const cnt = POP.counties.filter(c => classOf(m, m.get(c)) === i).length;
-      d.title = `${cnt} 個縣市`;
+      d.title = `${cnt}個縣市`;
       if (!cnt) d.style.opacity = '.34';
       sws.append(d);
     }
@@ -444,7 +438,7 @@ __MAP_ZOOM_JS__
       </tr>`).join('');
     const t = POP.totals;
     tfoot.innerHTML = `<tr>
-      <td>總計</td><td>22 縣市</td>
+      <td>總計</td><td>22縣市</td>
       <td class="num">${int(t.p99)}</td><td class="num">${int(t.p109)}</td>
       <td class="num up">${sign(t.delta)}${int(t.delta)}</td>
       <td class="num up">${sign(t.pct)}${Math.abs(t.pct).toFixed(2)}%</td>
@@ -489,10 +483,10 @@ __MAP_ZOOM_JS__
         'text-anchor': 'middle' }), { textContent: (v > 0 ? '+' : '') + v + '%' }));
     }
     gAx.append(Object.assign(el('text', { class: 'sc-axlabel', x: (L + R) / 2, y: B + 40,
-      'text-anchor': 'middle' }), { textContent: '十年人口變化（99 → 109 年）' }));
+      'text-anchor': 'middle' }), { textContent: '十年人口變化（99 → 109年）' }));
     gAx.append(Object.assign(el('text', { class: 'sc-axlabel', x: 14, y: (T + B) / 2,
       'text-anchor': 'middle', transform: `rotate(-90 14 ${(T + B) / 2})` }),
-      { textContent: '空屋率（109 年 11 月）' }));
+      { textContent: '空屋率（109年11月）' }));
 
     gCut.append(el('line', { class: 'sc-cut', x1: X(0), y1: T, x2: X(0), y2: B }));
     gCut.append(el('line', { class: 'sc-cut', x1: L, y1: Y(cut), x2: R, y2: Y(cut) }));
@@ -507,7 +501,7 @@ __MAP_ZOOM_JS__
       const n = HOU.counties.filter(c => c.quadrant === k).length;
       const t = el('text', { x, y, 'text-anchor': anchor });
       t.append(document.createTextNode(HOU.quadrants[k].label + ' '));
-      t.append(Object.assign(el('tspan', { class: 'c' }), { textContent: `${n} 個` }));
+      t.append(Object.assign(el('tspan', { class: 'c' }), { textContent: `${n}個` }));
       gZone.append(t);
     }
 
@@ -520,7 +514,7 @@ __MAP_ZOOM_JS__
       const r = 4 + 11 * Math.sqrt(c.households / maxHH);
       // One colour on purpose: the x position already encodes population change,
       // so tinting by it would spend the colour channel saying the same thing twice.
-      // Size carries what position cannot — how many households the dot stands for.
+      // Size carries what position cannot：how many households the dot stands for.
       gDot.append(el('circle', { class: 'dot', cx, cy, r: r.toFixed(1),
         'data-name': c.name, tabindex: '0', role: 'button', 'aria-label': c.name }));
 
@@ -534,7 +528,7 @@ __MAP_ZOOM_JS__
 
     document.getElementById('sc-cut').textContent = cut.toFixed(1) + '%';
     document.getElementById('sc-desc').textContent =
-      HOU.counties.map(c => `${c.name} 人口 ${byName.get(c.name).pct}%、空屋率 ${c.vacancy}%，屬「${HOU.quadrants[c.quadrant].label}」`).join('；') + '。';
+      HOU.counties.map(c => `${c.name}人口${byName.get(c.name).pct}%、空屋率${c.vacancy}%，屬「${HOU.quadrants[c.quadrant].label}」`).join('；') + '。';
 
     document.getElementById('zones').innerHTML = ZONE_ORDER.map(k => {
       const q = HOU.quadrants[k];
@@ -544,9 +538,9 @@ __MAP_ZOOM_JS__
       return `<div class="zone" style="border-left-color:var(--${k === 'tight_growing' ? 'div-7'
         : k === 'slack_growing' ? 'div-3' : k === 'tight_shrinking' ? 'div-4' : 'div-1'})">
         <span class="cond">${q.cond}</span>
-        <h4>${q.label}<span class="n">${list.length} 個</span></h4>
+        <h4>${q.label}<span class="n">${list.length}個</span></h4>
         <span class="who">${list.map(c => c.name.replace(/[市縣]$/, '')).join('、') || '無'}</span>
-        <span class="act">→ ${q.act}${edge ? `　（其中 ${edge} 個貼近分界）` : ''}</span>
+        <span class="act">→ ${q.act}${edge ? `　（其中${edge}個貼近分界）` : ''}</span>
       </div>`;
     }).join('');
   }
@@ -570,11 +564,11 @@ __MAP_ZOOM_JS__
     tip.innerHTML =
       `<div class="t-nm">${c.name}</div><div class="t-en">${c.en.toUpperCase()} ・ ${c.region}</div>
        <dl>
-         <dt>99 年常住人口</dt><dd>${int(c.p99)}</dd>
-         <dt>109 年常住人口</dt><dd>${int(c.p109)}</dd>
+         <dt>99年常住人口</dt><dd>${int(c.p99)}</dd>
+         <dt>109年常住人口</dt><dd>${int(c.p109)}</dd>
          <dt>十年增減</dt><dd class="${c.delta > 0 ? 'up' : 'down'}">${sign(c.delta)}${int(c.delta)}</dd>
          <dt>成長率</dt><dd class="${c.pct > 0 ? 'up' : 'down'}">${sign(c.pct)}${Math.abs(c.pct).toFixed(2)}%</dd>
-         <dt>人口密度 109</dt><dd>${int(c.density109)}</dd>
+         <dt>人口密度109</dt><dd>${int(c.density109)}</dd>
          <dt>住宅數</dt><dd>${int(h.houses)}</dd>
          <dt>住戶數</dt><dd>${int(h.households)}</dd>
          <dt>空屋率</dt><dd>${h.vacancy.toFixed(1)}%</dd>
@@ -650,11 +644,11 @@ __MAP_ZOOM_JS__
     const t = POP.totals, N = HOU.national;
     const growingSlack = HOU.counties.filter(c => c.quadrant === 'slack_growing').length;
     document.getElementById('stats').innerHTML = [
-      ['全國住宅', int(N.houses) + ' 宅', `住戶 ${int(N.households)} 戶`, ''],
-      ['空著沒人用', int(N.idle) + ' 宅', `占全部住宅 ${N.vacancy.toFixed(1)}%，約每 8 宅有 1 宅`, 'down'],
-      ['宅戶比', N.perHousehold.toFixed(3), '每 100 戶家庭對到 111 間住宅', ''],
+      ['全國住宅', int(N.houses) + '宅', `住戶${int(N.households)}戶`, ''],
+      ['空著沒人用', int(N.idle) + '宅', `占全部住宅${N.vacancy.toFixed(1)}%，約每8宅有1宅`, 'down'],
+      ['宅戶比', N.perHousehold.toFixed(3), '每100戶家庭對到111間住宅', ''],
       ['人口成長的縣市', `${t.grew} / 22`,
-        `其中 ${growingSlack} 個空屋率高於全國平均`, 'up'],
+        `其中${growingSlack}個空屋率高於全國平均`, 'up'],
     ].map(([k, v, s, cls]) =>
       `<div class="stat"><dt>${k}</dt><dd class="${cls}">${v}</dd><dd class="sub">${s}</dd></div>`
     ).join('');
@@ -663,7 +657,7 @@ __MAP_ZOOM_JS__
   paint();
   drawScatter();
 
-  // 22 counties on a 990×1000 frame: ×10 is enough to read 嘉義市 comfortably.
+  // 22 counties on a 990×1000 frame: ×10 is enough to read嘉義市comfortably.
   enableMapZoom(svg, { max: 10 });
 })();
 </script>

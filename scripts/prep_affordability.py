@@ -77,11 +77,11 @@ def main():
         'measures': {
             'pir': {'label': '房價所得比', 'unit': '倍',
                     'def': '中位數住宅總價 ÷ 家戶年可支配所得中位數。'
-                           '9.47 倍代表不吃不喝 9.47 年才買得起中位數住宅。'},
+                           '9.47倍代表不吃不喝9.47年才買得起中位數住宅。'},
             'burden': {'label': '房貸負擔率', 'unit': '%',
                        'def': '中位數住宅貸款月攤還額 ÷ 家戶月可支配所得中位數。'
-                              '內政部分級：30% 以下可合理負擔，30–40% 略低，'
-                              '40–50% 偏低，50% 以上過低。'},
+                              '內政部分級：30%以下可合理負擔，30–40%略低，'
+                              '40–50%偏低，50%以上過低。'},
         },
         'caveat': '兩項指標衡量的是「買」不是「租」。社宅是租賃政策，'
                   '這是目前唯一有縣市別的官方負擔能力數列，但不是最貼題的那一個。',
@@ -94,17 +94,17 @@ def main():
 
     live = [c for c in counties if c['listed']]
     live.sort(key=lambda c: -c['pir'])
-    print(f'{OUT.relative_to(ROOT)}：{period}，{len(live)} 縣市'
-          + (f'，未列 {"、".join(missing)}' if missing else ''))
-    print(f'  全國 房價所得比 {nat["pir"]} 倍　房貸負擔率 {nat["burden"]}%'
-          f'（{band(nat["burden"])}），較上年 {nat["burdenY"]:+.2f} 個百分點')
+    print(f'{OUT.relative_to(ROOT)}：{period}，{len(live)}縣市'
+          + (f'，未列{"、".join(missing)}' if missing else ''))
+    print(f'全國 房價所得比{nat["pir"]}倍　房貸負擔率{nat["burden"]}%'
+          f'（{band(nat["burden"])}），較上年{nat["burdenY"]:+.2f}個百分點')
     for c in live[:4]:
-        print(f'  {c["name"]:5s}{c["pir"]:6.2f} 倍　{c["burden"]:5.2f}%　{c["band"]}'
-              + ('　★樣本數未達 100 戶' if c['thin'] else ''))
-    print('  最低：' + '、'.join(f'{c["name"]} {c["pir"]}' for c in live[-3:]))
+        print(f'  {c["name"]:5s}{c["pir"]:6.2f}倍　{c["burden"]:5.2f}%　{c["band"]}'
+              + ('　★樣本數未達100戶' if c['thin'] else ''))
+    print('最低：' + '、'.join(f'{c["name"]}{c["pir"]}' for c in live[-3:]))
     thin = [c['name'] for c in live if c['thin']]
     if thin:
-        print(f'  樣本數未達 100 戶：{"、".join(thin)}')
+        print(f'樣本數未達100戶：{"、".join(thin)}')
 
 
 if __name__ == '__main__':

@@ -68,8 +68,7 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   <dl class="stats" id="stats"></dl>
 
   <section>
-    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">01</span>
-      問題的順序</h2>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">01</span>問題的順序</h2>
     <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
       每一頁回答一個問題，而且是上一題逼出來的下一題。照這個順序讀最省力。
     </p>
@@ -91,8 +90,7 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   <hr class="rule">
 
   <section>
-    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">03</span>
-      資料清單</h2>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">03</span>資料清單</h2>
     <div class="tablewrap">
       <table class="src" id="src">
         <thead><tr>
@@ -107,8 +105,7 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   <hr class="rule">
 
   <section>
-    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">04</span>
-      判讀原則</h2>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">04</span>判讀原則</h2>
     <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
       這五件事在每一頁上都會再講一次，因為它們是最容易出錯的地方。
       拿這些圖去做簡報之前，先確認自己沒有踩到。
@@ -120,10 +117,10 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
 
   <div class="notes">
     <section>
-      <h3>時間基準為什麼鎖 109 年 11 月</h3>
-      <p>結構分析（誰住哪、房子空多少）一律用 109 年人口及住宅普查：人口與住宅來自
-      同一次調查，分子分母同期才不失真。趨勢則交給有長期數列的資料——
-      低度使用住宅回推到 98 年，常住人口回推到 45 年。</p>
+      <h3>時間基準為什麼鎖109年11月</h3>
+      <p>結構分析（誰住哪、房子空多少）一律用109年人口及住宅普查：人口與住宅來自
+      同一次調查，分子分母同期才不失真。趨勢則交給有長期數列的資料：
+      低度使用住宅回推到98年，常住人口回推到45年。</p>
     </section>
     <section>
       <h3>為什麼沒有一頁叫「結論」</h3>
@@ -133,15 +130,14 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
     </section>
     <section>
       <h3>怎麼重建</h3>
-      <p>每一頁的資料都由 <code>scripts/prep_*.py</code> 從原始檔解析，
-      <code>scripts/build.py</code> 內嵌後產出 <code>dist/</code>。
+      <p>每一頁的資料都由<code>scripts/prep_*.py</code>從原始檔解析，<code>scripts/build.py</code>內嵌後產出<code>dist/</code>。
       解析程式一律先與原表的小計列對帳才寫檔，欄序若變動會直接中止而不是默默算錯。</p>
     </section>
     <section>
       <h3>資料在哪</h3>
-      <p>原始檔在 <code>data/sources/</code> 與 <code>data_TW/</code>，
-      解析後的中間檔在 <code>data/</code>。下載工具與各政府網站的已知問題
-      （憑證鏈、防火牆、人機驗證）都寫在 <code>README.md</code>。</p>
+      <p>原始檔在<code>data/sources/</code>與<code>data_TW/</code>，
+      解析後的中間檔在<code>data/</code>。下載工具與各政府網站的已知問題
+      （憑證鏈、防火牆、人機驗證）都寫在<code>README.md</code>。</p>
     </section>
   </div>
 </div>
@@ -155,27 +151,27 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   const H = D.headline;
   const int = v => Math.round(v).toLocaleString('en-US');
   // Only link to the sibling pages when they are actually next to this file.
-  // 在 artifact 裡是單獨一頁，隔壁沒有其他檔案，連過去會 404；
-  // 在網站或本機資料夾裡則一定是整組一起，連結照給。artifact 是嵌在 iframe 裡的，
+  // 在artifact裡是單獨一頁，隔壁沒有其他檔案，連過去會404；
+  // 在網站或本機資料夾裡則一定是整組一起，連結照給。artifact是嵌在iframe裡的，
   // 用這個判斷比看網址可靠。
   const LOCAL = window.top === window.self;
-  const man = v => (v / 10000).toFixed(0) + ' 萬';
+  const man = v => (v / 10000).toFixed(0) + '萬';
 
   document.getElementById('eyebrow').textContent =
-    `${D.built.pages} 頁 ・ ${D.built.sources} 份資料 ・ ` +
-    `${D.built.counties} 縣市 ／ ${D.built.towns} 鄉鎮市區`;
+    `${D.built.pages}頁 ・ ${D.built.sources}份資料 ・ ` +
+    `${D.built.counties}縣市 ／ ${D.built.towns}鄉鎮市區`;
 
   const stat = (k, v, sub) =>
     `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
   document.getElementById('stats').innerHTML =
     stat('住宅／家戶', `${man(H.houses)} / ${man(H.households)}`,
-         `每戶對到 ${(H.houses / H.households).toFixed(3)} 間住宅（109 年 11 月）`) +
+         `每戶對到${(H.houses / H.households).toFixed(3)}間住宅（109年11月）`) +
     stat('沒人使用的住宅', man(H.idle),
-         `占全部住宅 ${H.vacancy}%；用電定義下 ${H.moiNow}%（${H.moiLabel}）`) +
-    stat('房價所得比', H.pir.toFixed(2) + ' 倍',
-         `房貸負擔率 ${H.burden}%，內政部分級「偏低」`) +
-    stat('人口高點', '109 年',
-         `${int(H.popPeak)} → ${H.popYear} 年 ${int(H.popNow)}，六年少 ${man(H.popPeak - H.popNow)}人`);
+         `占全部住宅${H.vacancy}%；用電定義下${H.moiNow}%（${H.moiLabel}）`) +
+    stat('房價所得比', H.pir.toFixed(2) + '倍',
+         `房貸負擔率${H.burden}%，內政部分級「偏低」`) +
+    stat('人口高點', '109年',
+         `${int(H.popPeak)} → ${H.popYear}年${int(H.popNow)}，六年少${man(H.popPeak - H.popNow)}人`);
 
   const CHAIN = [
     ['空屋這麼多，還要蓋嗎', '先確認空屋能不能用。答案是多數不能：最空的是新屋與小宅。'],
@@ -187,14 +183,14 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
     `<div class="link"><span class="n">Q${i + 1}</span><h3>${h}</h3><p>${p}</p></div>`).join('');
 
   document.getElementById('linknote').textContent = LOCAL
-    ? '' : '（在 dist/ 資料夾裡開這一頁時，卡片下方會變成可點的連結）';
+    ? '' : '（在dist/ 資料夾裡開這一頁時，卡片下方會變成可點的連結）';
   document.getElementById('cards').innerHTML = D.pages.map(p => `
     <div class="card">
       <div class="top"><h3>${p.title}</h3><span class="unit">${p.unit}</span></div>
       <div class="asks">問：${p.asks}</div>
       <div class="says">${p.says}</div>
       <div class="note">${p.note}</div>
-      <div class="file">${LOCAL ? `<a href="${p.file}">開啟 ${p.file} →</a>` : p.file}</div>
+      <div class="file">${LOCAL ? `<a href="${p.file}">開啟${p.file} →</a>` : p.file}</div>
     </div>`).join('');
 
   document.querySelector('#src tbody').innerHTML = D.sources.map(s => `
@@ -207,18 +203,18 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   const missing = D.sources.filter(s => !s.have);
   document.getElementById('npages').textContent = D.pages.length;
   document.getElementById('gapbox').innerHTML =
-    `<h2>還缺 ${missing.length} 項，而且是算出來的不是抓來的</h2>` +
-    `<p>社宅的兩條路現在都有了：<b>直接興建</b>已完工 ${int(H.shbDone)} 戶
-     （總計 ${int(H.shbTotal)} 戶，其餘還在興建、待開工或規劃），
-     <b>包租代管</b>累計媒合 ${int(H.shMatched)} 戶、仍有效 ${int(H.shLive)} 戶。
+    `<h2>還缺${missing.length}項，而且是算出來的不是抓來的</h2>` +
+    `<p>社宅的兩條路現在都有了：<b>直接興建</b>已完工${int(H.shbDone)}戶
+     （總計${int(H.shbTotal)}戶，其餘還在興建、待開工或規劃），
+     <b>包租代管</b>累計媒合${int(H.shMatched)}戶、仍有效${int(H.shLive)}戶。
      兩者口徑不同，一個是存量一個是累計流量，頁面上分開講、不相加。</p>` +
-    `<p><b>租金也算出來了</b>：實價登錄的租賃申報 ${int(H.rentN)} 筆，
-     整棟（戶）出租的月租金中位數 ${int(H.rentWhole)} 元、每坪 ${int(H.rentPing)} 元
-     （${H.rentPeriod}）。同一批案件裡，社宅包租代管每坪 ${int(H.rentSocial)} 元，
-     其餘案件 ${int(H.rentMarket)} 元。</p>` +
+    `<p><b>租金也算出來了</b>：實價登錄的租賃申報${int(H.rentN)}筆，
+     整棟（戶）出租的月租金中位數${int(H.rentWhole)}元、每坪${int(H.rentPing)}元
+     （${H.rentPeriod}）。同一批案件裡，社宅包租代管每坪${int(H.rentSocial)}元，
+     其餘案件${int(H.rentMarket)}元。</p>` +
     `<p>剩下的缺口只有一個：<b>縣市別的家戶可支配所得</b>。有了它才能把租金變成
      <b>租金所得比</b>，也就是「租得起嗎」。在拿到之前，負擔能力只能用房價所得比代理，
-     而它量的是「買」不是「租」——社宅是租賃政策，這個代理並不貼題。</p>`;
+     而它量的是「買」不是「租」：社宅是租賃政策，這個代理並不貼題。</p>`;
 
   document.getElementById('rules').innerHTML = D.reading.map(r =>
     `<div class="rule-card"><h3>${r.h}</h3><p>${r.p}</p></div>`).join('');
