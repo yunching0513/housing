@@ -1,8 +1,14 @@
 # 把 site/ 部署到 GitHub Pages。
 #
-# configure-pages 的 enablement: true 會自己把 Pages 打開並設成 GitHub Actions
-# 來源，所以正常情況不需要有人進 Settings 點任何東西。
-# 之後每一次推送到本分支都會重新建置並部署。
+# 上線需要有人做一件事，而且只有這一件：
+#     Settings → Pages → Source 選「GitHub Actions」（不要選 Deploy from a branch）
+#
+# 為什麼不能自動：configure-pages 有一個 enablement 參數會嘗試用 API 開啟 Pages，
+# 這裡也開著，但實測回的是「Create Pages site failed: Resource not accessible by
+# integration」：工作流程的 GITHUB_TOKEN 沒有建立 Pages 站臺的權限。
+# 那是帳號層級的限制，改 workflow 沒有用。開完之後這個參數會變成沒有作用的保險。
+#
+# 開好之後，每一次推送到本分支都會自動重新建置並部署。
 #
 # 刻意用 sparse-checkout：這個 repo 的 data_TW/ 有 4.2 GB 原始檔，
 # 但建置版面只需要 data/（已解析的中間檔）與 src/，抓那 4.2 GB 純屬浪費。
@@ -58,8 +64,9 @@ jobs:
       - name: 設定 Pages
         uses: actions/configure-pages@v5
         with:
-          # 這個 repo 還沒開過 Pages，預設會停在「Get Pages site failed」。
-          # enablement 讓這個步驟自己去開，人就不必進 Settings 點。
+          # 嘗試自己開啟 Pages。實測這個 repo 的 GITHUB_TOKEN 沒有這個權限，
+          # 所以第一次仍須有人到 Settings → Pages 把來源設成 GitHub Actions；
+          # 設好之後這一行就只是保險。
           enablement: true
 
       - name: 上傳網站

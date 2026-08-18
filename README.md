@@ -631,8 +631,17 @@ python3 checks/seal.py      # 我確定要改，並且會在提交訊息裡說�
 
 網站由 `.github/workflows/pages.yml` 部署到 GitHub Pages。
 
-**要打開它，只需要一個開關**：repo 的 `Settings` → `Pages` → `Source` 選
-**GitHub Actions**（不要選 Deploy from a branch）。之後每一次推送都會自動重建並部署。
+**要打開它，只需要一個開關，而且只有這一個**：repo 的 `Settings` → `Pages` →
+`Source` 選 **GitHub Actions**（不要選 Deploy from a branch）。
+之後每一次推送都會自動重建並部署，網址是
+<https://yunching0513.github.io/housing/>。
+
+這一步為什麼不能由工作流程代勞：`actions/configure-pages` 有一個 `enablement`
+參數會嘗試用 API 建立 Pages 站臺，本工作流程也開著，但實測回的是
+`Create Pages site failed: Resource not accessible by integration`：
+工作流程的 `GITHUB_TOKEN` 沒有建立 Pages 站臺的權限。那是帳號層級的限制，
+改 workflow 沒有用。**在那個開關被打開之前，每一次推送都會建置成功、閘門全綠，
+然後停在最後一步。**
 
 工作流程做四件事：
 
