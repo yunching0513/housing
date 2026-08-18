@@ -35,7 +35,7 @@ def safe(name, limit=90):
 
 
 def guess_ext(url, ctype, body):
-    m = re.search(r'\.(xml|csv|json|zip|xlsx|xls|ods|geojson|pdf)(?:$|[?#])', url, re.I)
+    m = re.search(r'\.(xml|csv|json|zip|xlsx|xls|ods|odt|geojson|pdf)(?:$|[?#])', url, re.I)
     if m:
         return '.' + m.group(1).lower()
     for key, ext in (('xml', '.xml'), ('json', '.json'), ('csv', '.csv'),

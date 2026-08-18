@@ -9052,5 +9052,155 @@
   "urls": [
    "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11065/230907/s046.ods"
   ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_第2表_平均每戶家庭收支按區域別分",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/49.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_第8表_家庭住宅及主要設備概況按區域別分",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/89.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_第10表_家庭住宅及主要設備概況依可支配所得按戶數五等分位分",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/105.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_第6表_平均每戶家庭收支依可支配所得按戶數五等分位分",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/77.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_第1表_平均每戶家庭收支按戶內人數分",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/45.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_所得收入者第1表_平均每人所得來源按區域別分",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/111.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_歷年第24表_家庭住宅狀況",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Year24.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_歷年第14表_家庭消費支出結構按消費型態分",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Year14.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_歷年第10表_可支配所得消費支出及儲蓄",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Year10.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_歷年第3表_戶數五等分位組之平均每戶可支配所得",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Year03.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_歷年第7表_戶數十等分位組分界點之可支配所得",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Year07.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_歷年第1表_所得總額與可支配所得",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Year01.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_家庭收支重要指標",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Index.ods"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_附錄一_名詞解釋",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Definec.odt"
+  ]
+ },
+ {
+  "category": "08_家庭收支調查",
+  "dataset_id": null,
+  "title": "114年家庭收支調查_附錄二_調查方法",
+  "agency": "行政院主計總處",
+  "update": "每年",
+  "urls": [
+   "https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588/Methodc.odt"
+  ]
  }
 ]

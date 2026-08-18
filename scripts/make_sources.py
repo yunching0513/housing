@@ -77,6 +77,42 @@ EXTRA = [{
     'urls': ['https://raw.githubusercontent.com/g0v/twgeojson/master/json/twCounty2010.geo.json'],
 }]
 
+# ── 08 家庭收支調查 ──────────────────────────────────────────────────────────
+# 這一批不在 data.gov.tw 的目錄裡，是報告頁的直接連結，所以走 EXTRA 而非 PICKS。
+#   https://www.stat.gov.tw/News_Content.aspx?n=3908&s=236588
+# 一律取 .ods 不取 .xls：.xls 是 OLE2 二進位，沒有第三方套件讀不動；.ods 是 zip
+# 內含 content.xml，scripts/ods_to_csv.py 用內建函式庫就能拆（AGENTS.md §4）。
+FIES = 'https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588'
+FIES_TABLES = [
+    # 114 年橫斷面
+    ('49',  '第2表_平均每戶家庭收支按區域別分'),
+    ('89',  '第8表_家庭住宅及主要設備概況按區域別分'),
+    ('105', '第10表_家庭住宅及主要設備概況依可支配所得按戶數五等分位分'),
+    ('77',  '第6表_平均每戶家庭收支依可支配所得按戶數五等分位分'),
+    ('45',  '第1表_平均每戶家庭收支按戶內人數分'),
+    ('111', '所得收入者第1表_平均每人所得來源按區域別分'),
+    # 歷年序列
+    ('Year24', '歷年第24表_家庭住宅狀況'),
+    ('Year14', '歷年第14表_家庭消費支出結構按消費型態分'),
+    ('Year10', '歷年第10表_可支配所得消費支出及儲蓄'),
+    ('Year03', '歷年第3表_戶數五等分位組之平均每戶可支配所得'),
+    ('Year07', '歷年第7表_戶數十等分位組分界點之可支配所得'),
+    ('Year01', '歷年第1表_所得總額與可支配所得'),
+    ('Index',  '家庭收支重要指標'),
+]
+# 名詞解釋與調查方法一起收：設算租金怎麼算、縣市樣本數多少，都只寫在這兩份裡。
+FIES_DOCS = [('Definec', '附錄一_名詞解釋'), ('Methodc', '附錄二_調查方法')]
+
+EXTRA += [{
+    'category': '08_家庭收支調查',
+    'dataset_id': None,
+    'title': f'114年家庭收支調查_{name}',
+    'agency': '行政院主計總處',
+    'update': '每年',
+    'urls': [f'{FIES}/{stem}.{ext}'],
+} for stem, name, ext in ([(a, b, 'ods') for a, b in FIES_TABLES]
+                          + [(a, b, 'odt') for a, b in FIES_DOCS])]
+
 
 def main():
     src = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'catalog.csv')
