@@ -36,6 +36,7 @@
   "headline": {
    "type": "object",
    "required": [
+    "band",
     "burden",
     "households",
     "houses",
@@ -133,6 +134,9 @@
      "type": "integer"
     },
     "rentPeriod": {
+     "type": "string"
+    },
+    "band": {
      "type": "string"
     }
    }

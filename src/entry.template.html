@@ -59,18 +59,21 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
     <p class="eyebrow" id="eyebrow"></p>
     <h1>社宅該蓋在哪</h1>
     <p class="dek">
-      這是一組為了回答一個問題而做的資料與圖表：<b>臺灣的社會住宅該蓋在哪、蓋多少</b>。
-      核心不是把統計數字攤開，而是把<b>人實際住在哪</b>跟<b>房子實際空在哪</b>放在同一張圖上。
-      這兩件事在臺灣是錯開的，<b>錯開的地方就是政策該處理的地方</b>。
+      全國有<b id="d-idle"></b>宅沒有人在使用，占全部住宅的<b id="d-vac"></b>；
+      同一時間，房價所得比<b id="d-pir"></b>倍，內政部自己的分級是「<b id="d-band"></b>」。
+      房子空著與買不起並存，並非矛盾：那是兩件事發生在不同的地方。
+      本研究要回答的是<b>社會住宅該蓋在哪、蓋多少</b>，做法不是把統計數字攤開，
+      而是把<b>人實際住在哪</b>與<b>房子實際空在哪</b>放進同一張圖：
+      <b>兩者錯開之處，就是政策該處理的地方</b>。
     </p>
   </header>
 
   <dl class="stats" id="stats"></dl>
 
   <section>
-    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">01</span>問題的順序</h2>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">壹、</span>問題的順序</h2>
     <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
-      每一頁回答一個問題，而且是上一題逼出來的下一題。照這個順序讀最省力。
+      每一頁回答一個問題，而其中每一題都是上一題逼出來的。照這個順序讀最省力。
     </p>
     <div class="chain" id="chain"></div>
   </section>
@@ -78,11 +81,11 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   <hr class="rule">
 
   <section>
-    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">02</span>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">貳、</span>
       <span id="npages"></span>頁各自回答什麼</h2>
     <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
-      每一頁都是單一檔案、資料內嵌、無外部請求，可以離線開、可以直接寄給別人。
-      下面每張卡片的粗體那行就是那一頁的主要發現。<span id="linknote"></span>
+      每一頁皆為單一檔案、資料內嵌、無外部請求，得以離線開啟、直接寄送、長期封存。
+      下方每張卡片的粗體那一行，即為該頁的主要發現。<span id="linknote"></span>
     </p>
     <div class="cards" id="cards"></div>
   </section>
@@ -90,7 +93,7 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   <hr class="rule">
 
   <section>
-    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">03</span>資料清單</h2>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">參、</span>資料清單</h2>
     <div class="tablewrap">
       <table class="src" id="src">
         <thead><tr>
@@ -105,10 +108,10 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   <hr class="rule">
 
   <section>
-    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">04</span>判讀原則</h2>
+    <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">肆、</span>判讀原則</h2>
     <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
-      這五件事在每一頁上都會再講一次，因為它們是最容易出錯的地方。
-      拿這些圖去做簡報之前，先確認自己沒有踩到。
+      下列各條在每一頁上都會再講一次，因為它們正是最容易出錯的地方。
+      將這些圖表用於簡報之前，請先確認自己沒有踩到。
     </p>
     <div class="rules" id="rules"></div>
   </section>
@@ -117,27 +120,30 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
 
   <div class="notes">
     <section>
-      <h3>時間基準為什麼鎖109年11月</h3>
-      <p>結構分析（誰住哪、房子空多少）一律用109年人口及住宅普查：人口與住宅來自
-      同一次調查，分子分母同期才不失真。趨勢則交給有長期數列的資料：
-      低度使用住宅回推到98年，常住人口回推到45年。</p>
+      <h3>時間基準為什麼鎖在109年11月</h3>
+      <p>結構分析：誰住在哪裡、房子空了多少，一律以109年人口及住宅普查為準。
+      理由在於人口與住宅取自同一次調查，分子與分母同期才不失真。
+      趨勢則交給有長期數列的資料：低度使用住宅回推至98年，常住人口回推至45年。
+      兩者分工，跨資料的比較則須先看期別。</p>
     </section>
     <section>
       <h3>為什麼沒有一頁叫「結論」</h3>
-      <p>因為結論取決於你用哪個標準，而不同標準會給出不同的縣市名單。
-      「先蓋在哪裡」那一頁把三種標準的名次並排畫出來，就是為了讓這件事看得見，
-      而不是替讀者選一個然後假裝那是唯一答案。</p>
+      <p>結論取決於採用哪一個標準，而不同標準會給出不同的縣市名單。
+      〈先蓋在哪裡〉將三種標準的名次並排畫出，用意正是讓這個分歧看得見，
+      而非替讀者選定一個，然後假裝那是唯一答案。</p>
     </section>
     <section>
       <h3>怎麼重建</h3>
-      <p>每一頁的資料都由<code>scripts/prep_*.py</code>從原始檔解析，<code>scripts/build.py</code>內嵌後產出<code>dist/</code>。
-      解析程式一律先與原表的小計列對帳才寫檔，欄序若變動會直接中止而不是默默算錯。</p>
+      <p>每一頁的資料皆由<code>scripts/prep_*.py</code>自原始檔解析，
+      經<code>scripts/build.py</code>內嵌後產出。解析程式一律先與原表的小計列對帳才寫檔；
+      欄序若有變動即直接中止，而非默默算錯。此外全站設有五道閘門，
+      跑一次<code>python3 run_gates.py</code>即可查證資料與版面有沒有分岔。</p>
     </section>
     <section>
       <h3>資料在哪</h3>
-      <p>原始檔在<code>data/sources/</code>與<code>data_TW/</code>，
-      解析後的中間檔在<code>data/</code>。下載工具與各政府網站的已知問題
-      （憑證鏈、防火牆、人機驗證）都寫在<code>README.md</code>。</p>
+      <p>原始檔存於<code>data/sources/</code>與<code>data_TW/</code>，
+      解析後的中間檔存於<code>data/</code>。下載工具，以及各政府網站的已知障礙
+      （憑證鏈、防火牆、人機驗證）皆記於<code>README.md</code>。</p>
     </section>
   </div>
 </div>
@@ -157,6 +163,10 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
   const LOCAL = window.top === window.self;
   const man = v => (v / 10000).toFixed(0) + '萬';
 
+  document.getElementById('d-idle').textContent = man(H.idle);
+  document.getElementById('d-vac').textContent = H.vacancy + '%';
+  document.getElementById('d-pir').textContent = H.pir.toFixed(2);
+  document.getElementById('d-band').textContent = H.band;
   document.getElementById('eyebrow').textContent =
     `${D.built.pages}頁 ・ ${D.built.sources}份資料 ・ ` +
     `${D.built.counties}縣市 ／ ${D.built.towns}鄉鎮市區`;
@@ -169,15 +179,19 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
     stat('沒人使用的住宅', man(H.idle),
          `占全部住宅${H.vacancy}%；用電定義下${H.moiNow}%（${H.moiLabel}）`) +
     stat('房價所得比', H.pir.toFixed(2) + '倍',
-         `房貸負擔率${H.burden}%，內政部分級「偏低」`) +
+         `房貸負擔率${H.burden}%，內政部分級「${H.band}」`) +
     stat('人口高點', '109年',
          `${int(H.popPeak)} → ${H.popYear}年${int(H.popNow)}，六年少${man(H.popPeak - H.popNow)}人`);
 
   const CHAIN = [
-    ['空屋這麼多，還要蓋嗎', '先確認空屋能不能用。答案是多數不能：最空的是新屋與小宅。'],
-    ['那要蓋在哪', '空屋不是均勻分布，人也不是。兩者錯開的地方才是問題所在。'],
-    ['誰最需要', '空屋率排不出優先序，換成負擔能力就換一批縣市。'],
-    ['蓋了沒有', '包租代管那半邊有資料，直接興建那半邊還缺。'],
+    ['空屋這麼多，還需要蓋嗎',
+     '得先確認那些空屋能不能用。答案是多數不能：最空的是新屋與小宅，不是老屋。'],
+    ['那麼該蓋在哪裡',
+     '空屋並非均勻分布，人亦然。兩者錯開之處，才是問題所在。'],
+    ['誰最需要',
+     '空屋率排不出優先序；換成負擔能力，就換了一批縣市。標準決定名單。'],
+    ['蓋了多少，租金又是多少',
+     '直接興建與包租代管兩條路都有資料了；租金水準亦已算出，缺的只剩所得。'],
   ];
   document.getElementById('chain').innerHTML = CHAIN.map(([h, p], i) =>
     `<div class="link"><span class="n">Q${i + 1}</span><h3>${h}</h3><p>${p}</p></div>`).join('');
