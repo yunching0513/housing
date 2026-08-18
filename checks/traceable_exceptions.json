@@ -1,17 +1,40 @@
 {
  "_note": "版面上找不到出處的數字，每一個都要寫下為什麼可以留。這是受保護檔案：新增一筆等於一次人為決定，會被封印閘門記錄下來。",
  "exceptions": [
-  {"file": "town.template.html", "value": "0.0009",
-   "reason": "圖形簡化（Douglas-Peucker）的容差，單位是度，是方法參數不是統計數字"},
-  {"file": "index.template.html", "value": "77.37",
-   "reason": "兩種空屋定義的交叉表格位，來自 scripts/verify_vacancy.py 的對照常數，尚未寫進 data/。待辦：把交叉表輸出成中間檔"},
-  {"file": "town.template.html", "value": "77.37",
-   "reason": "同上，兩種空屋定義都認定「不是空屋」的比率"},
-  {"file": "build.template.html", "value": "70,136",
-   "reason": "中央興辦戶數的機關別拆分，寫在來源 PDF 的註記段落（1150731-社會住宅興辦案件執行情形彙整表_1.pdf 第 79 行）而不在表格裡，prep_social_build.py 只解析表格"},
-  {"file": "build.template.html", "value": "66,249",
-   "reason": "同上，中央直接興辦戶數，來自 PDF 註記第 83 行"},
-  {"file": "build.template.html", "value": "4,110",
-   "reason": "同上，中央其他多元興辦方式戶數，來自 PDF 註記第 83 行"}
+  {
+   "file": "town.template.html",
+   "value": "0.0009",
+   "reason": "圖形簡化（Douglas-Peucker）的容差，單位是度，是方法參數不是統計數字"
+  },
+  {
+   "file": "index.template.html",
+   "value": "77.37",
+   "reason": "兩種空屋定義的交叉表格位，來自 scripts/verify_vacancy.py 的對照常數，尚未寫進 data/。待辦：把交叉表輸出成中間檔"
+  },
+  {
+   "file": "town.template.html",
+   "value": "77.37",
+   "reason": "同上，兩種空屋定義都認定「不是空屋」的比率"
+  },
+  {
+   "file": "build.template.html",
+   "value": "70,136",
+   "reason": "中央興辦戶數的機關別拆分，寫在來源 PDF 的註記段落（1150731-社會住宅興辦案件執行情形彙整表_1.pdf 第 79 行）而不在表格裡，prep_social_build.py 只解析表格"
+  },
+  {
+   "file": "build.template.html",
+   "value": "66,249",
+   "reason": "同上，中央直接興辦戶數，來自 PDF 註記第 83 行"
+  },
+  {
+   "file": "build.template.html",
+   "value": "4,110",
+   "reason": "同上，中央其他多元興辦方式戶數，來自 PDF 註記第 83 行"
+  },
+  {
+   "file": "signal.template.html",
+   "value": "189.8",
+   "reason": "從 tw_towns.json 的多邊形以球面公式推算出的三民區面積，是用來說明「為什麼不用圖形算密度」的診斷值，不是這個站發布的統計。推算方式與其他行政區的對照寫在 README〈圖資的兩個已知缺陷〉"
+  }
  ]
 }
