@@ -44,6 +44,13 @@
      "quadrant",
      "rank",
      "region",
+     "rentArea",
+     "rentGap",
+     "rentMarketPing",
+     "rentN",
+     "rentPing",
+     "rentSocialPing",
+     "rentWhole",
      "shLatest",
      "shMatched",
      "shPer1000",
@@ -174,6 +181,8 @@
        "pct",
        "perHousehold",
        "pir",
+       "rentPing",
+       "rentWhole",
        "shMatched",
        "shPer1000",
        "shbDonePer1000",
@@ -279,6 +288,22 @@
         "type": "integer",
         "minimum": 1,
         "maximum": 22
+       },
+       "rentWhole": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 1,
+        "maximum": 22
+       },
+       "rentPing": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 1,
+        "maximum": 22
        }
       }
      },
@@ -364,6 +389,45 @@
       "type": "number",
       "minimum": 0,
       "maximum": 100
+     },
+     "rentWhole": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "rentPing": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "rentArea": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "rentN": {
+      "type": "integer"
+     },
+     "rentSocialPing": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "rentMarketPing": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "rentGap": {
+      "type": [
+       "number",
+       "null"
+      ]
      }
     }
    },
@@ -398,6 +462,11 @@
     "perHousehold",
     "pir",
     "popSeries",
+    "rentArea",
+    "rentMarketPing",
+    "rentPing",
+    "rentSocialPing",
+    "rentWhole",
     "shLive",
     "shLiveShare",
     "shMatched",
@@ -499,6 +568,21 @@
      "type": "number",
      "minimum": 0,
      "maximum": 100
+    },
+    "rentWhole": {
+     "type": "integer"
+    },
+    "rentPing": {
+     "type": "integer"
+    },
+    "rentSocialPing": {
+     "type": "integer"
+    },
+    "rentMarketPing": {
+     "type": "integer"
+    },
+    "rentArea": {
+     "type": "number"
     }
    }
   },
@@ -539,6 +623,7 @@
     "census",
     "moi",
     "pop",
+    "rent",
     "signal",
     "social"
    ],
@@ -563,6 +648,9 @@
      "type": "string"
     },
     "social": {
+     "type": "string"
+    },
+    "rent": {
      "type": "string"
     }
    }
@@ -692,6 +780,8 @@
     "pct",
     "perHousehold",
     "pir",
+    "rentPing",
+    "rentWhole",
     "shMatched",
     "shPer1000",
     "shbDonePer1000",
@@ -944,6 +1034,38 @@
      }
     },
     "vacancy": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "rentWhole": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "rentPing": {
      "type": "object",
      "required": [
       "label",

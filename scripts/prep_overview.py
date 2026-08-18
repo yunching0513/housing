@@ -35,6 +35,7 @@ def main():
     sig = load('tw_signal.json')
     prof = load('tw_county_profile.json')
     bld = load('tw_social_build.json')
+    rent = load('tw_rent.json')
 
     n_hou, n_moi = hou['national'], moi['national']
     last = len(moi['periods']) - 1
@@ -60,6 +61,8 @@ def main():
     inflow = max(towns, key=lambda t: t['dayWork'] - t['nightWork'])
     outflow = min(towns, key=lambda t: t['dayWork'] - t['nightWork'])
     tao = next(c for c in soc['counties'] if c['name'] == '桃園市')
+    rw = rent['national']['grid']['whole']
+    rent_have = sum(1 for c in rent['counties'] if c['grid']['whole']['all']['rent'])
 
     pages = [
         {'file': 'index.html', 'title': '臺灣住宅供需圖', 'unit': '22 縣市',
@@ -108,9 +111,16 @@ def main():
                  f"已完工只有 {bld['national']['total']['done']:,} 戶"
                  f"（{bld['national']['total']['done'] / bld['national']['total']['total'] * 100:.1f}%）",
          'note': f"{sum(1 for c in bld['counties'] if c['total']['done'] == 0)} 個縣市一戶都還沒完工"},
+        {'file': 'rent.html', 'title': '租金實際上是多少',
+         'unit': f'22 縣市（{rent_have} 縣市樣本足夠）',
+         'asks': '社宅是租賃政策，那租金到底多少',
+         'says': f"整戶月租金中位數 {rw['all']['rent']:,} 元、每坪 {rw['all']['ping']:,} 元；"
+                 f"社宅包租代管每坪 {rw['social']['ping']:,} 元，"
+                 f"其餘案件 {rw['nonSocial']['ping']:,} 元",
+         'note': '申報義務落在租賃住宅服務業，房東自租不在裡面，不是市場的隨機樣本'},
         {'file': 'county.html', 'title': '縣市檔案', 'unit': '22 縣市',
          'asks': '這一個縣市到底怎麼樣',
-         'says': '選一個縣市，八份資料一次看完，每個數字附 22 縣市名次',
+         'says': '選一個縣市，九份資料一次看完，每個數字附 22 縣市名次',
          'note': '合併的代價是期別不一致，頁面上逐項標注'},
     ]
 
@@ -131,10 +141,12 @@ def main():
          'unit': '鄉鎮市區', 'have': True, 'use': '實際停留人口與日夜差'},
         {'name': '社宅直接興建進度', 'org': '國土署', 'period': bld['asOf'], 'unit': '縣市',
          'have': True, 'use': '覆蓋率分子的另一半；四個階段分開，已完工才是存量'},
-        {'name': '不動產成交實價登錄', 'org': '內政部', 'period': '99–115 年', 'unit': '鄉鎮市區',
-         'have': True, 'use': '買賣與租賃逐筆交易，租金水準的原始資料'},
-        {'name': '租金所得比', 'org': '—', 'period': '—', 'unit': '縣市',
-         'have': False, 'use': '有租金了但缺縣市別家戶所得，還算不出來'},
+        {'name': '不動產成交實價登錄（租賃）', 'org': '內政部',
+         'period': f"102–{rent['years'][-1]} 年", 'unit': '鄉鎮市區', 'have': True,
+         'use': f"逐筆租賃申報，已算出各縣市租金中位數（{rent['national']['n']:,} 筆）"},
+        {'name': '家庭收支調查（縣市別可支配所得）', 'org': '主計總處', 'period': '—',
+         'unit': '縣市', 'have': False,
+         'use': '租金有了、所得還沒有，所以還算不出租金所得比'},
     ]
 
     reading = [
@@ -155,6 +167,11 @@ def main():
          'p': f"社宅總計 {bld['national']['total']['total']:,} 戶裡，"
               f"已完工只有 {bld['national']['total']['done']:,} 戶，其餘在興建、待開工或還在規劃。"
               '新聞引用的多半是總計；要講「現在有多少可以住」只能用已完工。'},
+        {'h': '租金那份不是市場租金',
+         'p': f"實價登錄的租賃申報義務主要落在租賃住宅服務業經手的案件，房東自租不在裡面。"
+              f"114 年整棟（戶）出租的申報案件裡有 "
+              f"{rw['social']['n'] / rw['all']['n'] * 100:.0f}% 是社宅包租代管，那是政策價。"
+              '相對高低可比，絕對值不要當成「這裡租一戶要多少錢」。'},
         {'h': '分界線附近不要當硬結論',
          'p': '四分型只差一個空屋率門檻。新北市離全國分界 0.04 個百分點，'
               '換一個空屋定義就會翻面，換一個標準會換一批縣市。'},
@@ -172,6 +189,12 @@ def main():
             'popPeak': pser['national'][pser['baseIndex']],
             'popNow': pser['national'][-1], 'popYear': pser['years'][-1],
             'pct': pop['totals']['pct'],
+            # 這兩個原本沒放進來，版面卻在用，於是印出 NaN。
+            'shbDone': bld['national']['total']['done'],
+            'shbTotal': bld['national']['total']['total'],
+            'rentWhole': rw['all']['rent'], 'rentPing': rw['all']['ping'],
+            'rentSocial': rw['social']['ping'], 'rentMarket': rw['nonSocial']['ping'],
+            'rentN': rent['national']['n'], 'rentPeriod': rent['period'],
         },
         'pages': pages, 'sources': sources, 'reading': reading,
     }

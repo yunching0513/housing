@@ -42,6 +42,10 @@ PAGES = {
         '__GEO_JSON__': 'tw_counties.json',
         '__BLD_JSON__': 'tw_social_build.json',
     }),
+    'rent.html': ('rent.template.html', {
+        '__GEO_JSON__': 'tw_counties.json',
+        '__RENT_JSON__': 'tw_rent.json',
+    }),
     'county.html': ('county.template.html', {
         '__GEO_JSON__': 'tw_counties.json',
         '__PROF_JSON__': 'tw_county_profile.json',

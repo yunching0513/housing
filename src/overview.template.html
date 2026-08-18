@@ -80,7 +80,7 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
 
   <section>
     <h2><span class="n" style="font-family:var(--f-mono);font-size:13px;color:var(--accent)">02</span>
-      八頁各自回答什麼</h2>
+      <span id="npages"></span>頁各自回答什麼</h2>
     <p style="margin:0;max-width:72ch;color:var(--ink-2);font-size:13.6px">
       每一頁都是單一檔案、資料內嵌、無外部請求，可以離線開、可以直接寄給別人。
       下面每張卡片的粗體那行就是那一頁的主要發現。<span id="linknote"></span>
@@ -202,15 +202,19 @@ table.src td:nth-child(6) { font-size: 12px; color: var(--ink-2); max-width: 34c
     </tr>`).join('');
 
   const missing = D.sources.filter(s => !s.have);
+  document.getElementById('npages').textContent = D.pages.length;
   document.getElementById('gapbox').innerHTML =
     `<h2>還缺 ${missing.length} 項，而且是算出來的不是抓來的</h2>` +
     `<p>社宅的兩條路現在都有了：<b>直接興建</b>已完工 ${int(H.shbDone)} 戶
      （總計 ${int(H.shbTotal)} 戶，其餘還在興建、待開工或規劃），
      <b>包租代管</b>累計媒合 ${int(H.shMatched)} 戶、仍有效 ${int(H.shLive)} 戶。
      兩者口徑不同，一個是存量一個是累計流量，頁面上分開講、不相加。</p>` +
-    `<p>剩下的缺口是 <b>租金所得比</b>。實價登錄的租賃逐筆資料已經在手，
-     算得出各縣市的租金中位數；但要變成「負擔得起嗎」還需要<b>縣市別的家戶可支配所得</b>，
-     那份還沒接進來。在拿到之前，負擔能力只能用房價所得比代理，
+    `<p><b>租金也算出來了</b>：實價登錄的租賃申報 ${int(H.rentN)} 筆，
+     整棟（戶）出租的月租金中位數 ${int(H.rentWhole)} 元、每坪 ${int(H.rentPing)} 元
+     （${H.rentPeriod}）。同一批案件裡，社宅包租代管每坪 ${int(H.rentSocial)} 元，
+     其餘案件 ${int(H.rentMarket)} 元。</p>` +
+    `<p>剩下的缺口只有一個：<b>縣市別的家戶可支配所得</b>。有了它才能把租金變成
+     <b>租金所得比</b>，也就是「租得起嗎」。在拿到之前，負擔能力只能用房價所得比代理，
      而它量的是「買」不是「租」——社宅是租賃政策，這個代理並不貼題。</p>`;
 
   document.getElementById('rules').innerHTML = D.reading.map(r =>

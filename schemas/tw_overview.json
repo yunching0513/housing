@@ -47,8 +47,16 @@
     "popNow",
     "popPeak",
     "popYear",
+    "rentMarket",
+    "rentN",
+    "rentPeriod",
+    "rentPing",
+    "rentSocial",
+    "rentWhole",
     "shLive",
     "shMatched",
+    "shbDone",
+    "shbTotal",
     "vacancy"
    ],
    "additionalProperties": false,
@@ -102,6 +110,30 @@
      "type": "number",
      "minimum": 0,
      "maximum": 100
+    },
+    "shbDone": {
+     "type": "integer"
+    },
+    "shbTotal": {
+     "type": "integer"
+    },
+    "rentWhole": {
+     "type": "integer"
+    },
+    "rentPing": {
+     "type": "integer"
+    },
+    "rentSocial": {
+     "type": "integer"
+    },
+    "rentMarket": {
+     "type": "integer"
+    },
+    "rentN": {
+     "type": "integer"
+    },
+    "rentPeriod": {
+     "type": "string"
     }
    }
   },

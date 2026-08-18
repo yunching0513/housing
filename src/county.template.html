@@ -168,11 +168,19 @@ __SHARED_CSS__
 
   <div class="notes">
     <section>
-      <h3>七個時間點，不是同一天</h3>
+      <h3>八個時間點，不是同一天</h3>
       <p>合併的代價是期別不一致：普查與住宅是 <b id="n-census"></b>，低度使用是
       <b id="n-moi"></b>，包租代管與社宅興辦是 <b id="n-social"></b>，負擔能力是
-      <b id="n-afford"></b>，電信信令是 <b id="n-signal"></b>，常住人口到
+      <b id="n-afford"></b>，電信信令是 <b id="n-signal"></b>，租金是
+      <b id="n-rent"></b>，常住人口到
       <b id="n-pop"></b>。同一格裡的比較都在同一份資料內，跨格比較請看期別。</p>
+    </section>
+    <section>
+      <h3>租金那兩格不是市場租金</h3>
+      <p>實價登錄的租賃申報義務主要落在租賃住宅服務業經手的案件上，房東自租
+      不在裡面；114 年的申報案件有六成是社宅包租代管，那是政策價。
+      名次仍然可比（同一套申報制度底下的相對高低），但絕對值不要當成
+      「這個縣市租一戶要多少錢」。細節在租金那一頁。</p>
     </section>
     <section>
       <h3>名次不等於好壞</h3>
@@ -382,6 +390,20 @@ __MAP_ZOOM_JS__
         c.burden == null ? '<span class="na">未列</span>' : c.burden.toFixed(2) + '%',
         c.burden == null ? '<span>－</span>' : `<span>${c.band}${c.affThin ? ' ★樣本不足' : ''}</span>`,
         c.rank.burden, R.burden.of),
+      metric('整戶月租金中位數（實價登錄）',
+        c.rentWhole == null ? '<span class="na">樣本不足</span>'
+          : int(c.rentWhole) + ' <small>元/月</small>',
+        c.rentWhole == null ? `<span>只有 ${int(c.rentN)} 筆申報</span>`
+          : `<span>中位面積 ${c.rentArea} 坪　全國 ${int(NAT.rentWhole)} 元</span>`,
+        c.rank.rentWhole, R.rentWhole.of),
+      metric('每坪租金（整棟戶出租）',
+        c.rentPing == null ? '<span class="na">樣本不足</span>'
+          : int(c.rentPing) + ' <small>元/坪</small>',
+        c.rentGap == null
+          ? `<span>社宅與非社宅其中一邊樣本不足，算不出價差</span>`
+          : `<span>社宅 ${int(c.rentSocialPing)}・非社宅 ${int(c.rentMarketPing)}，` +
+            `差 ${c.rentGap.toFixed(0)}%</span>`,
+        c.rank.rentPing, R.rentPing.of),
       metric('宅戶比', c.perHousehold.toFixed(3),
         vs(c.perHousehold, NAT.perHousehold, '', 3), c.rank.perHousehold, R.perHousehold.of),
       metric('社宅已完工（每千家戶）', c.shbDonePer1000.toFixed(2),
@@ -529,6 +551,7 @@ __MAP_ZOOM_JS__
     ['perHousehold', '宅戶比', v => v.toFixed(2), NAT.perHousehold],
     ['shPer1000', '包租代管 戶/千家戶', v => v.toFixed(0), NAT.shPer1000],
     ['shbDonePer1000', '社宅已完工 戶/千家戶', v => v.toFixed(1), NAT.shbDonePer1000],
+    ['rentPing', '每坪租金 元', v => v.toFixed(0), NAT.rentPing],
     ['sigRatio', '白天／晚上人口比', v => v.toFixed(2), NAT.sigRatio],
     ['since109Pct', '109→115 人口 %', v => v.toFixed(1), null],
   ];

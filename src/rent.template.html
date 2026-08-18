@@ -1,0 +1,693 @@
+<title>租金實際上是多少</title>
+
+<style>
+__SHARED_CSS__
+
+/* ── page-specific ─────────────────────────────────────────────────────── */
+.lede { background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--div-0);
+        border-radius: 3px; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.lede h2 { font-size: 17px; }
+.lede p { margin: 0; font-size: 13.6px; color: var(--ink-2); max-width: 76ch; }
+.lede p b { color: var(--ink); }
+
+.county.nodata { fill: var(--neutral); }
+.legend .ndrow { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-3); }
+.legend .ndrow i { width: 22px; height: 13px; border-radius: 1px; background: var(--neutral);
+                   display: inline-block; border: 1px solid var(--rule); }
+.row.nd .track { opacity: .5; }
+.row .val.nd { color: var(--ink-3); font-weight: 400; }
+
+/* 社宅與非社宅的對照：一個縣市一列，兩個點加一條連線 */
+.gaprow { display: grid; grid-template-columns: 3.6em 1fr 5.4em; align-items: center;
+          gap: 8px; padding: 3px 0; }
+.gaprow .nm { font-size: 12.5px; color: var(--ink-2); }
+.gapline { position: relative; height: 20px; }
+.gapline .seg { position: absolute; top: 9px; height: 2px; background: var(--rule); }
+.gapline .dot { position: absolute; top: 5px; width: 10px; height: 10px; border-radius: 50%;
+                margin-left: -5px; }
+.gapline .dot.s { background: var(--pri-3); }
+.gapline .dot.m { background: var(--sq2-0); }
+.gaprow .pc { font-family: var(--f-mono); font-size: 12px; text-align: right;
+              font-variant-numeric: tabular-nums; color: var(--ink); }
+.gapkey { display: flex; gap: 16px; font-size: 12px; color: var(--ink-3); margin-bottom: 8px; }
+.gapkey i { width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+            margin-right: 5px; vertical-align: -1px; }
+
+.yearbars { display: flex; align-items: flex-end; gap: 4px; height: 132px; }
+.yearbars .yb { flex: 1; display: flex; flex-direction: column; align-items: center;
+                justify-content: flex-end; gap: 4px; height: 100%; }
+.yearbars .yb i { width: 100%; background: var(--seq-2); border-radius: 1px 1px 0 0; }
+.yearbars .yb span { font-family: var(--f-mono); font-size: 9.5px; color: var(--ink-3); }
+.ylabel { font-size: 11.5px; color: var(--ink-3); margin-top: 6px; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow" id="eyebrow"></p>
+    <h1>租金實際上是多少</h1>
+    <p class="dek">
+      社宅是<b>租賃</b>政策，但一直以來能拿來衡量負擔的只有<b>房價</b>所得比：那量的是「買」。
+      這一頁把實價登錄的租賃申報逐筆算出各縣市的<b>租金中位數</b>。
+      先講最重要的一件事：這份資料<b>不是市場租金的隨機樣本</b>，
+      114 年的申報案件裡有六成是<b>社宅包租代管</b>，那是政策價不是市場價，所以要分開看。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="lede">
+    <h2>這份資料在測什麼、測不到什麼</h2>
+    <p><b>測得到</b>：經由租賃住宅服務業（包租業、代管業）成交的案件，以及社宅包租代管。
+    依租賃住宅市場發展及管理條例，申報義務落在服務業者身上。</p>
+    <p><b>測不到</b>：房東自己找房客、自己簽約的那一大塊。那部分沒有申報義務，
+    所以不在這份資料裡，而它很可能才是市場的多數。<b>不要把這裡的中位數當成
+    「全臺灣的租金」</b>，它是「有服務業經手的那些案件的租金」。</p>
+    <p><b>更不要當趨勢讀</b>：申報件數從 102 年的 <span id="k-n102"></span> 筆長到
+    114 年的 <span id="k-n114"></span> 筆，成長 <span id="k-grow"></span> 倍。
+    那是申報範圍在擴大，不是市場在變。同一期間中位數看起來在跌，
+    真正在跌的是<b>樣本的房子變小了</b>（中位面積 <span id="k-a102"></span> 坪 →
+    <span id="k-a114"></span> 坪）。下面那張圖就是把這件事畫出來讓你不要誤讀。</p>
+  </div>
+
+  <hr class="rule">
+
+  <div class="controls">
+    <div class="seg" id="seg" role="group" aria-label="切換指標">
+      <button data-k="rent" aria-pressed="true">整戶月租金</button>
+      <button data-k="ping" aria-pressed="false">每坪租金</button>
+      <button data-k="market" aria-pressed="false">每坪（排除社宅）</button>
+      <button data-k="gap" aria-pressed="false">社宅便宜多少</button>
+    </div>
+    <span class="hint">滑過或點選任一縣市，地圖、長條與表格同步</span>
+  </div>
+
+  <div class="figures">
+    <section class="panel">
+      <header><h2 id="map-title">租金分布</h2><p id="map-sub"></p></header>
+      <div class="body">
+        <div class="mapwrap"><svg class="map" id="map" viewBox="0 0 990 1000"
+             role="img" aria-labelledby="map-title" aria-describedby="map-desc"></svg>
+          <p id="map-desc" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header><h2>縣市排序</h2><p id="bars-sub"></p></header>
+      <div class="body"><div class="bars" id="bars"></div></div>
+    </section>
+  </div>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>同一個縣市、同樣是整棟（戶）出租，社宅包租代管便宜多少</h2>
+      <p>每一列是一個縣市，左邊的點是社宅包租代管的每坪租金，右邊是其餘案件</p>
+    </header>
+    <div class="body">
+      <div class="gapkey">
+        <span><i style="background:var(--pri-3)"></i>社宅包租代管</span>
+        <span><i style="background:var(--sq2-0)"></i>其餘申報案件</span>
+      </div>
+      <div id="gaps"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:80ch">
+        全國整棟（戶）出租的申報案件裡，社宅包租代管每坪 <b id="k-sp"></b> 元，
+        其餘案件每坪 <b id="k-mp"></b> 元，<b>差 <span id="k-gap"></span>%</b>。
+        而且這不是「社宅租的都是小房子」造成的：兩邊的中位面積分別是
+        <b id="k-sa"></b> 坪與 <b id="k-ma"></b> 坪，幾乎一樣。
+      </p>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:10px;max-width:80ch">
+        這個差距要小心解讀，它同時混了兩件分不開的事：<b>一是包租代管真的把租金壓下來了</b>
+        （房東減稅、政府補貼、租金上限），<b>二是拿來比的那一組本身偏貴</b>
+        ——經由服務業成交的一般案件多半在都會區、屋況較好。這份資料看不到
+        房東自租的那一塊，所以「便宜幾成」的分母站不穩。可以說的是：
+        <b>同一套申報制度底下，社宅那條路徑的租金明顯低於另一條</b>。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>為什麼這條線不能當趨勢讀</h2>
+      <p>柱子是每年的申報件數，數字是當年的整體月租金中位數與中位面積</p>
+    </header>
+    <div class="body">
+      <div class="yearbars" id="years"></div>
+      <div id="yearlabels" class="ylabel"></div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:14px;max-width:80ch">
+        每一批資料都是<b>同一個季節的三個月視窗</b>（春季），所以季節性已經受控。
+        但件數在十三年裡長了 <b id="k-grow2"></b> 倍，而且新進來的案件系統性地比較小、比較便宜。
+        中位數往下走看起來像「租金在跌」，實際上是<b>樣本的組成在變</b>。
+        真的要看租金趨勢，需要固定同一批可比較的物件，這份資料做不到。
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header><h2>各縣市完整資料</h2><p>點欄位標題排序。「－」表示樣本數少於 <span id="k-min"></span> 筆，不足以算中位數</p></header>
+    <div class="body">
+      <div class="tablewrap">
+        <table id="tbl">
+          <thead><tr>
+            <th data-k="name">縣市</th>
+            <th data-k="rent">整戶月租金</th>
+            <th data-k="area">中位面積（坪）</th>
+            <th data-k="ping">每坪</th>
+            <th data-k="social">社宅每坪</th>
+            <th data-k="market">非社宅每坪</th>
+            <th data-k="gap">差（%）</th>
+            <th data-k="studio">獨立套房月租</th>
+            <th data-k="room">分租月租</th>
+            <th data-k="n">申報件數</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header><h2 id="town-h">鄉鎮市區</h2><p>只列整棟（戶）出租樣本達 <span id="k-min2"></span> 筆的行政區。點縣市可以篩選</p></header>
+    <div class="body">
+      <div class="tablewrap">
+        <table id="ttbl">
+          <thead><tr>
+            <th data-k="name">行政區</th>
+            <th data-k="rent">整戶月租金</th>
+            <th data-k="area">中位面積（坪）</th>
+            <th data-k="ping">每坪</th>
+            <th data-k="n">整戶件數</th>
+            <th data-k="nAll">全部件數</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>怎麼算的</h3>
+      <p>用<b>中位數</b>不用平均：租金分布右偏，一筆整棟商辦可以是一般住家的三百倍。
+      因為用中位數，這支程式<b>不修剪極端值</b>，只排除明顯的資料錯誤（面積或租金為零）。
+      少一道人為判斷，就少一個可以被悄悄調鬆的參數。</p>
+    </section>
+    <section>
+      <h3>哪些案件被排除了</h3>
+      <p>純土地與純車位的租賃、非住宅類建物（店面、辦公商業大樓、廠辦、工廠、倉庫、農舍）
+      一律排除：一間店面的租金跟一戶住家放在同一個中位數裡，那個中位數就沒有意義。
+      每一筆讀入的案件都要落在「納入」或某一個具名的排除原因裡，兩者加總必須等於讀入筆數，
+      對不上就中止。</p>
+    </section>
+    <section>
+      <h3>車位的錢有扣掉</h3>
+      <p>原始欄位的「總額元」與「建物總面積平方公尺」都是<b>含車位</b>的。
+      這裡一律扣掉車位總額與車位面積之後才算租金與單價。
+      驗證方式是原始資料自己的恆等式：單價元平方公尺 ×（總面積 − 車位面積）
+      ≈ 總額 − 車位總額。</p>
+    </section>
+    <section>
+      <h3>整戶、獨立套房、分租不能混在一起</h3>
+      <p>「整棟（戶）出租」與「獨立套房」各自是一個可以住一戶的完整單元，
+      「分租套房」與「分租雅房」是一個單元裡的一個房間。把房間的月租跟整戶的月租
+      放進同一個中位數，得到的數字誰都不代表。所以本頁的縣市比較一律用<b>整棟（戶）出租</b>。</p>
+    </section>
+    <section>
+      <h3>兩個欄位 113 年才有</h3>
+      <p>「出租型態」與「租賃住宅服務」是 113 年的資料才開始有的欄位。
+      所以社宅與一般的比較、整戶與分租的比較，<b>只有 113 與 114 兩年做得出來</b>，
+      更早的年份只有整體中位數。</p>
+    </section>
+    <section>
+      <h3>連江縣沒有資料</h3>
+      <p>實價登錄的租賃檔案沒有連江縣（Z）這一份，21 個縣市有檔案。
+      金門縣只有 5 筆、澎湖縣 31 筆，都不足以算出可用的分項中位數。
+      這跟「租金是 0」完全不一樣，所以地圖上畫成灰色。</p>
+    </section>
+    <section>
+      <h3>資料來源</h3>
+      <p>內政部不動產成交案件實際資訊（實價登錄）租賃案件，102 至 114 年，
+      每年一個春季三個月視窗，共 263 個 XML 檔。
+      解析程式為 <code>scripts/prep_rent.py</code>；縣市名以各批次的
+      <code>manifest.csv</code> 為準，再與普查的 22 縣市對帳。</p>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="geo">__GEO_JSON__</script>
+<script type="application/json" id="rent">__RENT_JSON__</script>
+
+<script>
+__MAP_ZOOM_JS__
+(() => {
+  'use strict';
+  const GEO = JSON.parse(document.getElementById('geo').textContent);
+  const R = JSON.parse(document.getElementById('rent').textContent);
+  const C = Object.fromEntries(R.counties.map(c => [c.name, c]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]); return n; };
+  const int = v => Math.round(v).toLocaleString('en-US');
+  const dash = v => v == null ? '－' : int(v);
+
+  // 交叉表的取值。任何一格都可能是 null（樣本不足），呼叫端一律要處理。
+  const cell = (c, unit, svc) => c.grid[unit][svc];
+  const gapOf = c => {
+    const s = cell(c, 'whole', 'social').ping, m = cell(c, 'whole', 'nonSocial').ping;
+    return s && m ? (m / s - 1) * 100 : null;
+  };
+
+  // ── projection（與其他縣市地圖同一套框架）─────────────────────────────
+  const MAIN = [258, 8, 724, 984];
+  const INSETS = { matsu: { mag: 1.5, x: 14, y: 40 }, kinmen: { mag: 2.0, x: 14, y: 292 } };
+  const RECTS = { main: MAIN };
+  const proj = {};
+  const cosOf = b => Math.cos((b[1] + b[3]) / 2 * Math.PI / 180);
+  {
+    const b = GEO.bounds.main, k = cosOf(b), [x, y, w, h] = MAIN;
+    const s = Math.min(w / ((b[2] - b[0]) * k), h / (b[3] - b[1]));
+    proj.main = { b, k, s, dx: x + (w - (b[2] - b[0]) * k * s) / 2,
+                  dy: y + (h - (b[3] - b[1]) * s) / 2 };
+  }
+  for (const [g, cfg] of Object.entries(INSETS)) {
+    const b = GEO.bounds[g], k = cosOf(b), s = proj.main.s * cfg.mag;
+    RECTS[g] = [cfg.x, cfg.y, (b[2] - b[0]) * k * s, (b[3] - b[1]) * s];
+    proj[g] = { b, k, s, dx: cfg.x, dy: cfg.y };
+  }
+  const px = (g, lon) => proj[g].dx + (lon - proj[g].b[0]) * proj[g].k * proj[g].s;
+  const py = (g, lat) => proj[g].dy + (proj[g].b[3] - lat) * proj[g].s;
+  const pathOf = c => c.rings.map(r =>
+    'M' + r.map(([lo, la]) => `${px(c.group, lo).toFixed(1)} ${py(c.group, la).toFixed(1)}`).join('L') + 'Z'
+  ).join('');
+  const centroid = c => {
+    const r = c.rings[0]; let a = 0, cx = 0, cy = 0;
+    for (let i = 0; i < r.length - 1; i++) {
+      const x1 = px(c.group, r[i][0]), y1 = py(c.group, r[i][1]);
+      const x2 = px(c.group, r[i + 1][0]), y2 = py(c.group, r[i + 1][1]);
+      const f = x1 * y2 - x2 * y1;
+      a += f; cx += (x1 + x2) * f; cy += (y1 + y2) * f;
+    }
+    return a ? [cx / (3 * a), cy / (3 * a)] : [px(c.group, r[0][0]), py(c.group, r[0][1])];
+  };
+  const LBL = {
+    新北市: ['新北', -46, 26], 臺北市: ['臺北', 56, -34, 1], 桃園市: ['桃園', -18, 8],
+    基隆市: ['基隆', 42, -24, 1], 新竹市: ['竹市', -52, 4, 1], 新竹縣: ['竹縣', 18, 6],
+    宜蘭縣: ['宜蘭', 6, 12], 苗栗縣: ['苗栗', -6, 2], 臺中市: ['臺中', 24, 2],
+    彰化縣: ['彰化', -36, 6, 1], 南投縣: ['南投', 8, 10], 雲林縣: ['雲林', -28, 4, 1],
+    嘉義市: ['嘉市', -52, -8, 1], 嘉義縣: ['嘉縣', 10, 8], 臺南市: ['臺南', -4, 6],
+    高雄市: ['高雄', 2, 26], 屏東縣: ['屏東', 2, 30], 花蓮縣: ['花蓮', 0, 20],
+    臺東縣: ['臺東', -4, 12], 澎湖縣: ['澎湖', 0, 42],
+  };
+
+  // ── metrics ───────────────────────────────────────────────────────────
+  // 前三個都是「越貴越深」的量，用同一組序列色階；
+  // 第四個是兩組的比較，用發散色階，因為它有一個有意義的中點（沒有差距）。
+  const METRICS = {
+    rent: {
+      label: '整棟（戶）出租的月租金中位數', unit: '元/月',
+      breaks: [14000, 15500, 17000, 19000, 22000],
+      get: c => cell(c, 'whole', 'all').rent, fmt: int, tick: v => int(v),
+      sub: '全部申報案件（含社宅包租代管）。全國 ' + int(R.national.grid.whole.all.rent) + ' 元',
+      lo: '便宜', hi: '貴', ramp: 'seq', n: 6,
+    },
+    ping: {
+      label: '整棟（戶）出租的每坪月租金', unit: '元/坪',
+      breaks: [430, 500, 550, 600, 750],
+      get: c => cell(c, 'whole', 'all').ping, fmt: int, tick: v => int(v),
+      sub: '扣掉車位之後的單價，全部申報案件。全國 ' + int(R.national.grid.whole.all.ping) + ' 元/坪',
+      lo: '便宜', hi: '貴', ramp: 'seq', n: 6,
+    },
+    market: {
+      label: '排除社宅之後的每坪月租金', unit: '元/坪',
+      breaks: [500, 600, 730, 800, 1000],
+      get: c => cell(c, 'whole', 'nonSocial').ping, fmt: int, tick: v => int(v),
+      sub: '只算非社宅的申報案件，比較接近市場價，但樣本較少、七個縣市不足',
+      lo: '便宜', hi: '貴', ramp: 'seq', n: 6,
+    },
+    gap: {
+      label: '非社宅比社宅貴幾成', unit: '%',
+      breaks: [10, 20, 30, 40, 60, 80],
+      get: gapOf, fmt: v => v.toFixed(0) + '%', tick: v => v + '%',
+      sub: '同一縣市、同樣是整棟（戶）出租。兩邊都要有足夠樣本才算得出來',
+      lo: '差距小', hi: '差距大', ramp: 'sq2', n: 6,
+    },
+  };
+  const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
+    return i === -1 ? m.breaks.length : i; };
+  const shade = (m, i) => `var(--${m.ramp}-${Math.min(i, m.n - 1)})`;
+  const fillOf = (m, v) => v == null ? 'var(--neutral)' : shade(m, classOf(m, v));
+
+  let metric = 'rent', pinned = null, hovered = null, townFilter = null;
+
+  // ── build map ─────────────────────────────────────────────────────────
+  const svg = document.getElementById('map');
+  const gGrat = el('g', { class: 'grat' }), gTick = el('g'), gLand = el('g'),
+        gDeco = el('g'), gLbl = el('g');
+  svg.append(gGrat, gTick, gLand, gDeco, gLbl);
+  {
+    const [rx, ry, rw, rh] = RECTS.main;
+    for (let lon = 120; lon <= 122; lon++) {
+      const x = px('main', lon); if (x < rx || x > rx + rw) continue;
+      gGrat.append(el('line', { x1: x, y1: ry, x2: x, y2: ry + rh }));
+      if (x + 34 <= 990) gTick.append(Object.assign(
+        el('text', { class: 'grat-tick', x: x + 3, y: ry + rh - 6 }), { textContent: lon + '°E' }));
+    }
+    for (let lat = 22; lat <= 25; lat++) {
+      const y = py('main', lat); if (y < ry || y > ry + rh) continue;
+      gGrat.append(el('line', { x1: rx, y1: y, x2: rx + rw, y2: y }));
+      gTick.append(Object.assign(el('text', { class: 'grat-tick', x: rx + 4, y: y - 4 }),
+        { textContent: lat + '°N' }));
+    }
+  }
+  for (const c of GEO.counties) {
+    gLand.append(el('path', { class: 'county', d: pathOf(c), 'data-name': c.name,
+      tabindex: '0', role: 'button', 'aria-label': c.name }));
+  }
+  {
+    const mk = (g, text) => {
+      const [x, y, w, h] = RECTS[g];
+      gDeco.append(el('rect', { class: 'inset-frame', x, y, width: w, height: h, rx: 2 }));
+      gDeco.append(Object.assign(el('text', { class: 'inset-label', x: x + 2, y: y - 6 }),
+        { textContent: `${text} ×${(proj[g].s / proj.main.s).toFixed(1)}` }));
+    };
+    mk('matsu', '連江縣（馬祖）');
+    mk('kinmen', '金門縣');
+    const KM = 50, x0 = 26, y0 = 946, w = KM * proj.main.s / 111.32;
+    gDeco.append(el('path', { class: 'scalebar',
+      d: `M${x0} ${y0 - 5}V${y0}H${x0 + w}V${y0 - 5}M${x0 + w / 2} ${y0}v-4` }));
+    for (const [v, x] of [[0, x0], [KM / 2, x0 + w / 2], [KM, x0 + w]]) {
+      gDeco.append(Object.assign(el('text', {
+        class: 'inset-label', x, y: y0 + 13,
+        'text-anchor': v === 0 ? 'start' : v === KM ? 'end' : 'middle',
+      }), { textContent: v === KM ? `${v} km` : String(v) }));
+    }
+  }
+  for (const c of GEO.counties) {
+    if (!LBL[c.name]) continue;
+    const [nm, dx = 0, dy = 0, lead = 0] = LBL[c.name];
+    const [cx, cy] = centroid(c);
+    if (lead) gLbl.append(el('path', { class: 'leader',
+      d: `M${cx.toFixed(1)} ${cy.toFixed(1)}L${(cx + dx * .82).toFixed(1)} ${(cy + dy * .82 - 4).toFixed(1)}` }));
+    gLbl.append(Object.assign(el('text', {
+      class: 'lbl' + (['基隆市', '新竹市', '嘉義市', '澎湖縣'].includes(c.name) ? ' sm' : ''),
+      x: (cx + dx).toFixed(1), y: (cy + dy).toFixed(1), 'text-anchor': 'middle',
+    }), { textContent: nm }));
+  }
+
+  // ── header stats ──────────────────────────────────────────────────────
+  {
+    const n = R.national, w = n.grid.whole;
+    const s102 = n.series[0], s114 = n.series[n.series.length - 1];
+    document.getElementById('eyebrow').textContent =
+      `資料期 ${R.period} ・ 實價登錄租賃申報 ・ ${int(n.n)} 筆`;
+    const stat = (k, v, sub) =>
+      `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
+    document.getElementById('stats').innerHTML =
+      stat('整戶月租金中位數', int(w.all.rent) + ' 元',
+           `中位面積 ${w.all.area} 坪，每坪 ${int(w.all.ping)} 元`) +
+      stat('社宅包租代管每坪', int(w.social.ping) + ' 元',
+           `${int(w.social.n)} 筆，占整戶申報案件 ${(w.social.n / w.all.n * 100).toFixed(0)}%`) +
+      stat('其餘案件每坪', int(w.nonSocial.ping) + ' 元',
+           `${int(w.nonSocial.n)} 筆，比社宅高 ${((w.nonSocial.ping / w.social.ping - 1) * 100).toFixed(0)}%`) +
+      stat('有資料的縣市', R.counties.filter(c => cell(c, 'whole', 'all').rent != null).length + ' 個',
+           `連江縣沒有檔案；樣本少於 ${R.minSample} 筆不算中位數`);
+    document.getElementById('k-n102').textContent = int(s102.n);
+    document.getElementById('k-n114').textContent = int(s114.n);
+    document.getElementById('k-grow').textContent = (s114.n / s102.n).toFixed(1);
+    document.getElementById('k-grow2').textContent = (s114.n / s102.n).toFixed(1);
+    document.getElementById('k-a102').textContent = s102.area;
+    document.getElementById('k-a114').textContent = s114.area;
+    document.getElementById('k-sp').textContent = int(w.social.ping);
+    document.getElementById('k-mp').textContent = int(w.nonSocial.ping);
+    document.getElementById('k-gap').textContent =
+      ((w.nonSocial.ping / w.social.ping - 1) * 100).toFixed(0);
+    document.getElementById('k-sa').textContent = w.social.area;
+    document.getElementById('k-ma').textContent = w.nonSocial.area;
+    document.getElementById('k-min').textContent = R.minSample;
+    document.getElementById('k-min2').textContent = R.minSample;
+  }
+
+  // ── panels ────────────────────────────────────────────────────────────
+  const barsEl = document.getElementById('bars');
+  const legendEl = document.getElementById('legend');
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  const ttbody = document.querySelector('#ttbl tbody');
+  const tip = document.getElementById('tip');
+  let sortKey = 'rent', sortDir = -1, tSortKey = 'ping', tSortDir = -1;
+
+  const HAVE = m => R.counties.filter(c => METRICS[m].get(c) != null);
+
+  function paint() {
+    const m = METRICS[metric];
+    const have = HAVE(metric);
+    document.getElementById('map-sub').textContent =
+      `${m.sub}。${have.length} 個縣市樣本足夠`;
+    document.getElementById('bars-sub').textContent = `依${m.label}排序 ・ 單位 ${m.unit}`;
+    document.getElementById('map-desc').textContent =
+      `臺灣${m.label}分布圖。` + have.map(c => `${c.name} ${m.fmt(m.get(c))}`).join('、') +
+      `。其餘 ${22 - have.length} 個縣市樣本不足。`;
+    for (const p of gLand.children) p.style.fill = fillOf(m, m.get(C[p.dataset.name]));
+    drawLegend(m); drawBars(m); drawTable(); mark();
+  }
+
+  function drawLegend(m) {
+    const have = HAVE(metric);
+    legendEl.innerHTML = '';
+    const cap = document.createElement('div'); cap.className = 'cap';
+    cap.innerHTML = `<span>← ${m.lo}</span><span>${m.hi} →</span>`;
+    const sws = document.createElement('div'); sws.className = 'swatches';
+    for (let i = 0; i <= m.breaks.length; i++) {
+      const d = document.createElement('div');
+      d.className = 'sw'; d.style.background = shade(m, i);
+      const cnt = have.filter(c => classOf(m, m.get(c)) === i).length;
+      d.title = `${cnt} 個縣市`;
+      if (!cnt) d.style.opacity = '.34';
+      sws.append(d);
+    }
+    const tk = document.createElement('div'); tk.className = 'ticks';
+    for (const b of m.breaks) {
+      const s = document.createElement('span'); s.textContent = m.tick(b); tk.append(s);
+    }
+    tk.append(document.createElement('span'));
+    const nd = document.createElement('div'); nd.className = 'ndrow';
+    nd.innerHTML = `<i></i><span>樣本不足 ${R.minSample} 筆或沒有資料（不等於租金低）</span>`;
+    legendEl.append(cap, sws, tk, nd);
+  }
+
+  function drawBars(m) {
+    const vals = HAVE(metric).map(m.get);
+    const hi = Math.max(...vals, 1);
+    const rows = [...R.counties].sort((a, b) =>
+      (m.get(b) == null ? -1 : m.get(b)) - (m.get(a) == null ? -1 : m.get(a)));
+    barsEl.innerHTML = rows.map(c => {
+      const v = m.get(c);
+      return `<div class="row${v == null ? ' nd' : ''}" data-name="${c.name}" tabindex="0">
+        <span class="nm">${c.name.slice(0, 3)}</span>
+        <span class="track"><i class="bar" style="left:0;width:${v == null ? 0 : v / hi * 100}%;background:${fillOf(m, v)}"></i></span>
+        <span class="val${v == null ? ' nd' : ''}">${v == null ? '不足' : m.fmt(v)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  const COLS = {
+    name: c => c.name,
+    rent: c => cell(c, 'whole', 'all').rent,
+    area: c => cell(c, 'whole', 'all').area,
+    ping: c => cell(c, 'whole', 'all').ping,
+    social: c => cell(c, 'whole', 'social').ping,
+    market: c => cell(c, 'whole', 'nonSocial').ping,
+    gap: gapOf,
+    studio: c => cell(c, 'studio', 'all').rent,
+    room: c => cell(c, 'room', 'all').rent,
+    n: c => c.n,
+  };
+
+  function drawTable() {
+    const m = METRICS[metric];
+    const rows = [...R.counties].sort((a, b) => {
+      const x = COLS[sortKey](a), y = COLS[sortKey](b);
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    const one = v => v == null ? '－' : int(v);
+    tbody.innerHTML = rows.map(c => `
+      <tr data-name="${c.name}">
+        <td><i class="chip" style="background:${fillOf(m, m.get(c))}"></i>${c.name}</td>
+        <td class="num">${one(COLS.rent(c))}</td>
+        <td class="num">${COLS.area(c) == null ? '－' : COLS.area(c)}</td>
+        <td class="num">${one(COLS.ping(c))}</td>
+        <td class="num">${one(COLS.social(c))}</td>
+        <td class="num">${one(COLS.market(c))}</td>
+        <td class="num">${gapOf(c) == null ? '－' : gapOf(c).toFixed(0) + '%'}</td>
+        <td class="num">${one(COLS.studio(c))}</td>
+        <td class="num">${one(COLS.room(c))}</td>
+        <td class="num">${int(c.n)}</td>
+      </tr>`).join('');
+    const w = R.national.grid;
+    tfoot.innerHTML = `<tr>
+      <td>全國</td><td class="num">${int(w.whole.all.rent)}</td>
+      <td class="num">${w.whole.all.area}</td><td class="num">${int(w.whole.all.ping)}</td>
+      <td class="num">${int(w.whole.social.ping)}</td><td class="num">${int(w.whole.nonSocial.ping)}</td>
+      <td class="num">${((w.whole.nonSocial.ping / w.whole.social.ping - 1) * 100).toFixed(0)}%</td>
+      <td class="num">${int(w.studio.all.rent)}</td><td class="num">${int(w.room.all.rent)}</td>
+      <td class="num">${int(R.national.n)}</td></tr>`;
+  }
+
+  const TCOLS = {
+    name: t => t.county + t.name,
+    rent: t => t.whole.rent, area: t => t.whole.area,
+    ping: t => t.whole.ping, n: t => t.whole.n, nAll: t => t.n,
+  };
+
+  function drawTowns() {
+    const pool = R.towns.filter(t => t.whole.n >= R.minSample &&
+                                     (!townFilter || t.county === townFilter));
+    document.getElementById('town-h').textContent =
+      townFilter ? `${townFilter}的行政區（${pool.length} 個）` : `鄉鎮市區（${pool.length} 個）`;
+    const rows = [...pool].sort((a, b) => {
+      const x = TCOLS[tSortKey](a), y = TCOLS[tSortKey](b);
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * tSortDir;
+    });
+    ttbody.innerHTML = rows.map(t => `
+      <tr data-name="${t.county}"><td>${t.county} ${t.name}</td>
+        <td class="num">${dash(t.whole.rent)}</td><td class="num">${t.whole.area}</td>
+        <td class="num">${dash(t.whole.ping)}</td>
+        <td class="num">${int(t.whole.n)}</td><td class="num">${int(t.n)}</td></tr>`).join('') ||
+      `<tr><td colspan="6" style="color:var(--ink-3)">這個縣市沒有任何行政區的整戶樣本達 ${R.minSample} 筆</td></tr>`;
+  }
+
+  // ── 社宅與非社宅的對照 ────────────────────────────────────────────────
+  {
+    const pool = R.counties
+      .filter(c => cell(c, 'whole', 'social').ping && cell(c, 'whole', 'nonSocial').ping)
+      .sort((a, b) => gapOf(b) - gapOf(a));
+    const hi = Math.max(...pool.map(c => cell(c, 'whole', 'nonSocial').ping));
+    document.getElementById('gaps').innerHTML = pool.map(c => {
+      const s = cell(c, 'whole', 'social').ping, m = cell(c, 'whole', 'nonSocial').ping;
+      const a = s / hi * 100, b = m / hi * 100;
+      return `<div class="gaprow" data-name="${c.name}">
+        <span class="nm">${c.name.slice(0, 3)}</span>
+        <span class="gapline">
+          <i class="seg" style="left:${a}%;width:${b - a}%"></i>
+          <i class="dot s" style="left:${a}%" title="社宅 ${int(s)} 元/坪"></i>
+          <i class="dot m" style="left:${b}%" title="非社宅 ${int(m)} 元/坪"></i>
+        </span>
+        <span class="pc">＋${gapOf(c).toFixed(0)}%</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── 逐年件數 ──────────────────────────────────────────────────────────
+  {
+    const s = R.national.series, hi = Math.max(...s.map(y => y.n));
+    document.getElementById('years').innerHTML = s.map(y =>
+      `<div class="yb" title="${y.year} 年 ${int(y.n)} 筆，月租中位 ${int(y.rent)} 元，中位面積 ${y.area} 坪">
+        <span>${int(y.rent / 1000)}k</span>
+        <i style="height:${y.n / hi * 100}%"></i>
+      </div>`).join('');
+    document.getElementById('yearlabels').innerHTML =
+      `<div style="display:flex;gap:4px">` + s.map(y =>
+        `<span style="flex:1;text-align:center">${y.year}</span>`).join('') + `</div>` +
+      `<div style="margin-top:6px">柱高＝申報件數（${int(s[0].n)} → ${int(s[s.length - 1].n)} 筆）；` +
+      `柱上數字＝當年整體月租金中位數（千元）；中位面積 ${s[0].area} → ${s[s.length - 1].area} 坪</div>`;
+  }
+
+  // ── linking ───────────────────────────────────────────────────────────
+  function mark() {
+    const n = pinned || hovered;
+    svg.classList.toggle('dimmed', !!n);
+    for (const p of gLand.children) p.classList.toggle('active', p.dataset.name === n);
+    for (const r of barsEl.children) r.classList.toggle('active', r.dataset.name === n);
+    for (const r of tbody.children) r.classList.toggle('active', r.dataset.name === n);
+  }
+  function showTip(e, name) {
+    const c = C[name], w = cell(c, 'whole', 'all');
+    tip.innerHTML = `<div class="t-nm">${name}</div>` +
+      (w.rent != null
+        ? `<dl><dt>整戶月租金</dt><dd>${int(w.rent)} 元</dd>
+             <dt>中位面積</dt><dd>${w.area} 坪</dd>
+             <dt>每坪</dt><dd>${int(w.ping)} 元</dd>
+             <dt>社宅每坪</dt><dd>${dash(cell(c, 'whole', 'social').ping)}</dd>
+             <dt>非社宅每坪</dt><dd>${dash(cell(c, 'whole', 'nonSocial').ping)}</dd>
+             <dt>申報件數</dt><dd>${int(c.n)}</dd></dl>`
+        : `<dl><dt>狀態</dt><dd style="font-family:var(--f-body)">樣本不足（${int(c.n)} 筆）</dd></dl>`);
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 16, innerWidth - r.width - 8) + 'px';
+    tip.style.top = Math.max(8, Math.min(e.clientY - 12, innerHeight - r.height - 8)) + 'px';
+  }
+  function hideTip() { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); }
+
+  for (const host of [gLand, barsEl, tbody, document.getElementById('gaps')]) {
+    host.addEventListener('pointerover', e => {
+      const t = e.target.closest('[data-name]'); if (!t) return;
+      hovered = t.dataset.name; showTip(e, hovered); mark();
+    });
+    host.addEventListener('pointermove', e => {
+      const t = e.target.closest('[data-name]'); if (t) showTip(e, t.dataset.name);
+    });
+    host.addEventListener('pointerout', e => {
+      if (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-name]')) return;
+      hovered = null; hideTip(); mark();
+    });
+    host.addEventListener('click', e => {
+      const t = e.target.closest('[data-name]'); if (!t) return;
+      pinned = pinned === t.dataset.name ? null : t.dataset.name;
+      townFilter = pinned; drawTowns(); mark();
+    });
+  }
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape') { pinned = null; townFilter = null; hideTip(); drawTowns(); mark(); }
+  });
+
+  document.getElementById('seg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    metric = b.dataset.k;
+    document.querySelectorAll('#seg button').forEach(x =>
+      x.setAttribute('aria-pressed', String(x === b)));
+    paint();
+  });
+  document.querySelectorAll('#tbl thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.k;
+      sortDir = sortKey === k ? -sortDir : (k === 'name' ? 1 : -1);
+      sortKey = k;
+      document.querySelectorAll('#tbl thead th').forEach(x => x.removeAttribute('aria-sort'));
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable(); mark();
+    });
+  });
+  document.querySelectorAll('#ttbl thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.k;
+      tSortDir = tSortKey === k ? -tSortDir : (k === 'name' ? 1 : -1);
+      tSortKey = k;
+      document.querySelectorAll('#ttbl thead th').forEach(x => x.removeAttribute('aria-sort'));
+      th.setAttribute('aria-sort', tSortDir === 1 ? 'ascending' : 'descending');
+      drawTowns();
+    });
+  });
+
+  paint();
+  drawTowns();
+  enableMapZoom(svg, { max: 10 });
+})();
+</script>
