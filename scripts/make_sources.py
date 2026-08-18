@@ -77,41 +77,166 @@ EXTRA = [{
     'urls': ['https://raw.githubusercontent.com/g0v/twgeojson/master/json/twCounty2010.geo.json'],
 }]
 
-# ── 08 家庭收支調查 ──────────────────────────────────────────────────────────
+# ── 08 家庭收支調查（民國83年至114年）───────────────────────────────────────
 # 這一批不在 data.gov.tw 的目錄裡，是報告頁的直接連結，所以走 EXTRA 而非 PICKS。
-#   https://www.stat.gov.tw/News_Content.aspx?n=3908&s=236588
-# 一律取 .ods 不取 .xls：.xls 是 OLE2 二進位，沒有第三方套件讀不動；.ods 是 zip
-# 內含 content.xml，scripts/ods_to_csv.py 用內建函式庫就能拆（AGENTS.md §4）。
-FIES = 'https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/236588'
-FIES_TABLES = [
-    # 114 年橫斷面
-    ('49',  '第2表_平均每戶家庭收支按區域別分'),
-    ('89',  '第8表_家庭住宅及主要設備概況按區域別分'),
-    ('105', '第10表_家庭住宅及主要設備概況依可支配所得按戶數五等分位分'),
-    ('77',  '第6表_平均每戶家庭收支依可支配所得按戶數五等分位分'),
-    ('45',  '第1表_平均每戶家庭收支按戶內人數分'),
-    ('111', '所得收入者第1表_平均每人所得來源按區域別分'),
-    # 歷年序列
-    ('Year24', '歷年第24表_家庭住宅狀況'),
-    ('Year14', '歷年第14表_家庭消費支出結構按消費型態分'),
-    ('Year10', '歷年第10表_可支配所得消費支出及儲蓄'),
-    ('Year03', '歷年第3表_戶數五等分位組之平均每戶可支配所得'),
-    ('Year07', '歷年第7表_戶數十等分位組分界點之可支配所得'),
-    ('Year01', '歷年第1表_所得總額與可支配所得'),
-    ('Index',  '家庭收支重要指標'),
-]
-# 名詞解釋與調查方法一起收：設算租金怎麼算、縣市樣本數多少，都只寫在這兩份裡。
-FIES_DOCS = [('Definec', '附錄一_名詞解釋'), ('Methodc', '附錄二_調查方法')]
+#   https://www.stat.gov.tw/News.aspx?n=3908&sms=11530
+# 一律取 .ods/.odt 不取 .xls/.doc：後者是 OLE2 二進位，沒有第三方套件讀不動；
+# 前者是 zip 內含 content.xml，用內建函式庫就拆得開（AGENTS.md §4）。
+#
+# 檔案散在兩個位置，同一年還會混用，找不出規律，所以逐年照抄目錄頁上的實際連結：
+#   U＝ .../001/Upload/463/relfile/11530/{編號}/    W＝ .../win/fies/doc/result/{民國年}/a11/
+FIES_U = 'https://ws.dgbas.gov.tw/001/Upload/463/relfile/11530/{sid}'
+FIES_W = 'https://ws.dgbas.gov.tw/win/fies/doc/result/{roc}/a11'
+FIES_SID = {
+    114: '236588', 113: '235198', 112: '233680', 111: '231908', 110: '230826', 109: '235896',
+    108: '210988', 107: '210987', 106: '210986', 105: '210985', 104: '210984', 103: '210983',
+    102: '210982', 101: '210981', 100: '210980', 99: '210979', 98: '210978', 97: '210977',
+    96: '210976', 95: '210975', 94: '210974', 93: '210973', 92: '210972', 91: '210971',
+    90: '210970', 89: '210969', 88: '210968', 87: '210966', 86: '210965', 85: '210964',
+    84: '210963', 83: '210962',
+}
 
-EXTRA += [{
-    'category': '08_家庭收支調查',
-    'dataset_id': None,
-    'title': f'114年家庭收支調查_{name}',
-    'agency': '行政院主計總處',
-    'update': '每年',
-    'urls': [f'{FIES}/{stem}.{ext}'],
-} for stem, name, ext in ([(a, b, 'ods') for a, b in FIES_TABLES]
-                          + [(a, b, 'odt') for a, b in FIES_DOCS])]
+# 橫斷面表：17 張，83 至 114 年檔名完全一致（數字是印刷本的頁碼，不是表次）。
+# 表次反而逐年變動，例如「所得收入者平均每人所得來源按職業別分」早年排第三表、
+# 近年排第二表，所以檔名只留內容不留表次，同一張表三十二年才串得起來。
+# 61、101、117 這三張在民國 90 年代之前還多切一層「都市化程度別」，欄位會比較多。
+FIES_CROSS = [
+    ('45',  '平均每戶家庭收支按戶內人數分'),
+    ('49',  '平均每戶家庭收支按區域別分'),
+    ('61',  '平均每戶家庭收支按農家非農家分'),
+    ('65',  '平均每戶家庭收支按經濟戶長職業別分'),
+    ('73',  '平均每戶家庭收支按家庭組織型態別分'),
+    ('77',  '平均每戶家庭收支依可支配所得按戶數五等分位分'),
+    ('81',  '平均每戶可支配所得及消費支出按五等分位及戶長性別年齡教育程度分'),
+    ('87',  '家庭戶數按所得總額組別及經濟戶長性別分'),
+    ('89',  '家庭住宅及主要設備概況按區域別分'),
+    ('101', '家庭住宅及主要設備概況按農家非農家分'),
+    ('105', '家庭住宅及主要設備概況依可支配所得按戶數五等分位分'),
+    ('111', '所得收入者平均每人所得來源按區域別分'),
+    ('117', '所得收入者平均每人所得來源按農家非農家分'),
+    ('119', '所得收入者平均每人所得來源按職業別分'),
+    ('123', '所得收入者平均每人所得來源依可支配所得按五等分位分'),
+    ('125', '所得收入者平均每人可支配所得按五等分位及性別年齡教育程度分'),
+    ('129', '所得收入者人數按性別及可支配所得組別分'),
+]
+# 108 年的橫斷面表沒放進 Upload，只有舊路徑找得到；主計總處自己的目錄頁也是連舊路徑。
+FIES_CROSS_W = {108}
+
+# 歷年表：每一年的報告都附一份，內容是到當年為止的完整序列，後一年是前一年的超集，
+# 所以只取最新的 114 年，不逐年重複收三十份一模一樣的東西。
+FIES_YEAR_LATEST = 114
+FIES_SERIES = [
+    ('Index',  '重要指標'),
+    ('Year01', '所得總額與可支配所得'),
+    ('Year02', '所得總額按來源別分'),
+    ('Year03', '戶數五等分位組之平均每戶可支配所得'),
+    ('Year04', '戶數五等分位組之所得分配比與所得差距'),
+    ('Year05', '人數五等分位組之所得差距'),
+    ('Year06', '政府對家庭移轉收支對所得分配之影響'),
+    ('Year07', '戶數十等分位組分界點之可支配所得'),
+    ('Year08', '人數十等分位組分界點之可支配所得'),
+    ('Year09', '世界各國家地區所得分配狀況'),
+    ('Year10', '可支配所得消費支出及儲蓄'),
+    ('Year11', '戶數五等分位組之平均每戶消費支出'),
+    ('Year12', '戶數五等分位組之平均每戶儲蓄'),
+    ('Year13', '平均每戶及每位所得收入者之可支配所得按性別分'),
+    ('Year14', '家庭消費支出結構按消費型態分'),
+    ('Year15', '農家與非農家平均每戶及每人可支配所得'),
+    ('Year16', '農家平均每戶所得總額按來自農業與非農業分'),
+    ('Year17', '所得收入者五等分位組之可支配所得分配比與所得差距'),
+    ('Year18', '所得收入者十等分位組分界點之可支配所得'),
+    ('Year19', '所得收入者平均每人可支配所得及中位數所得按行業別分'),
+    ('Year20', '所得收入者平均每人可支配所得及中位數所得按職業別分'),
+    ('Year21', '所得收入者平均每人可支配所得及中位數所得按教育程度別分'),
+    ('Year22', '所得收入者之基本所得及人數按縣內縣外工作地點分'),
+    ('Year23', '所得收入者人數與按年齡組別及性別之分配'),
+    ('Year24', '家庭住宅狀況'),
+    ('Year25', '家庭主要設備普及率'),
+    ('Year26', '年中戶數與平均每戶人數就業人數按農家非農家分'),
+    ('Year27', '戶數五等分位組之平均每戶人數與就業人數'),
+    ('Year28', '家庭戶數按戶內人口規模別之分配'),
+    ('Year29', '就業者平均每人基本所得按職業別分'),
+]
+
+# 附錄逐年都收，理由是定義本身會變。每戶居住坪數的平均數在 110 年是 45.0 坪、
+# 112 年只剩 40.1 坪，兩年掉掉近 5 坪，要判斷那是真實變化還是改了定義或抽樣，
+# 只能翻當年的《調查方法》與《名詞解釋》，翻最新一版沒有用。
+FIES_DOC_NAME = {
+    'Preface': '前言', 'Analysis': '綜合分析', 'Definec': '附錄_名詞解釋',
+    'Methodc': '附錄_調查方法', 'Appendce': '附錄_未刊印之結果表',
+    'Questc': '附錄_調查表格式', 'appendix5': '附錄_高所得者所得占比',
+    'appendix6': '附錄_我國綜合所得稅申報統計',
+    'preface': '前言', 'methodc': '附錄_調查方法',   # 84、85、96、97 年的手誤檔名
+}
+# 各年提供的附錄不同：83 至 103 年六份，104 年起多了高所得者所得占比，
+# 109 至 110 年再多一份綜合所得稅申報統計，111 年起又收掉。
+# 前綴 * 表示這一份放在 U，其餘放在 W；少數幾份的大小寫與位置跟同年其他份不一致
+# （97 年的 methodc、96 年的 preface 之類），是上傳時的手誤，照實記，不要用規則推。
+FIES_DOCS = {
+    114: '*Preface *Analysis *Definec *Methodc *Appendce *Questc *appendix5',
+    113: '*Preface *Analysis *Definec *Methodc *Appendce *Questc *appendix5',
+    112: '*Preface *Analysis *Definec *Methodc *Appendce *Questc *appendix5',
+    111: '*Preface *Analysis *Definec *Methodc *Appendce *Questc *appendix5',
+    110: '*Preface *Analysis *Definec *Methodc *Appendce *Questc *appendix5 *appendix6',
+    109: '*Preface *Analysis *Definec *Methodc *Appendce *Questc *appendix5 *appendix6',
+    108: 'Preface *Analysis Definec Methodc Appendce Questc appendix5',
+    107: 'Preface *Analysis Definec Methodc Appendce Questc appendix5',
+    106: 'Preface Analysis Definec Methodc Appendce Questc appendix5',
+    105: 'Preface Analysis Definec Methodc Appendce Questc appendix5',
+    104: 'Preface Analysis Definec Methodc Appendce Questc appendix5',
+    103: 'Preface Analysis Definec Methodc Appendce Questc',
+    102: 'Preface Analysis Definec Methodc Appendce Questc',
+    101: 'Preface Analysis Definec Methodc Appendce Questc',
+    100: 'Preface Analysis Definec Methodc Appendce Questc',
+    99: 'Preface Analysis Definec Methodc Appendce Questc',
+    98: 'Preface Analysis Definec Methodc Appendce Questc',
+    97: '*Preface Analysis Definec *methodc Appendce Questc',
+    96: '*preface Analysis Definec Methodc Appendce Questc',
+    95: 'Preface Analysis Definec Methodc Appendce Questc',
+    94: 'Preface Analysis Definec Methodc Appendce Questc',
+    93: 'Preface Analysis Definec Methodc Appendce Questc',
+    92: 'Preface Analysis Definec Methodc Appendce Questc',
+    91: 'Preface Analysis Definec Methodc Appendce Questc',
+    90: 'Preface Analysis Definec Methodc Appendce Questc',
+    89: 'Preface Analysis Definec Methodc Appendce Questc',
+    88: 'Preface Analysis Definec Methodc Appendce Questc',
+    87: 'Preface Analysis Definec Methodc Appendce Questc',
+    86: 'Preface Analysis Definec Methodc Appendce Questc',
+    85: 'Preface Analysis Definec *methodc Appendce Questc',
+    84: '*preface Analysis Definec Methodc Appendce Questc',
+    83: 'Preface Analysis Definec Methodc Appendce Questc',
+}
+
+
+def fies():
+    """民國83年至114年家庭收支調查的檔案清單。
+
+    檔名把年度擺在最後：`家庭收支調查_{表名}_民國{年}年.ods`。
+    這樣同一張表的三十二年會排在一起，一個萬用字元就抓得到整條年度序列；
+    年度擺前面的話，臺北市的資料會夾在 100 年與 83 年中間，反而不好用。
+    """
+    out = []
+    for roc, sid in FIES_SID.items():
+        u, w = FIES_U.format(sid=sid), FIES_W.format(roc=roc)
+        picks = [(w if roc in FIES_CROSS_W else u, stem, name, 'ods')
+                 for stem, name in FIES_CROSS]
+        picks += [((u if s.startswith('*') else w), s.lstrip('*'),
+                   FIES_DOC_NAME[s.lstrip('*')], 'odt')
+                  for s in FIES_DOCS[roc].split()]
+        if roc == FIES_YEAR_LATEST:
+            picks += [(u, stem, '歷年_' + name, 'ods') for stem, name in FIES_SERIES]
+        out += [{
+            'category': '08_家庭收支調查',
+            'dataset_id': None,
+            'title': f'家庭收支調查_{name}_民國{roc}年',
+            'agency': '行政院主計總處',
+            'update': '每年',
+            'urls': [f'{base}/{stem}.{ext}'],
+        } for base, stem, name, ext in picks]
+    return out
+
+
+EXTRA += fies()
 
 
 def main():
