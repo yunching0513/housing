@@ -1,7 +1,9 @@
 {
  "type": "object",
  "required": [
+  "bands",
   "censusPeriod",
+  "medianMorningRatio",
   "medianRatio",
   "national",
   "period",
@@ -19,8 +21,14 @@
   "national": {
    "type": "object",
    "required": [
+    "afternoonWeekend",
+    "afternoonWork",
+    "area",
     "dayWeekend",
     "dayWork",
+    "morningRatio",
+    "morningWeekend",
+    "morningWork",
     "nightWeekend",
     "nightWork",
     "ratio",
@@ -51,6 +59,31 @@
     },
     "signalRatio": {
      "type": "number"
+    },
+    "morningWork": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "afternoonWork": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "morningWeekend": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "afternoonWeekend": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "area": {
+     "type": "number",
+     "minimum": 0
+    },
+    "morningRatio": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 10
     }
    }
   },
@@ -65,6 +98,9 @@
    "items": {
     "type": "object",
     "required": [
+     "afternoonWeekend",
+     "afternoonWork",
+     "area",
      "county",
      "dayWeekend",
      "dayWork",
@@ -72,7 +108,13 @@
      "houses",
      "inflow",
      "key",
+     "morningDensity",
+     "morningNet",
+     "morningRatio",
+     "morningWeekend",
+     "morningWork",
      "name",
+     "nightDensity",
      "nightWeekend",
      "nightWork",
      "ratio",
@@ -139,11 +181,69 @@
       "type": "number",
       "minimum": 0,
       "maximum": 100
+     },
+     "morningWork": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "afternoonWork": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "morningWeekend": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "afternoonWeekend": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "morningDensity": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "nightDensity": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "morningNet": {
+      "type": "integer"
+     },
+     "morningRatio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+     },
+     "area": {
+      "type": "number",
+      "minimum": 0.1,
+      "maximum": 2000
      }
     }
    },
    "minItems": 368,
    "maxItems": 368
+  },
+  "medianMorningRatio": {
+   "type": "number",
+   "minimum": 0,
+   "maximum": 10
+  },
+  "bands": {
+   "type": "object",
+   "required": [
+    "morning",
+    "afternoon"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "morning": {
+     "type": "string"
+    },
+    "afternoon": {
+     "type": "string"
+    }
+   }
   }
  },
  "title": "tw_signal.json"

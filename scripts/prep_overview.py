@@ -58,8 +58,11 @@ def main():
     gapped = max(live, key=lambda c: abs(r_vac[c['name']] - r_pir[c['name']]))
     gap_vac, gap_pir = r_vac[gapped['name']], r_pir[gapped['name']]
     towns = sig['towns']
-    inflow = max(towns, key=lambda t: t['dayWork'] - t['nightWork'])
-    outflow = min(towns, key=lambda t: t['dayWork'] - t['nightWork'])
+    inflow = max(towns, key=lambda t: t['morningNet'])
+    outflow = min(towns, key=lambda t: t['morningNet'])
+    dense = max(towns, key=lambda t: t['morningDensity'])
+    # Python 的 :+ 用的是半形連字號，中文句子裡要用真的減號才不會看起來像斷字
+    sgn = lambda v: f'{v:+,}'.replace('-', '−')
     tao = next(c for c in soc['counties'] if c['name'] == '桃園市')
     rw = rent['national']['grid']['whole']
     rent_have = sum(1 for c in rent['counties'] if c['grid']['whole']['all']['rent'])
@@ -99,12 +102,14 @@ def main():
                  f"差 {abs(gap_vac - gap_pir)} 個名次",
          'note': '建議：人口當門檻、負擔能力當排序、空屋率當工具選擇'},
         {'file': 'signal.html', 'title': '白天的臺灣，晚上的臺灣', 'unit': '368 鄉鎮市區',
-         'asks': '人白天在哪、晚上在哪',
-         'says': f"{inflow['county']}{inflow['name']}白天多 "
-                 f"{inflow['dayWork'] - inflow['nightWork']:,} 人，"
-                 f"{outflow['county']}{outflow['name']}少 "
-                 f"{abs(outflow['dayWork'] - outflow['nightWork']):,} 人",
-         'note': '日夜比與空屋率幾乎不相關（r=0.06），不能單獨拿來選址'},
+         'asks': '早上人都去哪裡、晚上回哪裡',
+         'says': f"上午（{sig['bands']['morning']}）淨流入最多的是"
+                 f"{inflow['county']}{inflow['name']} {sgn(inflow['morningNet'])} 人，"
+                 f"淨流出最多的是{outflow['county']}{outflow['name']} "
+                 f"{sgn(outflow['morningNet'])} 人",
+         'note': f"活動密度最高的是{dense['county']}{dense['name']}"
+                 f"（{dense['morningDensity']:,} 人/km²）；"
+                 f"日夜比與空屋率幾乎不相關（r=0.06），不能單獨拿來選址"},
         {'file': 'build.html', 'title': '社宅蓋了多少', 'unit': '22 縣市',
          'asks': '已經蓋了多少、蓋到哪個階段',
          'says': f"承諾 {bld['national']['total']['total']:,} 戶，"
@@ -138,7 +143,9 @@ def main():
         {'name': '房價負擔能力指標', 'org': '內政部', 'period': aff['period'],
          'unit': '縣市', 'have': True, 'use': '買不買得起；優先序的排序依據'},
         {'name': '電信信令人口', 'org': 'SEGIS', 'period': sig['period'],
-         'unit': '鄉鎮市區', 'have': True, 'use': '實際停留人口與日夜差'},
+         'unit': '鄉鎮市區', 'have': True,
+         'use': f"實際停留人口與日夜差，平日分上午{sig['bands']['morning']}"
+                f"與下午{sig['bands']['afternoon']}"},
         {'name': '社宅直接興建進度', 'org': '國土署', 'period': bld['asOf'], 'unit': '縣市',
          'have': True, 'use': '覆蓋率分子的另一半；四個階段分開，已完工才是存量'},
         {'name': '不動產成交實價登錄（租賃）', 'org': '內政部',

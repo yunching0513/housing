@@ -47,6 +47,27 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
 .filters .count { font-size: 12.5px; color: var(--ink-3); margin-left: auto; }
 .tallwrap { max-height: 560px; overflow: auto; }
 .tallwrap thead th { position: sticky; top: 0; background: var(--card); z-index: 1; }
+/* 這一頁的指標多到六個，預設的 .seg 不換行會在窄螢幕上被裁掉 */
+.seg { flex-wrap: wrap; }
+
+/* 熱區榜：兩欄，每一列是一個行政區加兩個數字 */
+.hot { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.hot h3 { font-size: 14px; margin: 0 0 2px; }
+.hot .why { font-size: 12px; color: var(--ink-3); margin: 0 0 8px; }
+.hotrow { display: grid; grid-template-columns: 1.9em 1fr 5.6em 5.2em; align-items: center;
+          gap: 6px; padding: 2px 0; font-size: 12.5px; border-bottom: 1px solid var(--rule-soft); }
+.hotrow:last-child { border-bottom: 0; }
+.hotrow .i { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-3); text-align: right; }
+.hotrow .n { color: var(--ink); }
+.hotrow .n small { color: var(--ink-3); font-size: 11px; }
+.hotrow .a, .hotrow .b { font-family: var(--f-mono); font-size: 11.5px; text-align: right;
+                         font-variant-numeric: tabular-nums; }
+.hotrow .b { color: var(--ink-3); }
+.hotrow.both { background: var(--accent-bg); }
+.hothead { display: grid; grid-template-columns: 1.9em 1fr 5.6em 5.2em; gap: 6px;
+           font-size: 10.5px; color: var(--ink-3); padding-bottom: 4px;
+           border-bottom: 1px solid var(--rule); }
+.hothead span:nth-child(3), .hothead span:nth-child(4) { text-align: right; }
 </style>
 
 <div class="wrap">
@@ -56,8 +77,9 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
     <h1>白天的臺灣，晚上的臺灣</h1>
     <p class="dek">
       前面每一頁數的都是<b>戶籍上或普查上人在哪</b>。這一頁數的是<b>手機實際在哪</b>，
-      而且分白天和晚上。差別直接關係到社宅要蓋在哪：
-      <b>臺北市六個行政區白天各多出 8 萬到 13 萬人，新北市六個行政區白天各少 6 萬到 11 萬人</b>。
+      而且分時段：來源把平日切成<b>上午 07:00–13:00</b>與<b>下午 13:00–19:00</b>。
+      問「早上人都去哪裡」看的就是上午那一段。
+      <b id="dek-top"></b>
       那些人早上過橋去上班，晚上過橋回來睡覺。
     </p>
   </header>
@@ -78,9 +100,11 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
 
   <div class="controls">
     <div class="seg" id="seg" role="group" aria-label="切換指標">
-      <button data-k="ratio" aria-pressed="true">平日日夜比</button>
+      <button data-k="morningDensity" aria-pressed="true">上午活動密度</button>
+      <button data-k="morningNet" aria-pressed="false">上午淨流入</button>
+      <button data-k="morningRatio" aria-pressed="false">上午日夜比</button>
+      <button data-k="ratio" aria-pressed="false">全日日夜比</button>
       <button data-k="ratioWeekend" aria-pressed="false">假日日夜比</button>
-      <button data-k="net" aria-pressed="false">平日淨流入人數</button>
       <button data-k="signalRatio" aria-pressed="false">信令÷普查</button>
     </div>
     <span class="hint">滑過或點選任一鄉鎮市區，地圖、榜單與表格同步</span>
@@ -118,6 +142,47 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
       </div>
     </section>
   </div>
+
+  <hr class="rule">
+
+  <section class="panel">
+    <header>
+      <h2>早上七點到一點，人都在哪裡</h2>
+      <p>兩種問法會給出兩份不同的名單，而差別本身就是答案</p>
+    </header>
+    <div class="body">
+      <div class="hot">
+        <div>
+          <h3>人往這裡跑：上午淨流入最多</h3>
+          <p class="why">上午活動人數減夜間停留人數。這是<b>早上有人從別的地方進來</b>的地方，
+          也就是工作與就學的目的地。</p>
+          <div class="hothead"><span></span><span>行政區</span><span>淨流入</span><span>密度</span></div>
+          <div id="hot-net"></div>
+        </div>
+        <div>
+          <h3>人擠在這裡：上午活動密度最高</h3>
+          <p class="why">上午活動人數 ÷ 土地面積。這是<b>上午每平方公里塞了多少人</b>，
+          小而滿的行政區會排在前面。</p>
+          <div class="hothead"><span></span><span>行政區</span><span>密度</span><span>淨流入</span></div>
+          <div id="hot-den"></div>
+        </div>
+      </div>
+      <p class="bandnote" style="font-size:13px;color:var(--ink-2);margin-top:16px;max-width:80ch">
+        兩份名單有 <b id="k-both"></b> 個行政區重疊（底色標出來的那幾列），
+        它們是真正的熱區：<b>又密又是別人早上要去的地方</b>。
+        只上榜其中一份的要分開讀：<b id="k-denonly"></b>
+        只在密度榜上，那是<b>住得很密但早上人往外跑</b>的臥室型行政區；
+        <b id="k-netonly"></b> 只在淨流入榜上，那是<b>腹地大、早上大量湧入</b>的就業區。
+      </p>
+      <p class="bandnote" style="font-size:12.5px;color:var(--ink-3);margin-top:10px;max-width:80ch">
+        為什麼要同時看兩個：密度會被行政區的大小綁架（<b id="k-tiny"></b> 只有
+        <b id="k-tinyarea"></b> 平方公里，塞一點人密度就很高），
+        淨流入會被行政區的人口規模綁架（大區的絕對值天生比較大）。
+        單看任何一個都會選錯地方。土地面積取自 109 年普查的「常住人口數及人口密度」表，
+        逐縣市與合計列對帳過。
+      </p>
+    </div>
+  </section>
 
   <hr class="rule">
 
@@ -179,8 +244,13 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
         <table id="tbl">
           <thead><tr>
             <th data-k="county">縣市</th><th data-k="name">鄉鎮市區</th>
-            <th data-k="nightWork">平日夜間</th><th data-k="dayWork">平日日間</th>
-            <th data-k="net">淨流入</th><th data-k="ratio">日夜比</th>
+            <th data-k="nightWork">平日夜間</th>
+            <th data-k="morningWork">上午活動</th>
+            <th data-k="morningNet">上午淨流入</th>
+            <th data-k="morningDensity">上午密度</th>
+            <th data-k="area">面積 km²</th>
+            <th data-k="dayWork">平日日間</th>
+            <th data-k="net">全日淨流入</th><th data-k="ratio">日夜比</th>
             <th data-k="ratioWeekend">假日日夜比</th>
             <th data-k="residents">普查常住</th><th data-k="signalRatio">信令÷普查</th>
             <th data-k="vacancy">空屋率</th>
@@ -200,6 +270,21 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
       <p>切到「假日日夜比」會看到全臺灣趨近一色：368 個區裡有 <b id="k-wk"></b> 個
       落在 0.95–1.06 之間。這正好反證平日那張圖量到的是<b>通勤</b>：
       週末不上班，人就待在自己住的地方。兩張圖用同一組級距，所以可以直接對照。</p>
+    </section>
+    <section>
+      <h3>上午與下午差不多，但「上午」才是問題要問的</h3>
+      <p>來源把平日切成上午（07:00–13:00）與下午（13:00–19:00）兩段。兩段的形狀很像，
+      因為多數人上午到、下午還在同一個地方。用上午那一段而不是含下午的平均，
+      是因為<b>通勤的方向在上午最清楚</b>：早上人離開住的地方、到達工作的地方，
+      下午已經混入外出、洽公與提早離開。原始資料兩段都留在
+      <code>data/tw_signal.json</code> 裡。</p>
+    </section>
+    <section>
+      <h3>密度的分母是官方面積，不是從圖形算的</h3>
+      <p>上午活動密度的分母是 109 年普查「常住人口數及人口密度」表的<b>土地面積</b>，
+      逐縣市與該表自己的合計列對帳過。沒有用地圖的多邊形去算：簡化過的圖形
+      算出來的全臺總面積比官方多 1.1%，小面積的行政區誤差可以到 6%，
+      而密度是拿來排名的，分母錯 6% 就會換名次。</p>
     </section>
     <section>
       <h3>時間對不起來</h3>
@@ -226,9 +311,11 @@ svg.tmap { display: block; width: 100%; height: auto; background: var(--sea); bo
     </section>
     <section>
       <h3>資料來源</h3>
-      <p>社會經濟資料服務平臺（SEGIS）行政區電信信令人口統計，資料時間 112 年 11 月。
+      <p>社會經濟資料服務平臺（SEGIS）行政區電信信令人口統計，資料時間 112 年 11 月；
+      土地面積取自 109 年人口及住宅普查「常住人口數及人口密度」表。
       解析程式為 <code>scripts/prep_signal.py</code>，368 個鄉鎮市區鍵值與普查雙向核對，
-      任一邊有缺就中止。</p>
+      任一邊有缺就中止；面積逐縣市與合計列對帳，22 縣市加總再與臺灣土地面積
+      36,197 平方公里核對。</p>
     </section>
   </div>
 </div>
@@ -290,35 +377,54 @@ __MAP_ZOOM_JS__
       `${px(g, lo).toFixed(1)} ${py(g, la).toFixed(1)}`).join('L') + 'Z').join(''); };
 
   /* ── metrics ────────────────────────────────────────────────────────── */
-  // All four are centred quantities — a district is either above or below
-  // "as many people by day as by night" — so all four use the diverging ramp
-  // with its midpoint on the break that means "no difference".
+  // 兩類量、兩種色階。比值與淨值是「以沒有差別為中點」的量，用發散色階；
+  // 密度沒有中點可言（0 就是最低），用循序色階。混用同一組顏色會讓讀者
+  // 以為中間那一階有意義，其實沒有。
   const RATIO_BREAKS = [0.82, 0.90, 0.95, 1.00, 1.06, 1.15, 1.35];
+  const NET_BREAKS = [-40000, -15000, -5000, 0, 5000, 15000, 40000];
+  const netTick = v => (v > 0 ? '+' : v < 0 ? '−' : '') +
+    (Math.abs(v) >= 10000 ? Math.abs(v) / 10000 + '萬' : int(Math.abs(v)));
   const METRICS = {
+    morningDensity: {
+      label: '上午活動密度', unit: '人/km²', ramp: 'seq', shades: 6,
+      breaks: [500, 2000, 6000, 12000, 20000],
+      get: t => t.morningDensity, fmt: v => int(v), tick: v => int(v),
+      sub: '平日上午（07:00–13:00）活動人數 ÷ 土地面積。'
+           + '這是「人擠在哪裡」，不是「人往哪裡跑」',
+      lo: '疏', hi: '密',
+      hiLbl: '上午最擁擠', loLbl: '上午最空曠',
+    },
+    morningNet: {
+      label: '上午淨流入', unit: '人', ramp: 'div', mid: '0 為中點', breaks: NET_BREAKS,
+      get: t => t.morningNet, fmt: v => sgn(v), tick: netTick,
+      sub: '平日上午活動人數減夜間停留人數。正值代表早上有人從別的地方進來',
+      lo: '淨流出', hi: '淨流入',
+      hiLbl: '上午淨流入最多', loLbl: '上午淨流出最多',
+    },
+    morningRatio: {
+      label: '上午日夜比', unit: '倍', ramp: 'div', mid: '1.00 為中點', breaks: RATIO_BREAKS,
+      get: t => t.morningRatio, fmt: v => v.toFixed(2), tick: v => v.toFixed(2),
+      sub: '平日上午活動人數 ÷ 夜間停留人數。大於 1 代表這裡早上比晚上熱鬧',
+      lo: '早上流出', hi: '早上湧入',
+      hiLbl: '上午湧入最多（比值）', loLbl: '上午流出最多（比值）',
+    },
     ratio: {
-      label: '平日日夜比', unit: '倍', breaks: RATIO_BREAKS,
+      label: '全日日夜比', unit: '倍', ramp: 'div', mid: '1.00 為中點', breaks: RATIO_BREAKS,
       get: t => t.ratio, fmt: v => v.toFixed(2), tick: v => v.toFixed(2),
-      sub: '平日日間活動人數 ÷ 平日夜間停留人數。1.00 為中點，大於 1 代表白天湧入',
+      sub: '平日日間（含下午）活動人數 ÷ 夜間停留人數。1.00 為中點，大於 1 代表白天湧入',
       lo: '白天流出', hi: '白天湧入',
       hiLbl: '白天湧入最多', loLbl: '白天流出最多',
     },
     ratioWeekend: {
-      label: '假日日夜比', unit: '倍', breaks: RATIO_BREAKS,
+      label: '假日日夜比', unit: '倍', ramp: 'div', mid: '1.00 為中點', breaks: RATIO_BREAKS,
       get: t => t.ratioWeekend, fmt: v => v.toFixed(2), tick: v => v.toFixed(2),
       sub: '與平日同一組級距，方便直接對照。假日幾乎全臺趨近 1.00',
       lo: '白天流出', hi: '白天湧入',
       hiLbl: '假日白天湧入最多', loLbl: '假日白天流出最多',
     },
-    net: {
-      label: '平日淨流入人數', unit: '人', breaks: [-40000, -15000, -5000, 0, 5000, 15000, 40000],
-      get: t => t.net, fmt: v => sgn(v), tick: v => (v > 0 ? '+' : v < 0 ? '−' : '') +
-        (Math.abs(v) >= 10000 ? Math.abs(v) / 10000 + '萬' : int(Math.abs(v))),
-      sub: '平日日間活動人數減夜間停留人數。0 為中點，正值代表白天淨流入',
-      lo: '淨流出', hi: '淨流入',
-      hiLbl: '淨流入最多', loLbl: '淨流出最多',
-    },
     signalRatio: {
-      label: '信令÷普查', unit: '倍', breaks: [0.78, 0.86, 0.93, 1.00, 1.08, 1.20, 1.45],
+      label: '信令÷普查', unit: '倍', ramp: 'div', mid: '1.00 為中點',
+      breaks: [0.78, 0.86, 0.93, 1.00, 1.08, 1.20, 1.45],
       get: t => t.signalRatio, fmt: v => v.toFixed(2), tick: v => v.toFixed(2),
       sub: '112 年 11 月信令夜間停留 ÷ 109 年 11 月普查常住。偏離 1.00 愈遠，方法差異愈可能主導',
       lo: '信令少', hi: '信令多',
@@ -327,8 +433,9 @@ __MAP_ZOOM_JS__
   };
   const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
     return i === -1 ? m.breaks.length : i; };
-  const fillOf = (m, v) => `var(--div-${classOf(m, v)})`;
-  let metric = 'ratio', pinned = null, hovered = null;
+  const fillOf = (m, v) => `var(--${m.ramp}-${
+    Math.min(classOf(m, v), (m.shades || 8) - 1)})`;
+  let metric = 'morningDensity', pinned = null, hovered = null;
 
   /* ── map ────────────────────────────────────────────────────────────── */
   const svg = document.getElementById('tmap');
@@ -366,16 +473,21 @@ __MAP_ZOOM_JS__
   /* ── stats ──────────────────────────────────────────────────────────── */
   {
     const air = D['桃園市/大園區'];
-    const inflow = [...T].sort((a, b) => b.net - a.net)[0];
-    const outflow = [...T].sort((a, b) => a.net - b.net)[0];
+    // 頭四格改講上午那一段：問「早上人在哪」的時候，含下午的平均會把答案沖淡。
+    const inflow = [...T].sort((a, b) => b.morningNet - a.morningNet)[0];
+    const outflow = [...T].sort((a, b) => a.morningNet - b.morningNet)[0];
+    const dense = [...T].sort((a, b) => b.morningDensity - a.morningDensity)[0];
     const stat = (k, v, sub) =>
       `<div class="stat"><dt>${k}</dt><dd>${v}</dd><span class="sub">${sub}</span></div>`;
     document.getElementById('stats').innerHTML =
+      stat('上午淨流入最多', inflow.name,
+           `${inflow.county}　${sgn(inflow.morningNet)} 人（07:00–13:00）`) +
+      stat('上午淨流出最多', outflow.name,
+           `${outflow.county}　${sgn(outflow.morningNet)} 人`) +
+      stat('上午活動密度最高', dense.name,
+           `${dense.county}　${int(dense.morningDensity)} 人/km²`) +
       stat('全國夜間停留', int(S.national.nightWork),
-           `普查常住 ${int(S.national.residents)}，比 ${S.national.signalRatio}`) +
-      stat('白天淨流入最多', inflow.name, `${inflow.county}　${sgn(inflow.net)} 人`) +
-      stat('白天淨流出最多', outflow.name, `${outflow.county}　${sgn(outflow.net)} 人`) +
-      stat('鄉鎮市區日夜比中位數', S.medianRatio.toFixed(2), '半數的區白天人比晚上少');
+           `普查常住 ${int(S.national.residents)}，比 ${S.national.signalRatio}`);
     document.getElementById('k-airport').textContent = air.signalRatio.toFixed(2);
     document.getElementById('k-small').textContent = T.filter(t => t.nightWork < SMALL).length;
     document.getElementById('k-extreme').textContent =
@@ -397,6 +509,45 @@ __MAP_ZOOM_JS__
       pear(T.map(t => t.ratio), T.map(t => t.vacancy)).toFixed(2);
     document.getElementById('k-corr2').textContent =
       pear(big.map(t => t.ratio), big.map(t => t.vacancy)).toFixed(2);
+  }
+
+  /* ── 早上人在哪裡：兩份榜單 ─────────────────────────────────────────── */
+  {
+    const N = 15;
+    const byNet = [...T].sort((a, b) => b.morningNet - a.morningNet).slice(0, N);
+    const byDen = [...T].sort((a, b) => b.morningDensity - a.morningDensity).slice(0, N);
+    const netKeys = new Set(byNet.map(t => t.key));
+    const denKeys = new Set(byDen.map(t => t.key));
+    const both = byNet.filter(t => denKeys.has(t.key));
+
+    const row = (t, i, a, b) => `<div class="hotrow${
+        netKeys.has(t.key) && denKeys.has(t.key) ? ' both' : ''}" data-key="${t.key}">
+      <span class="i">${i + 1}</span>
+      <span class="n">${t.name}<small>　${t.county.slice(0, 3)}</small></span>
+      <span class="a">${a(t)}</span><span class="b">${b(t)}</span></div>`;
+    document.getElementById('hot-net').innerHTML = byNet.map((t, i) =>
+      row(t, i, x => sgn(x.morningNet), x => int(x.morningDensity))).join('');
+    document.getElementById('hot-den').innerHTML = byDen.map((t, i) =>
+      row(t, i, x => int(x.morningDensity), x => sgn(x.morningNet))).join('');
+
+    const name = t => t.county.slice(0, 3) + t.name;
+    const denOnly = byDen.filter(t => !netKeys.has(t.key));
+    const netOnly = byNet.filter(t => !denKeys.has(t.key));
+    document.getElementById('k-both').textContent = both.length;
+    document.getElementById('k-denonly').textContent =
+      denOnly.slice(0, 3).map(name).join('、') + (denOnly.length > 3 ? '等' : '');
+    document.getElementById('k-netonly').textContent =
+      netOnly.slice(0, 3).map(name).join('、') + (netOnly.length > 3 ? '等' : '');
+    // 舉一個真的很小的區當例子，不要自己編一個門檻說「小」
+    const small = [...byDen].sort((a, b) => a.area - b.area)[0];
+    document.getElementById('k-tiny').textContent = name(small);
+    document.getElementById('k-tinyarea').textContent = small.area;
+
+    // 開場那句也從資料來，不寫死
+    const top = byNet[0], bot = [...T].sort((a, b) => a.morningNet - b.morningNet)[0];
+    document.getElementById('dek-top').textContent =
+      `上午淨流入最多的是${name(top)}（${sgn(top.morningNet)} 人），` +
+      `淨流出最多的是${name(bot)}（${sgn(bot.morningNet)} 人）。`;
   }
 
   /* ── 雙北 bridge cards ──────────────────────────────────────────────── */
@@ -457,12 +608,13 @@ __MAP_ZOOM_JS__
   function drawLegend(m) {
     legendEl.innerHTML = '';
     const cap = document.createElement('div'); cap.className = 'cap';
-    cap.innerHTML = `<span>← ${m.lo}</span><span class="zero">${
-      metric === 'net' ? '0 為中點' : '1.00 為中點'}</span><span>${m.hi} →</span>`;
+    cap.innerHTML = `<span>← ${m.lo}</span>` +
+      (m.mid ? `<span class="zero">${m.mid}</span>` : '') + `<span>${m.hi} →</span>`;
     const sws = document.createElement('div'); sws.className = 'swatches';
     for (let i = 0; i <= m.breaks.length; i++) {
       const d = document.createElement('div');
-      d.className = 'sw'; d.style.background = `var(--div-${i})`;
+      d.className = 'sw'; d.style.background = `var(--${m.ramp}-${
+        Math.min(i, (m.shades || 8) - 1)})`;
       const cnt = T.filter(t => classOf(m, m.get(t)) === i).length;
       d.title = `${cnt} 個鄉鎮市區`;
       if (!cnt) d.style.opacity = '.34';
@@ -507,7 +659,12 @@ __MAP_ZOOM_JS__
     tbody.innerHTML = out.map(t => `<tr data-key="${t.key}">
       <td>${t.county}</td>
       <td><i class="chip" style="background:${fillOf(m, m.get(t))}"></i>${t.name}${flagged(t) ? ' ★' : ''}</td>
-      <td class="num">${int(t.nightWork)}</td><td class="num">${int(t.dayWork)}</td>
+      <td class="num">${int(t.nightWork)}</td>
+      <td class="num">${int(t.morningWork)}</td>
+      <td class="num ${t.morningNet > 0 ? 'up' : 'down'}">${sgn(t.morningNet)}</td>
+      <td class="num">${int(t.morningDensity)}</td>
+      <td class="num">${t.area}</td>
+      <td class="num">${int(t.dayWork)}</td>
       <td class="num ${t.net > 0 ? 'up' : 'down'}">${sgn(t.net)}</td>
       <td class="num">${t.ratio.toFixed(2)}</td><td class="num">${t.ratioWeekend.toFixed(2)}</td>
       <td class="num">${int(t.residents)}</td><td class="num">${t.signalRatio.toFixed(2)}</td>
@@ -515,7 +672,12 @@ __MAP_ZOOM_JS__
     document.getElementById('f-count').textContent = `${out.length} / ${T.length} 個鄉鎮市區`;
     const n = S.national;
     tfoot.innerHTML = `<tr><td>全國</td><td>368 區</td>
-      <td class="num">${int(n.nightWork)}</td><td class="num">${int(n.dayWork)}</td>
+      <td class="num">${int(n.nightWork)}</td>
+      <td class="num">${int(n.morningWork)}</td>
+      <td class="num">${sgn(n.morningWork - n.nightWork)}</td>
+      <td class="num">${int(n.morningWork / n.area)}</td>
+      <td class="num">${int(n.area)}</td>
+      <td class="num">${int(n.dayWork)}</td>
       <td class="num">${sgn(n.dayWork - n.nightWork)}</td>
       <td class="num">${n.ratio.toFixed(2)}</td><td class="num">－</td>
       <td class="num">${int(n.residents)}</td><td class="num">${n.signalRatio.toFixed(2)}</td>
@@ -534,9 +696,13 @@ __MAP_ZOOM_JS__
     const t = D[key];
     tip.innerHTML = `<div class="t-nm">${t.county}${t.name}</div><dl>
       <dt>平日夜間停留</dt><dd>${int(t.nightWork)}</dd>
+      <dt>上午活動（07–13）</dt><dd>${int(t.morningWork)}</dd>
+      <dt>上午淨流入</dt><dd class="${t.morningNet > 0 ? 'up' : 'down'}">${sgn(t.morningNet)}</dd>
+      <dt>上午活動密度</dt><dd>${int(t.morningDensity)} /km²</dd>
+      <dt>土地面積</dt><dd>${t.area} km²</dd>
       <dt>平日日間活動</dt><dd>${int(t.dayWork)}</dd>
-      <dt>淨流入</dt><dd class="${t.net > 0 ? 'up' : 'down'}">${sgn(t.net)}</dd>
-      <dt>平日日夜比</dt><dd>${t.ratio.toFixed(2)}</dd>
+      <dt>全日淨流入</dt><dd class="${t.net > 0 ? 'up' : 'down'}">${sgn(t.net)}</dd>
+      <dt>全日日夜比</dt><dd>${t.ratio.toFixed(2)}</dd>
       <dt>假日日夜比</dt><dd>${t.ratioWeekend.toFixed(2)}</dd>
       <dt>信令÷普查</dt><dd>${t.signalRatio.toFixed(2)}</dd>
       <dt>空屋率</dt><dd>${t.vacancy.toFixed(1)}%</dd>
