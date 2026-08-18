@@ -1,0 +1,460 @@
+{
+ "type": "object",
+ "required": [
+  "caveat",
+  "counties",
+  "minSample",
+  "national",
+  "period",
+  "periods",
+  "source",
+  "towns",
+  "years"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "caveat": {
+   "type": "string"
+  },
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "area",
+     "grid",
+     "n",
+     "name",
+     "ping",
+     "rent",
+     "series"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "area": {
+      "type": [
+       "null",
+       "number"
+      ]
+     },
+     "grid": {
+      "type": "object",
+      "required": [
+       "all",
+       "room",
+       "studio",
+       "whole"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "all": {
+        "type": "object"
+       },
+       "room": {
+        "type": "object"
+       },
+       "studio": {
+        "type": "object"
+       },
+       "whole": {
+        "type": "object"
+       }
+      }
+     },
+     "n": {
+      "type": "integer"
+     },
+     "name": {
+      "type": "string"
+     },
+     "ping": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "rent": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "series": {
+      "type": "array",
+      "items": {
+       "type": "object"
+      }
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "minSample": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 10000
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "area",
+    "byService",
+    "grid",
+    "n",
+    "ping",
+    "rent",
+    "series"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "area": {
+     "type": "number"
+    },
+    "byService": {
+     "type": "object",
+     "required": [
+      "agency",
+      "other",
+      "social"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "agency": {
+       "type": "object",
+       "required": [
+        "area",
+        "n",
+        "ping",
+        "rent"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "area": {
+         "type": "number"
+        },
+        "n": {
+         "type": "integer"
+        },
+        "ping": {
+         "type": "integer"
+        },
+        "rent": {
+         "type": "integer"
+        }
+       }
+      },
+      "other": {
+       "type": "object",
+       "required": [
+        "area",
+        "n",
+        "ping",
+        "rent"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "area": {
+         "type": "number"
+        },
+        "n": {
+         "type": "integer"
+        },
+        "ping": {
+         "type": "integer"
+        },
+        "rent": {
+         "type": "integer"
+        }
+       }
+      },
+      "social": {
+       "type": "object",
+       "required": [
+        "area",
+        "n",
+        "ping",
+        "rent"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "area": {
+         "type": "number"
+        },
+        "n": {
+         "type": "integer"
+        },
+        "ping": {
+         "type": "integer"
+        },
+        "rent": {
+         "type": "integer"
+        }
+       }
+      }
+     }
+    },
+    "grid": {
+     "type": "object",
+     "required": [
+      "all",
+      "room",
+      "studio",
+      "whole"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "all": {
+       "type": "object",
+       "required": [
+        "all",
+        "nonSocial",
+        "social"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "all": {
+         "type": "object"
+        },
+        "nonSocial": {
+         "type": "object"
+        },
+        "social": {
+         "type": "object"
+        }
+       }
+      },
+      "room": {
+       "type": "object",
+       "required": [
+        "all",
+        "nonSocial",
+        "social"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "all": {
+         "type": "object"
+        },
+        "nonSocial": {
+         "type": "object"
+        },
+        "social": {
+         "type": "object"
+        }
+       }
+      },
+      "studio": {
+       "type": "object",
+       "required": [
+        "all",
+        "nonSocial",
+        "social"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "all": {
+         "type": "object"
+        },
+        "nonSocial": {
+         "type": "object"
+        },
+        "social": {
+         "type": "object"
+        }
+       }
+      },
+      "whole": {
+       "type": "object",
+       "required": [
+        "all",
+        "nonSocial",
+        "social"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "all": {
+         "type": "object"
+        },
+        "nonSocial": {
+         "type": "object"
+        },
+        "social": {
+         "type": "object"
+        }
+       }
+      }
+     }
+    },
+    "n": {
+     "type": "integer"
+    },
+    "ping": {
+     "type": "integer"
+    },
+    "rent": {
+     "type": "integer"
+    },
+    "series": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "area",
+       "n",
+       "ping",
+       "rent",
+       "year"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "area": {
+        "type": "number"
+       },
+       "n": {
+        "type": "integer"
+       },
+       "ping": {
+        "type": "integer"
+       },
+       "rent": {
+        "type": "integer"
+       },
+       "year": {
+        "type": "integer"
+       }
+      }
+     }
+    }
+   }
+  },
+  "period": {
+   "type": "string"
+  },
+  "periods": {
+   "type": "object",
+   "required": [],
+   "additionalProperties": true,
+   "properties": {
+    "102": {
+     "type": "string"
+    },
+    "103": {
+     "type": "string"
+    },
+    "104": {
+     "type": "string"
+    },
+    "105": {
+     "type": "string"
+    },
+    "106": {
+     "type": "string"
+    },
+    "107": {
+     "type": "string"
+    },
+    "108": {
+     "type": "string"
+    },
+    "109": {
+     "type": "string"
+    },
+    "110": {
+     "type": "string"
+    },
+    "111": {
+     "type": "string"
+    },
+    "112": {
+     "type": "string"
+    },
+    "113": {
+     "type": "string"
+    },
+    "114": {
+     "type": "string"
+    }
+   }
+  },
+  "source": {
+   "type": "string"
+  },
+  "towns": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "area",
+     "county",
+     "n",
+     "name",
+     "ping",
+     "rent",
+     "whole"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "area": {
+      "type": "number"
+     },
+     "county": {
+      "type": "string"
+     },
+     "n": {
+      "type": "integer"
+     },
+     "name": {
+      "type": "string"
+     },
+     "ping": {
+      "type": "integer"
+     },
+     "rent": {
+      "type": "integer"
+     },
+     "whole": {
+      "type": "object",
+      "required": [
+       "area",
+       "n",
+       "ping",
+       "rent"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "area": {
+        "type": [
+         "null",
+         "number"
+        ]
+       },
+       "n": {
+        "type": "integer"
+       },
+       "ping": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "rent": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "years": {
+   "type": "array",
+   "items": {
+    "type": "integer"
+   }
+  }
+ },
+ "title": "tw_rent.json"
+}

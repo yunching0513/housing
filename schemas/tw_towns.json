@@ -1,0 +1,49 @@
+{
+ "type": "object",
+ "required": [
+  "bounds",
+  "towns"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "bounds": {
+   "type": "array",
+   "items": {
+    "type": "number"
+   }
+  },
+  "towns": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "county",
+     "key",
+     "name",
+     "rings"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "county": {
+      "type": "string"
+     },
+     "key": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "rings": {
+      "type": "array",
+      "items": {
+       "type": "array"
+      }
+     }
+    }
+   },
+   "minItems": 366,
+   "maxItems": 366
+  }
+ },
+ "title": "tw_towns.json"
+}

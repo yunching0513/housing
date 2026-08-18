@@ -1,0 +1,68 @@
+{
+ "type": "object",
+ "required": [
+  "bounds",
+  "counties"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "bounds": {
+   "type": "object",
+   "required": [
+    "kinmen",
+    "main",
+    "matsu"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "kinmen": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    },
+    "main": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    },
+    "matsu": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    }
+   }
+  },
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "group",
+     "name",
+     "rings"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "group": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "rings": {
+      "type": "array",
+      "items": {
+       "type": "array"
+      }
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  }
+ },
+ "title": "tw_counties.json"
+}

@@ -1,0 +1,966 @@
+{
+ "type": "object",
+ "required": [
+  "counties",
+  "moiMethods",
+  "moiPeriods",
+  "national",
+  "notes",
+  "periods",
+  "popYears",
+  "quadrants",
+  "rankMeta"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "affThin",
+     "band",
+     "burden",
+     "delta",
+     "density",
+     "hasDistricts",
+     "households",
+     "houses",
+     "idle",
+     "margin",
+     "moi109",
+     "moiChange",
+     "moiCount",
+     "moiNow",
+     "moiSeries",
+     "name",
+     "p109",
+     "p99",
+     "pct",
+     "peakYear",
+     "perHousehold",
+     "pir",
+     "popSeries",
+     "quadrant",
+     "rank",
+     "region",
+     "shLatest",
+     "shMatched",
+     "shPer1000",
+     "shbAwarded",
+     "shbBuilding",
+     "shbCentralShare",
+     "shbDone",
+     "shbDonePer1000",
+     "shbPlanning",
+     "shbTotal",
+     "shbTotalPer1000",
+     "sigDay",
+     "sigNight",
+     "sigRatio",
+     "since109Pct",
+     "spread",
+     "townCount",
+     "townMax",
+     "townMaxName",
+     "townMin",
+     "townMinName",
+     "vacancy"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "affThin": {
+      "type": "boolean"
+     },
+     "band": {
+      "type": [
+       "null",
+       "string"
+      ]
+     },
+     "burden": {
+      "type": [
+       "null",
+       "number"
+      ]
+     },
+     "delta": {
+      "type": "integer"
+     },
+     "density": {
+      "type": "number"
+     },
+     "hasDistricts": {
+      "type": "boolean"
+     },
+     "households": {
+      "type": "integer"
+     },
+     "houses": {
+      "type": "integer"
+     },
+     "idle": {
+      "type": "integer"
+     },
+     "margin": {
+      "type": "number"
+     },
+     "moi109": {
+      "type": "number"
+     },
+     "moiChange": {
+      "type": "number"
+     },
+     "moiCount": {
+      "type": "number"
+     },
+     "moiNow": {
+      "type": "number"
+     },
+     "moiSeries": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "name": {
+      "type": "string"
+     },
+     "p109": {
+      "type": "integer"
+     },
+     "p99": {
+      "type": "integer"
+     },
+     "pct": {
+      "type": "number",
+      "minimum": -100,
+      "maximum": 1000
+     },
+     "peakYear": {
+      "type": "integer"
+     },
+     "perHousehold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+     },
+     "pir": {
+      "type": [
+       "null",
+       "number"
+      ]
+     },
+     "popSeries": {
+      "type": "array",
+      "items": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      }
+     },
+     "quadrant": {
+      "type": "string"
+     },
+     "rank": {
+      "type": "object",
+      "required": [
+       "burden",
+       "density",
+       "houses",
+       "moiChange",
+       "moiNow",
+       "pct",
+       "perHousehold",
+       "pir",
+       "shMatched",
+       "shPer1000",
+       "shbDonePer1000",
+       "shbTotalPer1000",
+       "sigRatio",
+       "since109Pct",
+       "spread",
+       "vacancy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "burden": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 1,
+        "maximum": 22
+       },
+       "density": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "houses": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "moiChange": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "moiNow": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "pct": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "perHousehold": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "pir": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 1,
+        "maximum": 22
+       },
+       "shMatched": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 1,
+        "maximum": 22
+       },
+       "shPer1000": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 1,
+        "maximum": 22
+       },
+       "shbDonePer1000": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "shbTotalPer1000": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "sigRatio": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "since109Pct": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       },
+       "spread": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 1,
+        "maximum": 22
+       },
+       "vacancy": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 22
+       }
+      }
+     },
+     "region": {
+      "type": "string"
+     },
+     "shLatest": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "shMatched": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "shPer1000": {
+      "type": [
+       "null",
+       "number"
+      ]
+     },
+     "shbAwarded": {
+      "type": "integer"
+     },
+     "shbBuilding": {
+      "type": "integer"
+     },
+     "shbCentralShare": {
+      "type": "number"
+     },
+     "shbDone": {
+      "type": "integer"
+     },
+     "shbDonePer1000": {
+      "type": "number"
+     },
+     "shbPlanning": {
+      "type": "integer"
+     },
+     "shbTotal": {
+      "type": "integer"
+     },
+     "shbTotalPer1000": {
+      "type": "number"
+     },
+     "sigDay": {
+      "type": "integer"
+     },
+     "sigNight": {
+      "type": "integer"
+     },
+     "sigRatio": {
+      "type": "number"
+     },
+     "since109Pct": {
+      "type": "number"
+     },
+     "spread": {
+      "type": [
+       "null",
+       "number"
+      ]
+     },
+     "townCount": {
+      "type": "integer"
+     },
+     "townMax": {
+      "type": "number"
+     },
+     "townMaxName": {
+      "type": "string"
+     },
+     "townMin": {
+      "type": "number"
+     },
+     "townMinName": {
+      "type": "string"
+     },
+     "vacancy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "moiMethods": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "moiPeriods": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "band",
+    "burden",
+    "density",
+    "households",
+    "houses",
+    "idle",
+    "moi109",
+    "moiNow",
+    "moiSeries",
+    "pct",
+    "perHousehold",
+    "pir",
+    "popSeries",
+    "shLive",
+    "shLiveShare",
+    "shMatched",
+    "shPer1000",
+    "shbCentralShare",
+    "shbDone",
+    "shbDonePer1000",
+    "shbTotal",
+    "shbTotalPer1000",
+    "sigRatio",
+    "vacancy"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "band": {
+     "type": "string"
+    },
+    "burden": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 200
+    },
+    "density": {
+     "type": "number"
+    },
+    "households": {
+     "type": "integer"
+    },
+    "houses": {
+     "type": "integer"
+    },
+    "idle": {
+     "type": "integer"
+    },
+    "moi109": {
+     "type": "number"
+    },
+    "moiNow": {
+     "type": "number"
+    },
+    "moiSeries": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    },
+    "pct": {
+     "type": "number",
+     "minimum": -100,
+     "maximum": 1000
+    },
+    "perHousehold": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 10
+    },
+    "pir": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    },
+    "popSeries": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     }
+    },
+    "shLive": {
+     "type": "integer"
+    },
+    "shLiveShare": {
+     "type": "number"
+    },
+    "shMatched": {
+     "type": "integer"
+    },
+    "shPer1000": {
+     "type": "number"
+    },
+    "shbCentralShare": {
+     "type": "number"
+    },
+    "shbDone": {
+     "type": "integer"
+    },
+    "shbDonePer1000": {
+     "type": "number"
+    },
+    "shbTotal": {
+     "type": "integer"
+    },
+    "shbTotalPer1000": {
+     "type": "number"
+    },
+    "sigRatio": {
+     "type": "number"
+    },
+    "vacancy": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    }
+   }
+  },
+  "notes": {
+   "type": "object",
+   "required": [
+    "afford",
+    "affordThin",
+    "social"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "afford": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "affordThin": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "social": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "periods": {
+   "type": "object",
+   "required": [
+    "afford",
+    "build",
+    "census",
+    "moi",
+    "pop",
+    "signal",
+    "social"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "afford": {
+     "type": "string"
+    },
+    "build": {
+     "type": "string"
+    },
+    "census": {
+     "type": "string"
+    },
+    "moi": {
+     "type": "string"
+    },
+    "pop": {
+     "type": "string"
+    },
+    "signal": {
+     "type": "string"
+    },
+    "social": {
+     "type": "string"
+    }
+   }
+  },
+  "popYears": {
+   "type": "array",
+   "items": {
+    "type": "integer"
+   }
+  },
+  "quadrants": {
+   "type": "object",
+   "required": [
+    "slack_growing",
+    "slack_shrinking",
+    "tight_growing",
+    "tight_shrinking"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "slack_growing": {
+     "type": "object",
+     "required": [
+      "act",
+      "cond",
+      "key",
+      "label"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "act": {
+       "type": "string"
+      },
+      "cond": {
+       "type": "string"
+      },
+      "key": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      }
+     }
+    },
+    "slack_shrinking": {
+     "type": "object",
+     "required": [
+      "act",
+      "cond",
+      "key",
+      "label"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "act": {
+       "type": "string"
+      },
+      "cond": {
+       "type": "string"
+      },
+      "key": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      }
+     }
+    },
+    "tight_growing": {
+     "type": "object",
+     "required": [
+      "act",
+      "cond",
+      "key",
+      "label"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "act": {
+       "type": "string"
+      },
+      "cond": {
+       "type": "string"
+      },
+      "key": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      }
+     }
+    },
+    "tight_shrinking": {
+     "type": "object",
+     "required": [
+      "act",
+      "cond",
+      "key",
+      "label"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "act": {
+       "type": "string"
+      },
+      "cond": {
+       "type": "string"
+      },
+      "key": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "rankMeta": {
+   "type": "object",
+   "required": [
+    "burden",
+    "density",
+    "houses",
+    "moiChange",
+    "moiNow",
+    "pct",
+    "perHousehold",
+    "pir",
+    "shMatched",
+    "shPer1000",
+    "shbDonePer1000",
+    "shbTotalPer1000",
+    "sigRatio",
+    "since109Pct",
+    "spread",
+    "vacancy"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "burden": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "density": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "houses": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "moiChange": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "moiNow": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "pct": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "perHousehold": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "pir": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "shMatched": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "shPer1000": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "shbDonePer1000": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "shbTotalPer1000": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "sigRatio": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "since109Pct": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "spread": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    },
+    "vacancy": {
+     "type": "object",
+     "required": [
+      "label",
+      "of"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "label": {
+       "type": "string"
+      },
+      "of": {
+       "type": "integer"
+      }
+     }
+    }
+   }
+  }
+ },
+ "title": "tw_county_profile.json"
+}

@@ -1,0 +1,258 @@
+{
+ "type": "object",
+ "required": [
+  "ageLabels",
+  "counties",
+  "definition",
+  "districts",
+  "matchRate",
+  "national",
+  "periods",
+  "recent",
+  "sizeLabels",
+  "source"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "ageLabels": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "byAge",
+     "bySize",
+     "countRecent",
+     "name",
+     "rates",
+     "stockRecent"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "byAge": {
+      "type": "array",
+      "items": {
+       "type": "object"
+      }
+     },
+     "bySize": {
+      "type": "array",
+      "items": {
+       "type": "object"
+      }
+     },
+     "countRecent": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "name": {
+      "type": "string"
+     },
+     "rates": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "stockRecent": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "definition": {
+   "type": "string"
+  },
+  "districts": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "counts",
+     "county",
+     "dCount",
+     "dRate",
+     "key",
+     "name",
+     "rates",
+     "yCount",
+     "yRate"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "counts": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "county": {
+      "type": "string"
+     },
+     "dCount": {
+      "type": "number"
+     },
+     "dRate": {
+      "type": "number"
+     },
+     "key": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "rates": {
+      "type": "array",
+      "items": {
+       "type": "number"
+      }
+     },
+     "yCount": {
+      "type": "number"
+     },
+     "yRate": {
+      "type": "number"
+     }
+    }
+   },
+   "minItems": 174,
+   "maxItems": 174
+  },
+  "matchRate": {
+   "type": "number",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "byAge",
+    "bySize",
+    "countRecent",
+    "rates",
+    "stockRecent"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "byAge": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "label",
+       "rates"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "label": {
+        "type": "string"
+       },
+       "rates": {
+        "type": "array"
+       }
+      }
+     }
+    },
+    "bySize": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "label",
+       "rates"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "label": {
+        "type": "string"
+       },
+       "rates": {
+        "type": "array"
+       }
+      }
+     }
+    },
+    "countRecent": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    },
+    "rates": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    },
+    "stockRecent": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    }
+   }
+  },
+  "periods": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "half",
+     "label",
+     "method",
+     "short",
+     "year"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "half": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "label": {
+      "type": "string"
+     },
+     "method": {
+      "type": "string"
+     },
+     "short": {
+      "type": "string"
+     },
+     "year": {
+      "type": "integer"
+     }
+    }
+   }
+  },
+  "recent": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "sizeLabels": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "source": {
+   "type": "string"
+  }
+ },
+ "title": "tw_moi_series.json"
+}

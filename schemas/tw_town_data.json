@@ -1,0 +1,238 @@
+{
+ "type": "object",
+ "required": [
+  "ageLabels",
+  "areaLabels",
+  "inflowCut",
+  "national",
+  "period",
+  "source",
+  "towns",
+  "vacancyCut"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "ageLabels": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "areaLabels": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "inflowCut": {
+   "type": "number"
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "ageAll",
+    "ageVacant",
+    "areaAll",
+    "areaVacant",
+    "households",
+    "houses",
+    "idle",
+    "occasional",
+    "otherUse",
+    "perHousehold",
+    "vacancy",
+    "vacant"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "ageAll": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     }
+    },
+    "ageVacant": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     }
+    },
+    "areaAll": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     }
+    },
+    "areaVacant": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     }
+    },
+    "households": {
+     "type": "integer"
+    },
+    "houses": {
+     "type": "integer"
+    },
+    "idle": {
+     "type": "integer"
+    },
+    "occasional": {
+     "type": "integer"
+    },
+    "otherUse": {
+     "type": "integer"
+    },
+    "perHousehold": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 10
+    },
+    "vacancy": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    },
+    "vacant": {
+     "type": "integer"
+    }
+   }
+  },
+  "period": {
+   "type": "string"
+  },
+  "source": {
+   "type": "string"
+  },
+  "towns": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "ageAll",
+     "ageVacant",
+     "areaAll",
+     "areaVacant",
+     "avgAreaAll",
+     "avgAreaVacant",
+     "county",
+     "households",
+     "houses",
+     "idle",
+     "inflow",
+     "inflowCounty",
+     "key",
+     "margin",
+     "name",
+     "occasional",
+     "occupied",
+     "otherUse",
+     "perHousehold",
+     "quadrant",
+     "residents",
+     "unoccupied",
+     "vacancy",
+     "vacant"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "ageAll": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      }
+     },
+     "ageVacant": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      }
+     },
+     "areaAll": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      }
+     },
+     "areaVacant": {
+      "type": "array",
+      "items": {
+       "type": "integer"
+      }
+     },
+     "avgAreaAll": {
+      "type": "number"
+     },
+     "avgAreaVacant": {
+      "type": "number"
+     },
+     "county": {
+      "type": "string"
+     },
+     "households": {
+      "type": "integer"
+     },
+     "houses": {
+      "type": "integer"
+     },
+     "idle": {
+      "type": "integer"
+     },
+     "inflow": {
+      "type": "number"
+     },
+     "inflowCounty": {
+      "type": "number"
+     },
+     "key": {
+      "type": "string"
+     },
+     "margin": {
+      "type": "number"
+     },
+     "name": {
+      "type": "string"
+     },
+     "occasional": {
+      "type": "integer"
+     },
+     "occupied": {
+      "type": "integer"
+     },
+     "otherUse": {
+      "type": "integer"
+     },
+     "perHousehold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+     },
+     "quadrant": {
+      "type": "string"
+     },
+     "residents": {
+      "type": "integer"
+     },
+     "unoccupied": {
+      "type": "integer"
+     },
+     "vacancy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+     },
+     "vacant": {
+      "type": "integer"
+     }
+    }
+   },
+   "minItems": 368,
+   "maxItems": 368
+  },
+  "vacancyCut": {
+   "type": "number"
+  }
+ },
+ "title": "tw_town_data.json"
+}

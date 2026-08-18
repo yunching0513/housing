@@ -1,0 +1,150 @@
+{
+ "type": "object",
+ "required": [
+  "censusPeriod",
+  "medianRatio",
+  "national",
+  "period",
+  "source",
+  "towns"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "censusPeriod": {
+   "type": "string"
+  },
+  "medianRatio": {
+   "type": "number"
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "dayWeekend",
+    "dayWork",
+    "nightWeekend",
+    "nightWork",
+    "ratio",
+    "residents",
+    "signalRatio"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "dayWeekend": {
+     "type": "integer"
+    },
+    "dayWork": {
+     "type": "integer"
+    },
+    "nightWeekend": {
+     "type": "integer"
+    },
+    "nightWork": {
+     "type": "integer"
+    },
+    "ratio": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    },
+    "residents": {
+     "type": "integer"
+    },
+    "signalRatio": {
+     "type": "number"
+    }
+   }
+  },
+  "period": {
+   "type": "string"
+  },
+  "source": {
+   "type": "string"
+  },
+  "towns": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "county",
+     "dayWeekend",
+     "dayWork",
+     "households",
+     "houses",
+     "inflow",
+     "key",
+     "name",
+     "nightWeekend",
+     "nightWork",
+     "ratio",
+     "ratioWeekend",
+     "residents",
+     "signalRatio",
+     "tripsWeekend",
+     "tripsWork",
+     "vacancy"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "county": {
+      "type": "string"
+     },
+     "dayWeekend": {
+      "type": "integer"
+     },
+     "dayWork": {
+      "type": "integer"
+     },
+     "households": {
+      "type": "integer"
+     },
+     "houses": {
+      "type": "integer"
+     },
+     "inflow": {
+      "type": "number"
+     },
+     "key": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "nightWeekend": {
+      "type": "integer"
+     },
+     "nightWork": {
+      "type": "integer"
+     },
+     "ratio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+     },
+     "ratioWeekend": {
+      "type": "number"
+     },
+     "residents": {
+      "type": "integer"
+     },
+     "signalRatio": {
+      "type": "number"
+     },
+     "tripsWeekend": {
+      "type": "integer"
+     },
+     "tripsWork": {
+      "type": "integer"
+     },
+     "vacancy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+     }
+    }
+   },
+   "minItems": 368,
+   "maxItems": 368
+  }
+ },
+ "title": "tw_signal.json"
+}

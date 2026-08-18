@@ -1,0 +1,187 @@
+{
+ "type": "object",
+ "required": [
+  "caveat",
+  "counties",
+  "measures",
+  "national",
+  "notListed",
+  "period",
+  "source"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "caveat": {
+   "type": "string"
+  },
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "band",
+     "burden",
+     "listed",
+     "name",
+     "pir",
+     "quadrant",
+     "thin"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "band": {
+      "type": [
+       "null",
+       "string"
+      ]
+     },
+     "burden": {
+      "type": [
+       "null",
+       "number"
+      ]
+     },
+     "burdenQ": {
+      "type": "number"
+     },
+     "burdenY": {
+      "type": "number"
+     },
+     "listed": {
+      "type": "boolean"
+     },
+     "name": {
+      "type": "string"
+     },
+     "pir": {
+      "type": [
+       "null",
+       "number"
+      ]
+     },
+     "pirQ": {
+      "type": "number"
+     },
+     "pirY": {
+      "type": "number"
+     },
+     "quadrant": {
+      "type": "string"
+     },
+     "thin": {
+      "type": "boolean"
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "measures": {
+   "type": "object",
+   "required": [
+    "burden",
+    "pir"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "burden": {
+     "type": "object",
+     "required": [
+      "def",
+      "label",
+      "unit"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "def": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      },
+      "unit": {
+       "type": "string"
+      }
+     }
+    },
+    "pir": {
+     "type": "object",
+     "required": [
+      "def",
+      "label",
+      "unit"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "def": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      },
+      "unit": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "band",
+    "burden",
+    "burdenQ",
+    "burdenY",
+    "pir",
+    "pirQ",
+    "pirY",
+    "thin"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "band": {
+     "type": "string"
+    },
+    "burden": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 200
+    },
+    "burdenQ": {
+     "type": "number"
+    },
+    "burdenY": {
+     "type": "number"
+    },
+    "pir": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    },
+    "pirQ": {
+     "type": "number"
+    },
+    "pirY": {
+     "type": "number"
+    },
+    "thin": {
+     "type": "boolean"
+    }
+   }
+  },
+  "notListed": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "period": {
+   "type": "string"
+  },
+  "source": {
+   "type": "string"
+  }
+ },
+ "title": "tw_affordability.json"
+}

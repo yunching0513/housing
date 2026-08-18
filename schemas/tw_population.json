@@ -1,0 +1,112 @@
+{
+ "type": "object",
+ "required": [
+  "counties",
+  "totals"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "area",
+     "delta",
+     "density109",
+     "density99",
+     "en",
+     "female109",
+     "male109",
+     "name",
+     "p109",
+     "p99",
+     "pct",
+     "region",
+     "sexRatio109"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "area": {
+      "type": "number"
+     },
+     "delta": {
+      "type": "integer"
+     },
+     "density109": {
+      "type": "number"
+     },
+     "density99": {
+      "type": "number"
+     },
+     "en": {
+      "type": "string"
+     },
+     "female109": {
+      "type": "integer"
+     },
+     "male109": {
+      "type": "integer"
+     },
+     "name": {
+      "type": "string"
+     },
+     "p109": {
+      "type": "integer"
+     },
+     "p99": {
+      "type": "integer"
+     },
+     "pct": {
+      "type": "number",
+      "minimum": -100,
+      "maximum": 1000
+     },
+     "region": {
+      "type": "string"
+     },
+     "sexRatio109": {
+      "type": "number"
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "totals": {
+   "type": "object",
+   "required": [
+    "delta",
+    "grew",
+    "p109",
+    "p99",
+    "pct",
+    "shrank"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "delta": {
+     "type": "integer"
+    },
+    "grew": {
+     "type": "integer"
+    },
+    "p109": {
+     "type": "integer"
+    },
+    "p99": {
+     "type": "integer"
+    },
+    "pct": {
+     "type": "number",
+     "minimum": -100,
+     "maximum": 1000
+    },
+    "shrank": {
+     "type": "integer"
+    }
+   }
+  }
+ },
+ "title": "tw_population.json"
+}
