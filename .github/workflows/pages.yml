@@ -1,6 +1,7 @@
 # 把 site/ 部署到 GitHub Pages。
 #
-# 使用者只需要做一件事：Settings → Pages → Source 選「GitHub Actions」。
+# configure-pages 的 enablement: true 會自己把 Pages 打開並設成 GitHub Actions
+# 來源，所以正常情況不需要有人進 Settings 點任何東西。
 # 之後每一次推送到本分支都會重新建置並部署。
 #
 # 刻意用 sparse-checkout：這個 repo 的 data_TW/ 有 4.2 GB 原始檔，
@@ -56,6 +57,10 @@ jobs:
 
       - name: 設定 Pages
         uses: actions/configure-pages@v5
+        with:
+          # 這個 repo 還沒開過 Pages，預設會停在「Get Pages site failed」。
+          # enablement 讓這個步驟自己去開，人就不必進 Settings 點。
+          enablement: true
 
       - name: 上傳網站
         uses: actions/upload-pages-artifact@v3
