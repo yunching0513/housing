@@ -156,6 +156,26 @@ __SHARED_CSS__
     </section>
   </div>
 
+  <div class="split">
+    <section class="panel">
+      <header><h2 id="sp3-title">家戶可支配所得中位數：民國83–114年</h2>
+        <p>灰線為全國。這是家庭收支調查，不是普查</p></header>
+      <div class="body">
+        <svg class="spark" id="sp-inc" viewBox="0 0 560 180" role="img" aria-label="家戶可支配所得中位數長期折線"></svg>
+        <p class="bandnote" id="sp3-note" style="font-size:12.5px;color:var(--ink-2);margin-top:10px"></p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header><h2>租押比率：民國83–114年</h2>
+        <p>灰線為全國。四類權屬裡只有這一類三十二年沒改過定義</p></header>
+      <div class="body">
+        <svg class="spark" id="sp-rent" viewBox="0 0 560 180" role="img" aria-label="租押比率長期折線"></svg>
+        <p class="bandnote" id="sp4-note" style="font-size:12.5px;color:var(--ink-2);margin-top:10px"></p>
+      </div>
+    </section>
+  </div>
+
   <section class="panel">
     <header><h2 id="strip-title">在22縣市裡的位置</h2>
       <p>每一列是一項指標，大點是目前選的縣市，細線是全國值</p></header>
@@ -208,6 +228,7 @@ __SHARED_CSS__
 
 <script type="application/json" id="geo">__GEO_JSON__</script>
 <script type="application/json" id="prof">__PROF_JSON__</script>
+<script type="application/json" id="fies">__FIES_JSON__</script>
 
 <script>
 __MAP_ZOOM_JS__
@@ -215,6 +236,7 @@ __MAP_ZOOM_JS__
   'use strict';
   const GEO = JSON.parse(document.getElementById('geo').textContent);
   const D = JSON.parse(document.getElementById('prof').textContent);
+  const F = JSON.parse(document.getElementById('fies').textContent);
   const C = Object.fromEntries(D.counties.map(c => [c.name, c]));
   const NAMES = D.counties.map(c => c.name);
   const NAT = D.national;
@@ -456,6 +478,7 @@ __MAP_ZOOM_JS__
       (c.affThin ? '<p class="warn">★ 房價資料被來源標註「樣本數未達100戶」，名次僅供參考。</p>' : '');
 
     drawSparks(c);
+    drawFies(c.name);
     drawStrips(c);
     document.getElementById('sp1-title').textContent = `低度使用住宅：${sel}`;
   }
@@ -545,6 +568,49 @@ __MAP_ZOOM_JS__
     ['sigRatio', '白天／晚上人口比', v => v.toFixed(2), NAT.sigRatio],
     ['since109Pct', '109→115人口 %', v => v.toFixed(1), null],
   ];
+  /* 家庭收支調查只涵蓋二十個縣市，金門與連江不在裡面；那兩格要留白並說明，
+     不能當成 0。三個定義斷點（99年權屬拆類、112年建坪改口徑、99年縣市改制）
+     一律從資料的 breaks 欄位取，不寫死在版面上。 */
+  function drawFies(name) {
+    const yrs = F.years;
+    const c = F.counties.find(x => x.name === name);
+    const ticks = [[0, String(yrs[0])], [yrs.indexOf(99), '99'],
+      [yrs.length - 1, String(yrs.at(-1))]];
+    const inc = document.getElementById('sp-inc');
+    const rent = document.getElementById('sp-rent');
+    const n1 = document.getElementById('sp3-note');
+    const n2 = document.getElementById('sp4-note');
+    if (!c) {
+      inc.textContent = ''; rent.textContent = '';
+      n1.innerHTML = n2.innerHTML =
+        `家庭收支調查不含${F.notInSurvey.join('與')}，這兩個縣沒有數字，` +
+        `留白不是 0。全國的口徑因此也是${F.counties.length}個縣市，不是22個。`;
+      return;
+    }
+    line(inc, c.series.incomeMedian, F.national.series.incomeMedian, {
+      fmt: v => man(v) + '元', hiLbl: '元', ticks,
+    });
+    const merged = c.series.incomeMedian.findIndex(v => v != null);
+    n1.innerHTML =
+      `${F.period}中位數<b>${int(c.incomeMedian)}元</b>，` +
+      `平均數${int(c.incomeMean)}元，樣本${int(c.sample)}戶，` +
+      `誤差<b>±${c.ciPct}%</b>（±${int(c.ci)}元）。` +
+      (merged > 0 ? `本縣市在民國${yrs[merged]}年以前由兩個縣市合併而來，
+        中位數無法由兩個子群回推，因此那一段留白。` : '') +
+      `所得含自用住宅設算租金，不是現金所得。`;
+
+    line(rent, c.series.rent, F.national.series.rent, {
+      fmt: v => v.toFixed(2) + '%', hiLbl: '%', shared: true, ticks,
+    });
+    const lo = Math.min(...c.series.rent.filter(v => v != null));
+    const hi = Math.max(...c.series.rent.filter(v => v != null));
+    n2.innerHTML =
+      `民國${yrs[0]}年${c.series.rent[0].toFixed(2)}% → ` +
+      `${yrs.at(-1)}年<b>${c.rent.toFixed(2)}%</b>，` +
+      `最低${lo.toFixed(2)}%、最高${hi.toFixed(2)}%。` +
+      `自有率不放在這裡比，理由是${F.breaks[0].what}`;
+  }
+
   function drawStrips(c) {
     document.getElementById('strips').innerHTML = STRIPS.map(([k, label, fmt, natv]) => {
       const vals = D.counties.map(x => x[k]).filter(v => v != null);

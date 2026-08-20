@@ -60,6 +60,7 @@ PAGES = {
     'county.html': ('county.template.html', {
         '__GEO_JSON__': 'tw_counties.json',
         '__PROF_JSON__': 'tw_county_profile.json',
+        '__FIES_JSON__': 'tw_fies.json',
     }),
     'priority.html': ('priority.template.html', {
         '__AFF_JSON__': 'tw_affordability.json',

@@ -37,7 +37,8 @@ def cells(chunk):
     return out
 
 
-def convert(path):
+def sheet(path):
+    """讀出一張 .ods 的儲存格矩陣。給 prep_*.py 直接用，不必先轉成 CSV。"""
     with zipfile.ZipFile(path) as z:
         xml = z.read('content.xml').decode('utf-8')
     rows = []
@@ -48,6 +49,11 @@ def convert(path):
         rows.extend([line] * (n if line else 1))
     while rows and not any(rows[-1]):
         rows.pop()
+    return rows
+
+
+def convert(path):
+    rows = sheet(path)
     if not rows:
         return None
     width = max(len(r) for r in rows)

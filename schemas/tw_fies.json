@@ -1,0 +1,504 @@
+{
+ "type": "object",
+ "required": [
+  "breaks",
+  "caveat",
+  "counties",
+  "national",
+  "notInSurvey",
+  "period",
+  "quintiles",
+  "source",
+  "years",
+  "z"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "breaks": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "field",
+     "what",
+     "year"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "field": {
+      "type": "string"
+     },
+     "what": {
+      "type": "string"
+     },
+     "year": {
+      "type": "integer"
+     }
+    }
+   },
+   "minItems": 3,
+   "maxItems": 3
+  },
+  "caveat": {
+   "type": "string"
+  },
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "_national",
+     "ci",
+     "ciPct",
+     "consume",
+     "earners",
+     "floorMean",
+     "floorMedian",
+     "households",
+     "imputedRent",
+     "incomeGross",
+     "incomeMean",
+     "incomeMedian",
+     "incomeSe",
+     "kin",
+     "name",
+     "other",
+     "own",
+     "persons",
+     "rent",
+     "sample",
+     "saving",
+     "series",
+     "water"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "_national": {
+      "type": "null"
+     },
+     "ci": {
+      "type": "number"
+     },
+     "ciPct": {
+      "type": "number"
+     },
+     "consume": {
+      "type": "number"
+     },
+     "earners": {
+      "type": "number"
+     },
+     "floorMean": {
+      "type": "number"
+     },
+     "floorMedian": {
+      "type": "number"
+     },
+     "households": {
+      "type": "number"
+     },
+     "imputedRent": {
+      "type": "number"
+     },
+     "incomeGross": {
+      "type": "number"
+     },
+     "incomeMean": {
+      "type": "number"
+     },
+     "incomeMedian": {
+      "type": "number"
+     },
+     "incomeSe": {
+      "type": "number"
+     },
+     "kin": {
+      "type": "number"
+     },
+     "name": {
+      "type": "string"
+     },
+     "other": {
+      "type": "number"
+     },
+     "own": {
+      "type": "number"
+     },
+     "persons": {
+      "type": "number"
+     },
+     "rent": {
+      "type": "number"
+     },
+     "sample": {
+      "type": "number"
+     },
+     "saving": {
+      "type": "number"
+     },
+     "series": {
+      "type": "object",
+      "required": [
+       "floorMean",
+       "floorMedian",
+       "households",
+       "incomeMean",
+       "incomeMedian",
+       "kin",
+       "other",
+       "own",
+       "persons",
+       "rent"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "floorMean": {
+        "type": "array",
+        "items": {
+         "type": [
+          "null",
+          "number"
+         ]
+        }
+       },
+       "floorMedian": {
+        "type": "array",
+        "items": {
+         "type": [
+          "null",
+          "number"
+         ]
+        }
+       },
+       "households": {
+        "type": "array",
+        "items": {
+         "type": "number"
+        }
+       },
+       "incomeMean": {
+        "type": "array",
+        "items": {
+         "type": "number"
+        }
+       },
+       "incomeMedian": {
+        "type": "array",
+        "items": {
+         "type": [
+          "null",
+          "number"
+         ]
+        }
+       },
+       "kin": {
+        "type": "array",
+        "items": {
+         "type": [
+          "null",
+          "number"
+         ]
+        }
+       },
+       "other": {
+        "type": "array",
+        "items": {
+         "type": "number"
+        }
+       },
+       "own": {
+        "type": "array",
+        "items": {
+         "type": "number"
+        }
+       },
+       "persons": {
+        "type": "array",
+        "items": {
+         "type": "number"
+        }
+       },
+       "rent": {
+        "type": "array",
+        "items": {
+         "type": "number"
+        }
+       }
+      }
+     },
+     "water": {
+      "type": "number"
+     }
+    }
+   },
+   "minItems": 20,
+   "maxItems": 20
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "ci",
+    "ciPct",
+    "consume",
+    "earners",
+    "floorMean",
+    "floorMedian",
+    "households",
+    "imputedRent",
+    "incomeGross",
+    "incomeMean",
+    "incomeMedian",
+    "incomeSe",
+    "kin",
+    "other",
+    "own",
+    "persons",
+    "rent",
+    "sample",
+    "saving",
+    "series",
+    "water"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "ci": {
+     "type": "number"
+    },
+    "ciPct": {
+     "type": "number"
+    },
+    "consume": {
+     "type": "number"
+    },
+    "earners": {
+     "type": "number"
+    },
+    "floorMean": {
+     "type": "number"
+    },
+    "floorMedian": {
+     "type": "number"
+    },
+    "households": {
+     "type": "number"
+    },
+    "imputedRent": {
+     "type": "number"
+    },
+    "incomeGross": {
+     "type": "number"
+    },
+    "incomeMean": {
+     "type": "number"
+    },
+    "incomeMedian": {
+     "type": "number"
+    },
+    "incomeSe": {
+     "type": "number"
+    },
+    "kin": {
+     "type": "number"
+    },
+    "other": {
+     "type": "number"
+    },
+    "own": {
+     "type": "number"
+    },
+    "persons": {
+     "type": "number"
+    },
+    "rent": {
+     "type": "number"
+    },
+    "sample": {
+     "type": "number"
+    },
+    "saving": {
+     "type": "number"
+    },
+    "series": {
+     "type": "object",
+     "required": [
+      "consume",
+      "floorMean",
+      "floorMedian",
+      "imputedRent",
+      "incomeMean",
+      "incomeMedian",
+      "kin",
+      "other",
+      "own",
+      "persons",
+      "rent"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "consume": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      },
+      "floorMean": {
+       "type": "array",
+       "items": {
+        "type": [
+         "null",
+         "number"
+        ]
+       }
+      },
+      "floorMedian": {
+       "type": "array",
+       "items": {
+        "type": [
+         "null",
+         "number"
+        ]
+       }
+      },
+      "imputedRent": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      },
+      "incomeMean": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      },
+      "incomeMedian": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      },
+      "kin": {
+       "type": "array",
+       "items": {
+        "type": [
+         "null",
+         "number"
+        ]
+       }
+      },
+      "other": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      },
+      "own": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      },
+      "persons": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      },
+      "rent": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "water": {
+     "type": "number"
+    }
+   }
+  },
+  "notInSurvey": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "period": {
+   "type": "string"
+  },
+  "quintiles": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "consume",
+     "floorMean",
+     "floorMedian",
+     "imputedRent",
+     "incomeMean",
+     "kin",
+     "other",
+     "own",
+     "persons",
+     "q",
+     "rent",
+     "water"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "consume": {
+      "type": "number"
+     },
+     "floorMean": {
+      "type": "number"
+     },
+     "floorMedian": {
+      "type": "number"
+     },
+     "imputedRent": {
+      "type": "number"
+     },
+     "incomeMean": {
+      "type": "number"
+     },
+     "kin": {
+      "type": "number"
+     },
+     "other": {
+      "type": "number"
+     },
+     "own": {
+      "type": "number"
+     },
+     "persons": {
+      "type": "number"
+     },
+     "q": {
+      "type": "integer"
+     },
+     "rent": {
+      "type": "number"
+     },
+     "water": {
+      "type": "number"
+     }
+    }
+   },
+   "minItems": 5,
+   "maxItems": 5
+  },
+  "source": {
+   "type": "string"
+  },
+  "years": {
+   "type": "array",
+   "items": {
+    "type": "integer"
+   }
+  },
+  "z": {
+   "type": "number"
+  }
+ },
+ "title": "tw_fies.json"
+}
