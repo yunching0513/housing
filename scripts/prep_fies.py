@@ -249,7 +249,8 @@ def quintiles():
 
 
 def record(name, roc, panel):
-    row = {k: v.get(name) for k, v in panel[roc].items()}
+    # 底線開頭的是內部用的全國欄，不是縣市欄位，別讓它漏進輸出
+    row = {k: v.get(name) for k, v in panel[roc].items() if not k.startswith('_')}
     mean, se = row.get('incomeMean'), row.get('incomeSe')
     row['ci'] = round(Z * se, 1) if (mean and se) else None
     row['ciPct'] = round(Z * se / mean * 100, 2) if (mean and se) else None

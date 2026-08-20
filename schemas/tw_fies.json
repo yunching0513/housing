@@ -47,7 +47,6 @@
    "items": {
     "type": "object",
     "required": [
-     "_national",
      "ci",
      "ciPct",
      "consume",
@@ -73,9 +72,6 @@
     ],
     "additionalProperties": false,
     "properties": {
-     "_national": {
-      "type": "null"
-     },
      "ci": {
       "type": "number"
      },
