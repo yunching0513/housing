@@ -405,3 +405,11 @@ cooperative gesture 慣例，純滾輪照常捲動頁面並顯示一次提示，
 - 常住人口 ≠ 戶籍人口。
 - 連江縣 −19.1% 主要來自駐軍精簡（男性 11,770 → 7,892 人），離島小基數變動須謹慎解讀。
 - 成長率為十年累計，非年增率。
+
+
+---
+
+## 著作權 Copyright
+
+© 2026　吳昀慶 Yun-Ching Wu
+授權條款見 [`LICENSE`](LICENSE) 與 [`LICENSE-CONTENT`](LICENSE-CONTENT)　詳細聲明見 [`COPYRIGHT.md`](COPYRIGHT.md)
