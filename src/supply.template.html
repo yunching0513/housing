@@ -1,0 +1,684 @@
+<title>臺灣住宅供需圖</title>
+
+<style>
+__SHARED_CSS__
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">民國109年11月 ・ 人口及住宅普查 ・ 行政院主計總處</p>
+    <h1>臺灣住宅供需圖</h1>
+    <p class="dek">
+      全國有<b id="d-h"></b>間住宅、<b id="d-hh"></b>戶家庭，房子比家庭多<b id="d-over"></b>，
+      其中<b id="d-idle"></b>間目前沒有人使用。唯空屋並非均勻分布：
+      人口正在成長的<b id="d-grow"></b>個縣市之中，有<b id="d-both"></b>個的空屋率高於全國平均。
+      可見問題多半不在房子不夠，而在<b>房子不在需要的地方，或者不是負擔得起的那一種</b>。
+    </p>
+  </header>
+
+  <dl class="stats" id="stats"></dl>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="選擇指標">
+      <button type="button" data-metric="pct"     aria-pressed="true">人口成長率</button>
+      <button type="button" data-metric="delta"   aria-pressed="false">人口增減數</button>
+      <button type="button" data-metric="density" aria-pressed="false">人口密度</button>
+      <button type="button" data-metric="vacancy" aria-pressed="false">空屋率</button>
+      <button type="button" data-metric="perhh"   aria-pressed="false">宅戶比</button>
+    </div>
+    <p class="hint">點選縣市可固定；再點一次取消</p>
+  </div>
+
+  <div class="figures">
+    <div class="panel">
+      <header>
+        <h2 id="map-title">縣市分布圖</h2>
+        <p id="map-sub"></p>
+      </header>
+      <div class="body">
+        <div class="mapwrap"><svg class="map" id="map" viewBox="0 0 990 1000"
+             role="img" aria-labelledby="map-title" aria-describedby="map-desc"></svg></div>
+        <p id="map-desc" hidden></p>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <header>
+        <h2 id="bars-title">22縣市排序</h2>
+        <p id="bars-sub"></p>
+      </header>
+      <div class="body"><div class="bars" id="bars"></div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <header>
+      <h2 id="sc-title">人跟房子有沒有對上</h2>
+      <p>橫軸為十年人口變化，縱軸為空屋率。虛線是分界：人口零成長，以及全國空屋率<b id="sc-cut"></b>。
+      落在哪一區，決定的是該蓋房子，還是該做別的事。</p>
+    </header>
+    <div class="body">
+      <div class="scatter-wrap">
+        <div><svg class="scatter" id="scatter" viewBox="0 0 760 520" role="img"
+                  aria-labelledby="sc-title" aria-describedby="sc-desc"></svg>
+             <p id="sc-desc" hidden></p></div>
+        <div class="zones" id="zones"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="body">
+      <div class="tablewrap">
+        <table id="tbl">
+          <caption>常住人口數（人）與人口密度（人／平方公里）。點欄位標題可換排序。</caption>
+          <thead><tr>
+            <th data-sort="name"       scope="col">縣市</th>
+            <th data-sort="region"     scope="col">區域</th>
+            <th data-sort="p99"        scope="col">99年</th>
+            <th data-sort="p109"       scope="col">109年</th>
+            <th data-sort="delta"      scope="col">增減</th>
+            <th data-sort="pct"        scope="col" aria-sort="descending">成長率</th>
+            <th data-sort="density109" scope="col">密度109</th>
+            <th data-sort="houses"     scope="col">住宅數</th>
+            <th data-sort="households" scope="col">住戶數</th>
+            <th data-sort="vacancy"    scope="col">空屋率</th>
+            <th data-sort="perHousehold" scope="col">宅戶比</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="notes">
+    <section>
+      <h3>資料與定義</h3>
+      <p><b>常住人口</b>指實際住在這裡的人，與戶口名簿上登記的人不同；<b>住戶</b>指一起生活的一群人，
+      通常即是一個家庭；<b>住宅</b>則指一間可以住人的房子。評估住宅需求須以住戶數為分母，
+      因為房子是一戶一戶在用的，不是一人一間。</p>
+      <p>來源：行政院主計總處109年人口及住宅普查（表87住宅使用情形、表66住戶數）
+      與99年普查常住人口。</p>
+    </section>
+    <section>
+      <h3>兩種空屋率，數字為什麼不一樣</h3>
+      <ul>
+        <li>本頁採<b>普查的算法</b>：普查員上門詢問這間房子現在有沒有人住。109年11月全國<b id="n-vac"></b>，約<b id="n-idle"></b>宅。</li>
+        <li>新聞上常見的是<b>內政部的算法</b>：看台電的電表，一個月平均用電不到60度就算沒住人。
+        最新一期是<b>114年下半年9.44%</b>（115年7月出刊），每半年更新一次。</li>
+        <li>電表法會誤判之處有二：很省電的獨居長者可能被算成空屋，而放著除濕機的空屋可能被算成有人住。</li>
+        <li><b>兩者的交集比想像中小。</b>內政部拿109年逐筆比對過，公布的一致率是84.08%，
+        但那個數字是被「兩者都認定不是空屋」的77.37%撐起來的。真正被認定為空屋的部分：
+        普查認定的空閒住宅裡，只有約三分之一同時被電表法認定為低度使用。</li>
+        <li>可見這不是誰對誰錯，而是問的問題不同。看趨勢用電表法，因為它更新得快；
+        看結構用普查法，因為它還能再拆屋齡與坪數。兩者各有其地位，唯不宜相減。</li>
+      </ul>
+    </section>
+    <section>
+      <h3>判讀提醒</h3>
+      <ul>
+        <li><b>空屋多不等於不必蓋社宅。</b>空屋之中有相當比例是偏鄉的老房子與投資型新成屋，
+        這兩種都不是社宅能直接接手來用的。下結論之前，必須先按屋齡與位置拆開看。</li>
+        <li><b>分界線附近的縣市要小心解讀。</b>22個縣市之中有5個離全國空屋率分界不到0.5個百分點，
+        例如新北市對全國。它們被分到哪一邊，換一個算法就可能翻過去。</li>
+        <li>連江縣人口十年減少<b id="n-lj"></b>，主要來自駐軍精簡。離島基數小，變動須謹慎解讀。</li>
+      </ul>
+    </section>
+    <section>
+      <h3>製圖說明</h3>
+      <ul>
+        <li><b>時間基準鎖在民國109年11月。</b>人口與住宅皆取自同一次普查，
+        分子與分母同期才不致失真。十年變化則是99年11月至109年11月。</li>
+        <li><b>分型以散布圖呈現而不用四色地圖。</b>理由是有5個縣市貼近分界，
+        四色地圖會把「剛好在線上」畫得與「明顯在某一區」一樣確定。散布圖把分界線本身畫出來，
+        讀者因此看得到誰接近邊緣。</li>
+        <li>散布圖上圓點的大小代表住戶數，顏色則只有一種：橫軸已經在表示人口變化，
+        再用顏色講同一件事只會變成雜訊。</li>
+        <li>縣市界圖資為g0v <code>twgeojson</code>，已簡化並移除0.15 km² 以下島礁。
+        金門與馬祖是插圖，比例尺與本島不同，框上有標放大倍率。</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<div id="tip" role="tooltip" aria-hidden="true"></div>
+
+<script type="application/json" id="geo">__GEO_JSON__</script>
+<script type="application/json" id="pop">__POP_JSON__</script>
+<script type="application/json" id="hou">__HOU_JSON__</script>
+
+<script>
+__MAP_ZOOM_JS__
+(() => {
+  'use strict';
+  const GEO = JSON.parse(document.getElementById('geo').textContent);
+  const POP = JSON.parse(document.getElementById('pop').textContent);
+  const HOU = JSON.parse(document.getElementById('hou').textContent);
+  const H = Object.fromEntries(HOU.counties.map(c => [c.name, c]));
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a = {}) => { const n = document.createElementNS(NS, t);
+    for (const k in a) n.setAttribute(k, a[k]); return n; };
+  const byName = new Map(POP.counties.map(c => [c.name, c]));
+
+  // ── projection ────────────────────────────────────────────────────────
+  // Equirectangular with longitude shrunk by cos(mean latitude) so the island
+  // keeps its proportions. Kinmen and Matsu are ~200 km offshore and would be
+  // invisible specks at the main scale, so each gets a labelled inset at a
+  // stated magnification. Kept low on purpose: at ×3+ Kinmen's 152 km² reads
+  // bigger than a real west-coast county.
+  const MAIN = [258, 8, 724, 984];
+  const INSETS = { matsu: { mag: 1.5, x: 14, y: 40 }, kinmen: { mag: 2.0, x: 14, y: 292 } };
+  const RECTS = { main: MAIN };
+  const proj = {};
+  const cosOf = (b) => Math.cos((b[1] + b[3]) / 2 * Math.PI / 180);
+  {
+    const b = GEO.bounds.main, k = cosOf(b), [x, y, w, h] = MAIN;
+    const s = Math.min(w / ((b[2] - b[0]) * k), h / (b[3] - b[1]));
+    proj.main = { b, k, s,
+      dx: x + (w - (b[2] - b[0]) * k * s) / 2,
+      dy: y + (h - (b[3] - b[1]) * s) / 2 };
+  }
+  // Each inset frame is sized to its own content, so no frame carries dead sea.
+  for (const [g, cfg] of Object.entries(INSETS)) {
+    const b = GEO.bounds[g], k = cosOf(b), s = proj.main.s * cfg.mag;
+    const w = (b[2] - b[0]) * k * s, h = (b[3] - b[1]) * s;
+    RECTS[g] = [cfg.x, cfg.y, w, h];
+    proj[g] = { b, k, s, dx: cfg.x, dy: cfg.y };
+  }
+  const px = (g, lon) => proj[g].dx + (lon - proj[g].b[0]) * proj[g].k * proj[g].s;
+  const py = (g, lat) => proj[g].dy + (proj[g].b[3] - lat) * proj[g].s;
+
+  const pathOf = (c) => c.rings.map(r =>
+    'M' + r.map(([lo, la]) => `${px(c.group, lo).toFixed(1)} ${py(c.group, la).toFixed(1)}`).join('L') + 'Z'
+  ).join('');
+
+  /** Area-weighted centroid of a county's largest ring：where its label goes. */
+  const centroid = (c) => {
+    const r = c.rings[0]; let a = 0, cx = 0, cy = 0;
+    for (let i = 0; i < r.length - 1; i++) {
+      const x1 = px(c.group, r[i][0]),     y1 = py(c.group, r[i][1]);
+      const x2 = px(c.group, r[i + 1][0]), y2 = py(c.group, r[i + 1][1]);
+      const f = x1 * y2 - x2 * y1;
+      a += f; cx += (x1 + x2) * f; cy += (y1 + y2) * f;
+    }
+    return a ? [cx / (3 * a), cy / (3 * a)] : [px(c.group, r[0][0]), py(c.group, r[0][1])];
+  };
+
+  // Short map labels. dx/dy nudge the crowded west-coast cities off their
+  // centroids; `lead` draws a hairline back to the polygon.
+  // Kinmen and Matsu are named on their inset frames instead, so they are absent here.
+  const LBL = {
+    新北市: ['新北', -46, 26], 臺北市: ['臺北', 56, -34, 1], 桃園市: ['桃園', -18, 8],
+    基隆市: ['基隆', 42, -24, 1], 新竹市: ['竹市', -52, 4, 1], 新竹縣: ['竹縣', 18, 6],
+    宜蘭縣: ['宜蘭', 6, 12], 苗栗縣: ['苗栗', -6, 2], 臺中市: ['臺中', 24, 2],
+    彰化縣: ['彰化', -36, 6, 1], 南投縣: ['南投', 8, 10], 雲林縣: ['雲林', -28, 4, 1],
+    嘉義市: ['嘉市', -52, -8, 1], 嘉義縣: ['嘉縣', 10, 8], 臺南市: ['臺南', -4, 6],
+    高雄市: ['高雄', 2, 26], 屏東縣: ['屏東', 2, 30], 花蓮縣: ['花蓮', 0, 20],
+    臺東縣: ['臺東', -4, 12], 澎湖縣: ['澎湖', 0, 42],
+  };
+
+  // ── metrics ───────────────────────────────────────────────────────────
+  const int = (v) => Math.round(Math.abs(v)).toLocaleString('en-US');
+  const sign = (v) => (v > 0 ? '+' : v < 0 ? '−' : '');
+  const METRICS = {
+    pct: {
+      label: '十年人口成長率', unit: '%', kind: 'div',
+      breaks: [-10, -5, -2, 0, 2, 5, 10],
+      tick: (v) => (v ? (v > 0 ? '+' : '−') + Math.abs(v) : '0') + '%',
+      get: (c) => c.pct,
+      fmt: (v) => sign(v) + Math.abs(v).toFixed(1) + '%',
+      sub: '以99年為基期的十年累計增減率，0%為色階中點',
+      lo: '衰退', hi: '成長',
+    },
+    delta: {
+      label: '十年人口增減數', unit: '人', kind: 'div',
+      breaks: [-150000, -40000, -10000, 0, 10000, 40000, 150000],
+      tick: (v) => v ? (v > 0 ? '+' : '−') + Math.abs(v / 10000) + '萬' : '0',
+      get: (c) => c.delta,
+      fmt: (v) => sign(v) + int(v),
+      sub: '實際增減人數。級距對稱，最外側衰退級距無縣市落入',
+      lo: '減少', hi: '增加',
+    },
+    density: {
+      label: '人口密度（109年）', unit: '人/km²', kind: 'seq', ramp: 'seq',
+      breaks: [150, 400, 1000, 2500, 5000],
+      tick: (v) => int(v),
+      get: (c) => c.density109,
+      fmt: (v) => int(v),
+      sub: '每平方公里常住人口，反映人口實際分布的疏密',
+      lo: '低', hi: '高',
+    },
+    vacancy: {
+      label: '空屋率（109年11月）', unit: '%', kind: 'seq', ramp: 'sq2',
+      breaks: [11, 12.5, 14, 16, 18],
+      tick: (v) => v + '%',
+      get: (c) => H[c.name].vacancy,
+      fmt: (v) => v.toFixed(1) + '%',
+      sub: '普查認定「目前沒有使用」的住宅占比，全國13.1%',
+      lo: '低', hi: '高',
+    },
+    perhh: {
+      label: '宅戶比（109年11月）', unit: '宅/戶', kind: 'seq', ramp: 'sq2',
+      breaks: [1.05, 1.10, 1.15, 1.20, 1.25],
+      tick: (v) => v.toFixed(2),
+      get: (c) => H[c.name].perHousehold,
+      fmt: (v) => v.toFixed(3),
+      sub: '每一戶家庭對到幾間住宅，全國1.112。愈高代表住宅相對家庭數愈寬鬆',
+      lo: '緊', hi: '寬鬆',
+    },
+  };
+  for (const m of Object.values(METRICS)) m.ramp = m.ramp || (m.kind === 'div' ? 'div' : 'seq');
+  const classOf = (m, v) => { const i = m.breaks.findIndex(b => v < b);
+    return i === -1 ? m.breaks.length : i; };
+  const fillOf = (m, v) => `var(--${m.ramp}-${classOf(m, v)})`;
+
+  let metric = 'pct', pinned = null, hovered = null;
+
+  // ── build the map once; only fills change on metric switch ────────────
+  const svg = document.getElementById('map');
+  const gGrat = el('g', { class: 'grat' });
+  const gTick = el('g');
+  const gLand = el('g');
+  const gDeco = el('g');
+  const gLbl  = el('g');
+  svg.append(gGrat, gTick, gLand, gDeco, gLbl);
+
+  { // graticule + degree ticks over the main map only
+    const [rx, ry, rw, rh] = RECTS.main;
+    for (let lon = 120; lon <= 122; lon++) {
+      const x = px('main', lon); if (x < rx || x > rx + rw) continue;
+      gGrat.append(el('line', { x1: x, y1: ry, x2: x, y2: ry + rh }));
+      if (x + 34 > 990) continue;  // would run off the right edge
+      gTick.append(Object.assign(el('text', { class: 'grat-tick', x: x + 3, y: ry + rh - 6 }),
+        { textContent: lon + '°E' }));
+    }
+    for (let lat = 22; lat <= 25; lat++) {
+      const y = py('main', lat); if (y < ry || y > ry + rh) continue;
+      gGrat.append(el('line', { x1: rx, y1: y, x2: rx + rw, y2: y }));
+      gTick.append(Object.assign(el('text', { class: 'grat-tick', x: rx + 4, y: y - 4 }),
+        { textContent: lat + '°N' }));
+    }
+  }
+
+  for (const c of GEO.counties) {
+    const p = el('path', {
+      class: 'county', d: pathOf(c), 'data-name': c.name,
+      tabindex: '0', role: 'button', 'aria-label': c.name,
+    });
+    gLand.append(p);
+  }
+
+  { // inset frames, labelled with their magnification against the main scale
+    const mk = (g, text) => {
+      const [x, y, w, h] = RECTS[g];
+      gDeco.append(el('rect', { class: 'inset-frame', x, y, width: w, height: h, rx: 2 }));
+      gDeco.append(Object.assign(el('text', { class: 'inset-label', x: x + 2, y: y - 6 }),
+        { textContent: `${text} ×${(proj[g].s / proj.main.s).toFixed(1)}` }));
+    };
+    mk('matsu', '連江縣（馬祖）');
+    mk('kinmen', '金門縣');
+  }
+
+  { // scale bar：main map only; the insets carry their own magnification
+    const KM = 50, x0 = 26, y0 = 946;
+    const w = KM * proj.main.s / 111.32;
+    gDeco.append(el('path', { class: 'scalebar',
+      d: `M${x0} ${y0 - 5}V${y0}H${x0 + w}V${y0 - 5}M${x0 + w / 2} ${y0}v-4` }));
+    for (const [v, x] of [[0, x0], [KM / 2, x0 + w / 2], [KM, x0 + w]]) {
+      gDeco.append(Object.assign(el('text', {
+        class: 'inset-label', x, y: y0 + 13,
+        'text-anchor': v === 0 ? 'start' : v === KM ? 'end' : 'middle',
+      }), { textContent: v === KM ? `${v} km` : String(v) }));
+    }
+  }
+
+  for (const c of GEO.counties) {
+    if (!LBL[c.name]) continue;
+    const [nm, dx = 0, dy = 0, lead = 0] = LBL[c.name];
+    const [cx, cy] = centroid(c);
+    if (lead) gLbl.append(el('path', { class: 'leader',
+      d: `M${cx.toFixed(1)} ${cy.toFixed(1)}L${(cx + dx * .82).toFixed(1)} ${(cy + dy * .82 - 4).toFixed(1)}` }));
+    gLbl.append(Object.assign(el('text', {
+      class: 'lbl' + (['基隆市','新竹市','嘉義市','澎湖縣'].includes(c.name) ? ' sm' : ''),
+      x: (cx + dx).toFixed(1), y: (cy + dy).toFixed(1), 'text-anchor': 'middle',
+    }), { textContent: nm }));
+  }
+
+  // ── panels ────────────────────────────────────────────────────────────
+  const barsEl = document.getElementById('bars');
+  const legendEl = document.getElementById('legend');
+  const tbody = document.querySelector('#tbl tbody');
+  const tfoot = document.querySelector('#tbl tfoot');
+  const tip = document.getElementById('tip');
+  let sortKey = 'pct', sortDir = -1;
+
+  function paint() {
+    const m = METRICS[metric];
+    document.getElementById('map-sub').textContent = m.sub;
+    document.getElementById('bars-sub').textContent = `依${m.label}排序 ・ 單位${m.unit}`;
+    document.getElementById('map-desc').textContent =
+      `臺灣22縣市${m.label}分布圖。` +
+      POP.counties.map(c => `${c.name}${m.fmt(m.get(c))}`).join('、') + '。';
+
+    for (const p of gLand.children) {
+      p.style.fill = fillOf(m, m.get(byName.get(p.dataset.name)));
+    }
+    drawLegend(m);
+    drawBars(m);
+    drawTable();
+    mark();
+  }
+
+  function drawLegend(m) {
+    const n = m.breaks.length + 1;
+    const pre = m.ramp;
+    legendEl.innerHTML = '';
+    const cap = document.createElement('div'); cap.className = 'cap';
+    cap.innerHTML = `<span>← ${m.lo}</span>` +
+      (m.kind === 'div' ? `<span class="zero">0為中點</span>` : '') +
+      `<span>${m.hi} →</span>`;
+    const sws = document.createElement('div'); sws.className = 'swatches';
+    for (let i = 0; i < n; i++) {
+      const d = document.createElement('div');
+      d.className = 'sw'; d.style.background = `var(--${pre}-${i})`;
+      const cnt = POP.counties.filter(c => classOf(m, m.get(c)) === i).length;
+      d.title = `${cnt}個縣市`;
+      if (!cnt) d.style.opacity = '.34';
+      sws.append(d);
+    }
+    const tk = document.createElement('div'); tk.className = 'ticks';
+    for (const b of m.breaks) { const s = document.createElement('span');
+      s.textContent = m.tick(b); tk.append(s); }
+    tk.append(document.createElement('span'));
+    legendEl.append(cap, sws, tk);
+  }
+
+  function drawBars(m) {
+    const vals = POP.counties.map(c => m.get(c));
+    const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+    const span = hi - lo || 1;
+    const zero = (0 - lo) / span * 100;
+    const rows = [...POP.counties].sort((a, b) => m.get(b) - m.get(a));
+    barsEl.innerHTML = '';
+    for (const c of rows) {
+      const v = m.get(c);
+      const a = (Math.min(0, v) - lo) / span * 100;
+      const w = Math.abs(v) / span * 100;
+      const r = document.createElement('div');
+      r.className = 'row'; r.dataset.name = c.name; r.tabIndex = 0;
+      r.innerHTML =
+        `<span class="nm">${c.name.slice(0, 3)}</span>` +
+        `<span class="track"><i class="zeroline" style="left:${zero}%"></i>` +
+        `<i class="bar" style="left:${a}%;width:${w}%;background:${fillOf(m, v)}"></i></span>` +
+        `<span class="val">${m.fmt(v)}</span>`;
+      barsEl.append(r);
+    }
+  }
+
+  function drawTable() {
+    const m = METRICS[metric];
+    const HKEYS = new Set(['houses', 'households', 'vacancy', 'perHousehold']);
+    const val = (c) => (HKEYS.has(sortKey) ? H[c.name][sortKey] : c[sortKey]);
+    const rows = [...POP.counties].sort((a, b) => {
+      const x = val(a), y = val(b);
+      return (typeof x === 'string' ? x.localeCompare(y, 'zh-Hant') : x - y) * sortDir;
+    });
+    tbody.innerHTML = rows.map(c => `
+      <tr data-name="${c.name}">
+        <td><i class="chip" style="background:${fillOf(m, m.get(c))}"></i>${c.name}</td>
+        <td>${c.region}</td>
+        <td class="num">${int(c.p99)}</td>
+        <td class="num">${int(c.p109)}</td>
+        <td class="num ${c.delta > 0 ? 'up' : 'down'}">${sign(c.delta)}${int(c.delta)}</td>
+        <td class="num ${c.pct > 0 ? 'up' : 'down'}">${sign(c.pct)}${Math.abs(c.pct).toFixed(2)}%</td>
+        <td class="num">${int(c.density109)}</td>
+        <td class="num">${int(H[c.name].houses)}</td>
+        <td class="num">${int(H[c.name].households)}</td>
+        <td class="num">${H[c.name].vacancy.toFixed(1)}%</td>
+        <td class="num">${H[c.name].perHousehold.toFixed(3)}</td>
+      </tr>`).join('');
+    const t = POP.totals;
+    tfoot.innerHTML = `<tr>
+      <td>總計</td><td>22縣市</td>
+      <td class="num">${int(t.p99)}</td><td class="num">${int(t.p109)}</td>
+      <td class="num up">${sign(t.delta)}${int(t.delta)}</td>
+      <td class="num up">${sign(t.pct)}${Math.abs(t.pct).toFixed(2)}%</td>
+      <td class="num">638.9 → 658.3</td>
+      <td class="num">${int(HOU.national.houses)}</td>
+      <td class="num">${int(HOU.national.households)}</td>
+      <td class="num">${HOU.national.vacancy.toFixed(1)}%</td>
+      <td class="num">${HOU.national.perHousehold.toFixed(3)}</td></tr>`;
+  }
+
+  // ── scatter: 人口變化 × 空屋率 ─────────────────────────────────────────
+  // The four-way classification lives here rather than on the map on purpose.
+  // Five of the 22 counties sit within 0.5pp of the vacancy cut; a four-colour
+  // choropleth would paint those the same solid colour as the clear-cut cases
+  // and hide how close the call was. A scatter shows the cut lines themselves.
+  const scEl = document.getElementById('scatter');
+  const ZONE_ORDER = ['tight_growing', 'slack_growing', 'tight_shrinking', 'slack_shrinking'];
+
+  function drawScatter() {
+    const cut = HOU.vacancyCut;
+    const L = 62, R = 736, T = 26, B = 452;
+    const xs = POP.counties.map(c => c.pct), ys = HOU.counties.map(c => c.vacancy);
+    const x0 = Math.min(...xs) - 3, x1 = Math.max(...xs) + 3;
+    const y0 = Math.min(...ys) - 1, y1 = Math.max(...ys) + 1;
+    const X = (v) => L + (v - x0) / (x1 - x0) * (R - L);
+    const Y = (v) => B - (v - y0) / (y1 - y0) * (B - T);
+    const maxHH = Math.max(...HOU.counties.map(c => c.households));
+    scEl.innerHTML = '';
+
+    const g = (cls) => { const n = el('g', cls ? { class: cls } : {}); scEl.append(n); return n; };
+    const gAx = g(), gCut = g(), gZone = g('sc-zone'), gDot = g(), gLbl = g();
+
+    for (const v of [10, 12, 14, 16, 18, 20]) {
+      if (v < y0 || v > y1) continue;
+      gAx.append(el('line', { class: 'sc-axis', x1: L, y1: Y(v), x2: R, y2: Y(v), opacity: .5 }));
+      gAx.append(Object.assign(el('text', { class: 'sc-tick', x: L - 8, y: Y(v) + 3.5,
+        'text-anchor': 'end' }), { textContent: v + '%' }));
+    }
+    for (const v of [-20, -15, -10, -5, 0, 5, 10, 15, 20]) {
+      if (v < x0 || v > x1) continue;
+      gAx.append(Object.assign(el('text', { class: 'sc-tick', x: X(v), y: B + 18,
+        'text-anchor': 'middle' }), { textContent: (v > 0 ? '+' : '') + v + '%' }));
+    }
+    gAx.append(Object.assign(el('text', { class: 'sc-axlabel', x: (L + R) / 2, y: B + 40,
+      'text-anchor': 'middle' }), { textContent: '十年人口變化（99 → 109年）' }));
+    gAx.append(Object.assign(el('text', { class: 'sc-axlabel', x: 14, y: (T + B) / 2,
+      'text-anchor': 'middle', transform: `rotate(-90 14 ${(T + B) / 2})` }),
+      { textContent: '空屋率（109年11月）' }));
+
+    gCut.append(el('line', { class: 'sc-cut', x1: X(0), y1: T, x2: X(0), y2: B }));
+    gCut.append(el('line', { class: 'sc-cut', x1: L, y1: Y(cut), x2: R, y2: Y(cut) }));
+
+    const zones = [
+      ['slack_shrinking', L + 10, T + 16, 'start'],
+      ['slack_growing',   R - 10, T + 16, 'end'],
+      ['tight_shrinking', L + 10, B - 10, 'start'],
+      ['tight_growing',   R - 10, B - 10, 'end'],
+    ];
+    for (const [k, x, y, anchor] of zones) {
+      const n = HOU.counties.filter(c => c.quadrant === k).length;
+      const t = el('text', { x, y, 'text-anchor': anchor });
+      t.append(document.createTextNode(HOU.quadrants[k].label + ' '));
+      t.append(Object.assign(el('tspan', { class: 'c' }), { textContent: `${n}個` }));
+      gZone.append(t);
+    }
+
+    // Labels sit to the right of their dot; nudge downward on collision so all 22
+    // stay readable without leader lines.
+    const placed = [];
+    for (const c of [...HOU.counties].sort((a, b) => Y(a.vacancy) - Y(b.vacancy))) {
+      const pc = byName.get(c.name);
+      const cx = X(pc.pct), cy = Y(c.vacancy);
+      const r = 4 + 11 * Math.sqrt(c.households / maxHH);
+      // One colour on purpose: the x position already encodes population change,
+      // so tinting by it would spend the colour channel saying the same thing twice.
+      // Size carries what position cannot：how many households the dot stands for.
+      gDot.append(el('circle', { class: 'dot', cx, cy, r: r.toFixed(1),
+        'data-name': c.name, tabindex: '0', role: 'button', 'aria-label': c.name }));
+
+      let lx = cx + r + 4, ly = cy + 3.5, anchor = 'start';
+      if (lx > R - 44) { lx = cx - r - 4; anchor = 'end'; }
+      while (placed.some(q => Math.abs(q.y - ly) < 11 && Math.abs(q.x - lx) < 62)) ly += 11;
+      placed.push({ x: lx, y: ly });
+      gLbl.append(Object.assign(el('text', { class: 'dot-lbl', x: lx.toFixed(1), y: ly.toFixed(1),
+        'text-anchor': anchor, 'data-name': c.name }), { textContent: c.name.slice(0, 3) }));
+    }
+
+    document.getElementById('sc-cut').textContent = cut.toFixed(1) + '%';
+    document.getElementById('sc-desc').textContent =
+      HOU.counties.map(c => `${c.name}人口${byName.get(c.name).pct}%、空屋率${c.vacancy}%，屬「${HOU.quadrants[c.quadrant].label}」`).join('；') + '。';
+
+    document.getElementById('zones').innerHTML = ZONE_ORDER.map(k => {
+      const q = HOU.quadrants[k];
+      const list = HOU.counties.filter(c => c.quadrant === k)
+        .sort((a, b) => byName.get(b.name).pct - byName.get(a.name).pct);
+      const edge = list.filter(c => Math.abs(c.margin) < 0.5).length;
+      return `<div class="zone" style="border-left-color:var(--${k === 'tight_growing' ? 'div-7'
+        : k === 'slack_growing' ? 'div-3' : k === 'tight_shrinking' ? 'div-4' : 'div-1'})">
+        <span class="cond">${q.cond}</span>
+        <h4>${q.label}<span class="n">${list.length}個</span></h4>
+        <span class="who">${list.map(c => c.name.replace(/[市縣]$/, '')).join('、') || '無'}</span>
+        <span class="act">→ ${q.act}${edge ? `　（其中${edge}個貼近分界）` : ''}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── linked highlight ──────────────────────────────────────────────────
+  const active = () => pinned || hovered;
+  function mark() {
+    const a = active();
+    svg.classList.toggle('dimmed', !!a);
+    scEl.classList.toggle('dimmed', !!a);
+    for (const n of scEl.querySelectorAll('.dot, .dot-lbl'))
+      n.classList.toggle('active', n.dataset.name === a);
+    for (const p of gLand.children) p.classList.toggle('active', p.dataset.name === a);
+    for (const r of barsEl.children) r.classList.toggle('active', r.dataset.name === a);
+    for (const r of tbody.children) r.classList.toggle('active', r.dataset.name === a);
+  }
+
+  function showTip(name, x, y) {
+    const c = byName.get(name); if (!c) return;
+    const h = H[name];
+    tip.innerHTML =
+      `<div class="t-nm">${c.name}</div><div class="t-en">${c.en.toUpperCase()} ・ ${c.region}</div>
+       <dl>
+         <dt>99年常住人口</dt><dd>${int(c.p99)}</dd>
+         <dt>109年常住人口</dt><dd>${int(c.p109)}</dd>
+         <dt>十年增減</dt><dd class="${c.delta > 0 ? 'up' : 'down'}">${sign(c.delta)}${int(c.delta)}</dd>
+         <dt>成長率</dt><dd class="${c.pct > 0 ? 'up' : 'down'}">${sign(c.pct)}${Math.abs(c.pct).toFixed(2)}%</dd>
+         <dt>人口密度109</dt><dd>${int(c.density109)}</dd>
+         <dt>住宅數</dt><dd>${int(h.houses)}</dd>
+         <dt>住戶數</dt><dd>${int(h.households)}</dd>
+         <dt>空屋率</dt><dd>${h.vacancy.toFixed(1)}%</dd>
+         <dt>宅戶比</dt><dd>${h.perHousehold.toFixed(3)}</dd>
+       </dl>
+       <p style="margin:8px 0 0;font-size:11.5px;color:var(--ink-3)">
+         ${HOU.quadrants[h.quadrant].label}${Math.abs(h.margin) < 0.5 ? '（貼近分界）' : ''}</p>`;
+    tip.classList.add('on'); tip.setAttribute('aria-hidden', 'false');
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(x + 16, innerWidth - r.width - 12) + 'px';
+    tip.style.top = Math.min(Math.max(12, y - r.height / 2), innerHeight - r.height - 12) + 'px';
+  }
+  const hideTip = () => { tip.classList.remove('on'); tip.setAttribute('aria-hidden', 'true'); };
+
+  function bind(root, getName) {
+    root.addEventListener('pointerover', (e) => {
+      const n = getName(e.target); if (!n) return;
+      hovered = n; mark(); showTip(n, e.clientX, e.clientY);
+    });
+    root.addEventListener('pointermove', (e) => {
+      const n = getName(e.target); if (n) showTip(n, e.clientX, e.clientY);
+    });
+    root.addEventListener('pointerout', (e) => {
+      if (!getName(e.target)) return;
+      hovered = null; mark(); if (!pinned) hideTip();
+    });
+    root.addEventListener('click', (e) => {
+      const n = getName(e.target); if (!n) return;
+      pinned = pinned === n ? null : n; mark();
+      if (!pinned) hideTip(); else showTip(n, e.clientX, e.clientY);
+    });
+    root.addEventListener('focusin', (e) => {
+      const n = getName(e.target); if (!n) return;
+      hovered = n; mark();
+      const b = e.target.getBoundingClientRect();
+      showTip(n, b.right, b.top + b.height / 2);
+    });
+    root.addEventListener('focusout', () => { hovered = null; mark(); if (!pinned) hideTip(); });
+    root.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const n = getName(e.target); if (!n) return;
+      e.preventDefault(); pinned = pinned === n ? null : n; mark();
+    });
+  }
+  bind(svg, (t) => t.closest?.('.county')?.dataset.name);
+  bind(barsEl, (t) => t.closest?.('.row')?.dataset.name);
+  bind(tbody, (t) => t.closest?.('tr')?.dataset.name);
+
+  // ── controls ──────────────────────────────────────────────────────────
+  for (const b of document.querySelectorAll('.seg button')) {
+    b.addEventListener('click', () => {
+      metric = b.dataset.metric;
+      for (const o of document.querySelectorAll('.seg button'))
+        o.setAttribute('aria-pressed', String(o === b));
+      paint();
+    });
+  }
+  for (const th of document.querySelectorAll('#tbl thead th')) {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      sortDir = sortKey === k ? -sortDir : (k === 'name' || k === 'region' ? 1 : -1);
+      sortKey = k;
+      for (const o of document.querySelectorAll('#tbl thead th')) o.removeAttribute('aria-sort');
+      th.setAttribute('aria-sort', sortDir === 1 ? 'ascending' : 'descending');
+      drawTable(); mark();
+    });
+  }
+
+  bind(scEl, (t) => t.closest?.('.dot')?.dataset.name);
+
+  // ── headline stats ────────────────────────────────────────────────────
+  {
+    const t = POP.totals, N = HOU.national;
+    const growingSlack = HOU.counties.filter(c => c.quadrant === 'slack_growing').length;
+    const man = v => (v / 10000).toFixed(0) + '萬';
+    // 開頭那一段的數字全部從這裡填，不寫死在版面上：來源更新的那天，
+    // 手寫的數字會靜靜地變成錯的，而且沒有人會發現。
+    const put = (id, v) => document.getElementById(id).textContent = v;
+    put('d-h', man(N.houses));
+    put('d-hh', man(N.households));
+    put('d-over', ((N.houses / N.households - 1) * 100).toFixed(0) + '%');
+    put('d-idle', man(N.idle));
+    put('d-grow', t.grew);
+    put('d-both', growingSlack);
+    put('n-vac', N.vacancy.toFixed(1) + '%');
+    put('n-idle', man(N.idle));
+    put('n-lj', Math.abs(byName.get('連江縣').pct).toFixed(1) + '%');
+    document.getElementById('stats').innerHTML = [
+      ['全國住宅', int(N.houses) + '宅', `住戶${int(N.households)}戶`, ''],
+      ['空著沒人用', int(N.idle) + '宅',
+        `占全部住宅${N.vacancy.toFixed(1)}%，約每${Math.round(1 / (N.vacancy / 100))}宅有1宅`, 'down'],
+      ['宅戶比', N.perHousehold.toFixed(3),
+        `每100戶家庭對到${(N.perHousehold * 100).toFixed(0)}間住宅`, ''],
+      ['人口成長的縣市', `${t.grew} / 22`,
+        `其中${growingSlack}個的空屋率高於全國平均`, 'up'],
+    ].map(([k, v, s, cls]) =>
+      `<div class="stat"><dt>${k}</dt><dd class="${cls}">${v}</dd><dd class="sub">${s}</dd></div>`
+    ).join('');
+  }
+
+  paint();
+  drawScatter();
+
+  // 22 counties on a 990×1000 frame: ×10 is enough to read嘉義市comfortably.
+  enableMapZoom(svg, { max: 10 });
+})();
+</script>

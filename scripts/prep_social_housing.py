@@ -36,7 +36,7 @@ NOTSTART = '未開辦'
 
 def text_of(pdf):
     if not shutil.which('pdftotext'):
-        sys.exit('需要 pdftotext（poppler-utils）：apt-get install -y poppler-utils')
+        sys.exit('需要pdftotext（poppler-utils）：apt-get install -y poppler-utils')
     with tempfile.TemporaryDirectory() as d:
         txt = pathlib.Path(d) / 'p.txt'
         subprocess.run(['pdftotext', '-layout', str(pdf), str(txt)], check=True,
@@ -45,7 +45,7 @@ def text_of(pdf):
 
 
 def cell(tok):
-    if tok in (DASH, '-', NOTSTART, '─', '—'):
+    if tok in (DASH, '-', NOTSTART, '─', '：'):
         return None
     return int(tok.replace(',', ''))
 
@@ -55,11 +55,12 @@ def main():
         sys.exit(f'缺少來源檔：{PDF}')
     lines = text_of(PDF)
 
-    date = '115 年 7 月 31 日'
+    date = '115年7月31日'
     for ln in lines:
         m = re.search(r'資料日期：\s*(\d+\s*年\s*\d+\s*月\s*\d+\s*日)', ln)
         if m:
-            date = re.sub(r'\s+', ' ', m.group(1))
+            # PDF 的文字層在數字之間夾了空白，中文日期不留空格，整個收掉
+            date = re.sub(r'\s+', '', m.group(1))
             break
 
     # 六都的縣市名獨占一列（下一列才是數字），其餘縣市名與數字同列。
@@ -88,7 +89,7 @@ def main():
     # 逐欄與小計對帳：欄序錯了這裡一定會爆。
     for j, label in enumerate(ROUNDS):
         got = sum(r[j] or 0 for r in rows.values())
-        assert got == subtotal[j], f'{label} 加總 {got} ≠ 小計 {subtotal[j]}'
+        assert got == subtotal[j], f'{label}加總{got} ≠ 小計{subtotal[j]}'
 
     grand = None
     for ln in lines:
@@ -144,15 +145,15 @@ def main():
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')),
                    encoding='utf-8')
 
-    print(f'{OUT.relative_to(ROOT)}：{len(COUNTIES) - len(missing)} 個縣市有資料，'
-          f'{len(missing)} 個未列（{"、".join(missing)}）')
-    print(f'  資料日期 {date}')
-    print(f'  累計媒合 {grand:,} 戶　有效契約 {live:,} 戶（{data["national"]["liveShare"]}%）')
-    print(f'  全國每千家戶 {data["national"]["per1000"]} 戶')
+    print(f'{OUT.relative_to(ROOT)}：{len(COUNTIES) - len(missing)}個縣市有資料，'
+          f'{len(missing)}個未列（{"、".join(missing)}）')
+    print(f'資料日期{date}')
+    print(f'累計媒合{grand:,}戶　有效契約{live:,}戶（{data["national"]["liveShare"]}%）')
+    print(f'全國每千家戶{data["national"]["per1000"]}戶')
     top = sorted((c for c in counties if c['per1000']), key=lambda c: -c['per1000'])
     for c in top[:5]:
-        print(f'  {c["name"]:5s}{c["per1000"]:>7.2f} 戶/千家戶　累計 {c["matched"]:>7,}')
-    print(f'  最低：' + '、'.join(f'{c["name"]} {c["per1000"]}' for c in top[-3:]))
+        print(f'  {c["name"]:5s}{c["per1000"]:>7.2f}戶/千家戶　累計{c["matched"]:>7,}')
+    print(f'最低：' + '、'.join(f'{c["name"]}{c["per1000"]}' for c in top[-3:]))
 
 
 if __name__ == '__main__':

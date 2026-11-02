@@ -1,0 +1,245 @@
+{
+ "type": "object",
+ "required": [
+  "counties",
+  "national",
+  "period",
+  "quadrants",
+  "source",
+  "vacancyCut"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "households",
+     "houses",
+     "idle",
+     "margin",
+     "name",
+     "occasional",
+     "occupied",
+     "otherUse",
+     "perHousehold",
+     "quadrant",
+     "unoccupied",
+     "vacancy"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "households": {
+      "type": "integer"
+     },
+     "houses": {
+      "type": "integer"
+     },
+     "idle": {
+      "type": "integer"
+     },
+     "margin": {
+      "type": "number"
+     },
+     "name": {
+      "type": "string"
+     },
+     "occasional": {
+      "type": "integer"
+     },
+     "occupied": {
+      "type": "integer"
+     },
+     "otherUse": {
+      "type": "integer"
+     },
+     "perHousehold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10
+     },
+     "quadrant": {
+      "type": "string"
+     },
+     "unoccupied": {
+      "type": "integer"
+     },
+     "vacancy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "households",
+    "houses",
+    "idle",
+    "occasional",
+    "occupied",
+    "otherUse",
+    "perHousehold",
+    "unoccupied",
+    "vacancy"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "households": {
+     "type": "integer"
+    },
+    "houses": {
+     "type": "integer"
+    },
+    "idle": {
+     "type": "integer"
+    },
+    "occasional": {
+     "type": "integer"
+    },
+    "occupied": {
+     "type": "integer"
+    },
+    "otherUse": {
+     "type": "integer"
+    },
+    "perHousehold": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 10
+    },
+    "unoccupied": {
+     "type": "integer"
+    },
+    "vacancy": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    }
+   }
+  },
+  "period": {
+   "type": "string"
+  },
+  "quadrants": {
+   "type": "object",
+   "required": [
+    "slack_growing",
+    "slack_shrinking",
+    "tight_growing",
+    "tight_shrinking"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "slack_growing": {
+     "type": "object",
+     "required": [
+      "act",
+      "cond",
+      "key",
+      "label"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "act": {
+       "type": "string"
+      },
+      "cond": {
+       "type": "string"
+      },
+      "key": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      }
+     }
+    },
+    "slack_shrinking": {
+     "type": "object",
+     "required": [
+      "act",
+      "cond",
+      "key",
+      "label"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "act": {
+       "type": "string"
+      },
+      "cond": {
+       "type": "string"
+      },
+      "key": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      }
+     }
+    },
+    "tight_growing": {
+     "type": "object",
+     "required": [
+      "act",
+      "cond",
+      "key",
+      "label"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "act": {
+       "type": "string"
+      },
+      "cond": {
+       "type": "string"
+      },
+      "key": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      }
+     }
+    },
+    "tight_shrinking": {
+     "type": "object",
+     "required": [
+      "act",
+      "cond",
+      "key",
+      "label"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "act": {
+       "type": "string"
+      },
+      "cond": {
+       "type": "string"
+      },
+      "key": {
+       "type": "string"
+      },
+      "label": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "source": {
+   "type": "string"
+  },
+  "vacancyCut": {
+   "type": "number"
+  }
+ },
+ "title": "tw_housing.json"
+}

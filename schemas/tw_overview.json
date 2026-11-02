@@ -1,0 +1,235 @@
+{
+ "type": "object",
+ "required": [
+  "built",
+  "headline",
+  "pages",
+  "reading",
+  "sources"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "built": {
+   "type": "object",
+   "required": [
+    "counties",
+    "pages",
+    "sources",
+    "towns"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "counties": {
+     "type": "integer"
+    },
+    "pages": {
+     "type": "integer"
+    },
+    "sources": {
+     "type": "integer"
+    },
+    "towns": {
+     "type": "integer"
+    }
+   }
+  },
+  "headline": {
+   "type": "object",
+   "required": [
+    "band",
+    "burden",
+    "households",
+    "houses",
+    "idle",
+    "moiLabel",
+    "moiNow",
+    "pct",
+    "pir",
+    "popNow",
+    "popPeak",
+    "popYear",
+    "rentMarket",
+    "rentN",
+    "rentPeriod",
+    "rentPing",
+    "rentSocial",
+    "rentWhole",
+    "shLive",
+    "shMatched",
+    "shbDone",
+    "shbTotal",
+    "vacancy"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "burden": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 200
+    },
+    "households": {
+     "type": "integer"
+    },
+    "houses": {
+     "type": "integer"
+    },
+    "idle": {
+     "type": "integer"
+    },
+    "moiLabel": {
+     "type": "string"
+    },
+    "moiNow": {
+     "type": "number"
+    },
+    "pct": {
+     "type": "number",
+     "minimum": -100,
+     "maximum": 1000
+    },
+    "pir": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    },
+    "popNow": {
+     "type": "integer"
+    },
+    "popPeak": {
+     "type": "integer"
+    },
+    "popYear": {
+     "type": "integer"
+    },
+    "shLive": {
+     "type": "integer"
+    },
+    "shMatched": {
+     "type": "integer"
+    },
+    "vacancy": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    },
+    "shbDone": {
+     "type": "integer"
+    },
+    "shbTotal": {
+     "type": "integer"
+    },
+    "rentWhole": {
+     "type": "integer"
+    },
+    "rentPing": {
+     "type": "integer"
+    },
+    "rentSocial": {
+     "type": "integer"
+    },
+    "rentMarket": {
+     "type": "integer"
+    },
+    "rentN": {
+     "type": "integer"
+    },
+    "rentPeriod": {
+     "type": "string"
+    },
+    "band": {
+     "type": "string"
+    }
+   }
+  },
+  "pages": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "asks",
+     "file",
+     "note",
+     "says",
+     "title",
+     "unit"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "asks": {
+      "type": "string"
+     },
+     "file": {
+      "type": "string"
+     },
+     "note": {
+      "type": "string"
+     },
+     "says": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     },
+     "unit": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "reading": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "h",
+     "p"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "h": {
+      "type": "string"
+     },
+     "p": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "sources": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "have",
+     "name",
+     "org",
+     "period",
+     "unit",
+     "use"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "have": {
+      "type": "boolean"
+     },
+     "name": {
+      "type": "string"
+     },
+     "org": {
+      "type": "string"
+     },
+     "period": {
+      "type": "string"
+     },
+     "unit": {
+      "type": "string"
+     },
+     "use": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ },
+ "title": "tw_overview.json"
+}

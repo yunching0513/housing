@@ -99,7 +99,7 @@ def polygons(geom):
 
 def main():
     if not SRC.exists():
-        sys.exit(f'缺少 {SRC}')
+        sys.exit(f'缺少{SRC}')
     src = json.loads(SRC.read_text(encoding='utf-8'))
 
     merged, dropped, sea_merges = {}, 0, 0
@@ -138,10 +138,10 @@ def main():
                               separators=(',', ':')), encoding='utf-8')
 
     pts = sum(len(r) for t in towns for r in t['rings'])
-    print(f'鄉鎮市區 {len(towns)} 個 ・ 環 {sum(len(t["rings"]) for t in towns)} ・ 點 {pts:,}')
-    print(f'合併海域圖塊 {sea_merges} 個 ・ 移除小島礁 {dropped} 個')
+    print(f'鄉鎮市區{len(towns)}個 ・ 環{sum(len(t["rings"]) for t in towns)} ・ 點{pts:,}')
+    print(f'合併海域圖塊{sea_merges}個 ・ 移除小島礁{dropped}個')
     print(f'{OUT.name}: {OUT.stat().st_size / 1024:.0f} KB')
-    print(f'範圍 lon[{b[0]:.3f},{b[2]:.3f}] lat[{b[1]:.3f},{b[3]:.3f}]')
+    print(f'範圍lon[{b[0]:.3f},{b[2]:.3f}] lat[{b[1]:.3f},{b[3]:.3f}]')
 
     census = ROOT / 'data' / 'town_census_keys.json'
     if census.exists():

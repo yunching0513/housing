@@ -1,0 +1,131 @@
+{
+ "type": "object",
+ "required": [
+  "asOf",
+  "counties",
+  "measure",
+  "national",
+  "notListed",
+  "roundLabels",
+  "source"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "asOf": {
+   "type": "string"
+  },
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "households",
+     "latest",
+     "listed",
+     "matched",
+     "name",
+     "per1000",
+     "rounds"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "households": {
+      "type": "integer"
+     },
+     "latest": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "listed": {
+      "type": "boolean"
+     },
+     "matched": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "name": {
+      "type": "string"
+     },
+     "per1000": {
+      "type": [
+       "null",
+       "number"
+      ]
+     },
+     "rounds": {
+      "type": [
+       "array",
+       "null"
+      ]
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "measure": {
+   "type": "string"
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "byRound",
+    "households",
+    "latest",
+    "live",
+    "liveShare",
+    "matched",
+    "per1000"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "byRound": {
+     "type": "array",
+     "items": {
+      "type": "integer"
+     }
+    },
+    "households": {
+     "type": "integer"
+    },
+    "latest": {
+     "type": "integer"
+    },
+    "live": {
+     "type": "integer"
+    },
+    "liveShare": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    },
+    "matched": {
+     "type": "integer"
+    },
+    "per1000": {
+     "type": "number"
+    }
+   }
+  },
+  "notListed": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "roundLabels": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "source": {
+   "type": "string"
+  }
+ },
+ "title": "tw_social_housing.json"
+}

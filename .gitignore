@@ -11,3 +11,6 @@ _discovery.json
 _pip_manifest.json
 _network.json
 _page.html
+
+# 網站版由 scripts/build.py 產生，CI 部署時現場重建，不入版控
+site/

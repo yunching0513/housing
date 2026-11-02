@@ -1,0 +1,66 @@
+{
+ "tw_housing.json:national.houses": {
+  "label": "住宅總數",
+  "value": 8993149
+ },
+ "tw_housing.json:national.households": {
+  "label": "家戶總數",
+  "value": 8086905
+ },
+ "tw_housing.json:national.idle": {
+  "label": "普查認定沒在使用的住宅",
+  "value": 1173608
+ },
+ "tw_housing.json:national.vacancy": {
+  "label": "普查空屋率",
+  "value": 13.05
+ },
+ "tw_moi_series.json:national.rates.-1": {
+  "label": "最新一期用電低度使用率",
+  "value": 9.44
+ },
+ "tw_social_build.json:national.total.done": {
+  "label": "社宅已完工戶數",
+  "value": 46765
+ },
+ "tw_social_build.json:national.total.total": {
+  "label": "社宅總計戶數",
+  "value": 149360
+ },
+ "tw_social_build.json:national.donePer1000": {
+  "label": "社宅每千戶完工數",
+  "value": 5.78
+ },
+ "tw_social_housing.json:national.matched": {
+  "label": "包租代管累計媒合",
+  "value": 234596
+ },
+ "tw_social_housing.json:national.live": {
+  "label": "包租代管仍有效契約",
+  "value": 116390
+ },
+ "tw_affordability.json:national.pir": {
+  "label": "全國房價所得比",
+  "value": 9.47
+ },
+ "tw_affordability.json:national.burden": {
+  "label": "全國房貸負擔率",
+  "value": 41.46
+ },
+ "tw_pop_series.json:national.-1": {
+  "label": "最新一年常住人口",
+  "value": 23710000
+ },
+ "tw_rent.json:national.rent": {
+  "label": "全國月租金中位數",
+  "value": 15500
+ },
+ "tw_rent.json:national.grid.whole.social.ping": {
+  "label": "社宅包租代管整戶每坪租金",
+  "value": 557
+ },
+ "tw_rent.json:national.grid.whole.nonSocial.ping": {
+  "label": "非社宅整戶每坪租金",
+  "value": 787
+ }
+}

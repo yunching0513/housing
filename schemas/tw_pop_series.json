@@ -1,0 +1,101 @@
+{
+ "type": "object",
+ "required": [
+  "baseIndex",
+  "censusYears",
+  "counties",
+  "national",
+  "prelimYear",
+  "source",
+  "splitNote",
+  "unitNote",
+  "years"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "baseIndex": {
+   "type": "integer"
+  },
+  "censusYears": {
+   "type": "array",
+   "items": {
+    "type": "integer"
+   }
+  },
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "firstYear",
+     "name",
+     "peakYear",
+     "since109",
+     "since109Pct",
+     "splitFrom",
+     "values"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "firstYear": {
+      "type": "integer"
+     },
+     "name": {
+      "type": "string"
+     },
+     "peakYear": {
+      "type": "integer"
+     },
+     "since109": {
+      "type": "integer"
+     },
+     "since109Pct": {
+      "type": "number"
+     },
+     "splitFrom": {
+      "type": [
+       "null",
+       "string"
+      ]
+     },
+     "values": {
+      "type": "array",
+      "items": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      }
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "national": {
+   "type": "array",
+   "items": {
+    "type": "integer"
+   }
+  },
+  "prelimYear": {
+   "type": "integer"
+  },
+  "source": {
+   "type": "string"
+  },
+  "splitNote": {
+   "type": "string"
+  },
+  "unitNote": {
+   "type": "string"
+  },
+  "years": {
+   "type": "array",
+   "items": {
+    "type": "integer"
+   }
+  }
+ },
+ "title": "tw_pop_series.json"
+}

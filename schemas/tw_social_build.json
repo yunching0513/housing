@@ -1,0 +1,355 @@
+{
+ "type": "object",
+ "required": [
+  "asOf",
+  "counties",
+  "definition",
+  "national",
+  "source",
+  "stageLabels"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "asOf": {
+   "type": "string"
+  },
+  "counties": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "awardedPer1000",
+     "central",
+     "centralShare",
+     "donePer1000",
+     "households",
+     "local",
+     "name",
+     "rented",
+     "total",
+     "totalPer1000"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "awardedPer1000": {
+      "type": "number"
+     },
+     "central": {
+      "type": "object",
+      "required": [
+       "awaiting",
+       "awarded",
+       "building",
+       "done",
+       "planning",
+       "total"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "awaiting": {
+        "type": "integer"
+       },
+       "awarded": {
+        "type": "integer"
+       },
+       "building": {
+        "type": "integer"
+       },
+       "done": {
+        "type": "integer"
+       },
+       "planning": {
+        "type": "integer"
+       },
+       "total": {
+        "type": "integer"
+       }
+      }
+     },
+     "centralShare": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+     },
+     "donePer1000": {
+      "type": "number"
+     },
+     "households": {
+      "type": "integer"
+     },
+     "local": {
+      "type": "object",
+      "required": [
+       "awaiting",
+       "awarded",
+       "building",
+       "done",
+       "planning",
+       "total"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "awaiting": {
+        "type": "integer"
+       },
+       "awarded": {
+        "type": "integer"
+       },
+       "building": {
+        "type": "integer"
+       },
+       "done": {
+        "type": "integer"
+       },
+       "planning": {
+        "type": "integer"
+       },
+       "total": {
+        "type": "integer"
+       }
+      }
+     },
+     "name": {
+      "type": "string"
+     },
+     "rented": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "total": {
+      "type": "object",
+      "required": [
+       "awaiting",
+       "awarded",
+       "building",
+       "done",
+       "planning",
+       "total"
+      ],
+      "additionalProperties": false,
+      "properties": {
+       "awaiting": {
+        "type": "integer"
+       },
+       "awarded": {
+        "type": "integer"
+       },
+       "building": {
+        "type": "integer"
+       },
+       "done": {
+        "type": "integer"
+       },
+       "planning": {
+        "type": "integer"
+       },
+       "total": {
+        "type": "integer"
+       }
+      }
+     },
+     "totalPer1000": {
+      "type": "number"
+     }
+    }
+   },
+   "minItems": 22,
+   "maxItems": 22
+  },
+  "definition": {
+   "type": "object",
+   "required": [
+    "已完工",
+    "已決標",
+    "興建中",
+    "規劃中"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "已完工": {
+     "type": "string"
+    },
+    "已決標": {
+     "type": "string"
+    },
+    "興建中": {
+     "type": "string"
+    },
+    "規劃中": {
+     "type": "string"
+    }
+   }
+  },
+  "national": {
+   "type": "object",
+   "required": [
+    "central",
+    "centralShare",
+    "donePer1000",
+    "households",
+    "local",
+    "rented",
+    "rentedLive",
+    "total",
+    "totalPer1000"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "central": {
+     "type": "object",
+     "required": [
+      "awaiting",
+      "awarded",
+      "building",
+      "done",
+      "planning",
+      "total"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "awaiting": {
+       "type": "integer"
+      },
+      "awarded": {
+       "type": "integer"
+      },
+      "building": {
+       "type": "integer"
+      },
+      "done": {
+       "type": "integer"
+      },
+      "planning": {
+       "type": "integer"
+      },
+      "total": {
+       "type": "integer"
+      }
+     }
+    },
+    "centralShare": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 100
+    },
+    "donePer1000": {
+     "type": "number"
+    },
+    "households": {
+     "type": "integer"
+    },
+    "local": {
+     "type": "object",
+     "required": [
+      "awaiting",
+      "awarded",
+      "building",
+      "done",
+      "planning",
+      "total"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "awaiting": {
+       "type": "integer"
+      },
+      "awarded": {
+       "type": "integer"
+      },
+      "building": {
+       "type": "integer"
+      },
+      "done": {
+       "type": "integer"
+      },
+      "planning": {
+       "type": "integer"
+      },
+      "total": {
+       "type": "integer"
+      }
+     }
+    },
+    "rented": {
+     "type": "integer"
+    },
+    "rentedLive": {
+     "type": "integer"
+    },
+    "total": {
+     "type": "object",
+     "required": [
+      "awaiting",
+      "awarded",
+      "building",
+      "done",
+      "planning",
+      "total"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "awaiting": {
+       "type": "integer"
+      },
+      "awarded": {
+       "type": "integer"
+      },
+      "building": {
+       "type": "integer"
+      },
+      "done": {
+       "type": "integer"
+      },
+      "planning": {
+       "type": "integer"
+      },
+      "total": {
+       "type": "integer"
+      }
+     }
+    },
+    "totalPer1000": {
+     "type": "number"
+    }
+   }
+  },
+  "source": {
+   "type": "string"
+  },
+  "stageLabels": {
+   "type": "object",
+   "required": [
+    "awaiting",
+    "awarded",
+    "building",
+    "done",
+    "planning",
+    "total"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "awaiting": {
+     "type": "string"
+    },
+    "awarded": {
+     "type": "string"
+    },
+    "building": {
+     "type": "string"
+    },
+    "done": {
+     "type": "string"
+    },
+    "planning": {
+     "type": "string"
+    },
+    "total": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "title": "tw_social_build.json"
+}

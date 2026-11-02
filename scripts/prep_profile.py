@@ -23,7 +23,7 @@ METRO = {'新北市', '臺北市', '桃園市', '臺中市', '臺南市', '高�
 def load(name):
     p = D / name
     if not p.exists():
-        sys.exit(f'缺少 {p.relative_to(ROOT)}，請先跑對應的 prep 腳本')
+        sys.exit(f'缺少{p.relative_to(ROOT)}，請先跑對應的prep腳本')
     return json.loads(p.read_text(encoding='utf-8'))
 
 
@@ -52,6 +52,8 @@ def main():
     pser = load('tw_pop_series.json')
     town = load('tw_town_data.json')
     sig = load('tw_signal.json')
+    bld = load('tw_social_build.json')
+    rent = load('tw_rent.json')
 
     P = {c['name']: c for c in pop['counties']}
     H = {c['name']: c for c in hou['counties']}
@@ -59,6 +61,8 @@ def main():
     S = {c['name']: c for c in soc['counties']}
     A = {c['name']: c for c in aff['counties']}
     Y = {c['name']: c for c in pser['counties']}
+    B = {c['name']: c for c in bld['counties']}
+    RT = {c['name']: c for c in rent['counties']}
     names = [c['name'] for c in hou['counties']]
 
     i09 = next(i for i, p in enumerate(moi['periods']) if p['short'] == '109H2')
@@ -76,7 +80,8 @@ def main():
 
     rows = []
     for n in names:
-        h, m, a, s, y = H[n], M[n], A[n], S[n], Y[n]
+        h, m, a, s, y, b = H[n], M[n], A[n], S[n], Y[n], B[n]
+        rw = RT[n]['grid']['whole']          # 整棟（戶）出租；分租的月租不能跟整戶並排
         ts = sorted(by_county.get(n, []), key=lambda t: t['vacancy'])
         sg = sig_by.get(n)
         rows.append({
@@ -103,6 +108,22 @@ def main():
             # 包租代管：19 個縣市有辦，其餘為 None 而不是 0
             'shMatched': s['matched'], 'shPer1000': s['per1000'], 'shLatest': s['latest'],
 
+            # 社宅直接興建：已完工是「現在住得進去的」，總計含規劃中所以是承諾不是存量
+            'shbDone': b['total']['done'], 'shbBuilding': b['total']['building'],
+            'shbAwarded': b['total']['awarded'], 'shbPlanning': b['total']['planning'],
+            'shbTotal': b['total']['total'],
+            'shbDonePer1000': b['donePer1000'], 'shbTotalPer1000': b['totalPer1000'],
+            'shbCentralShare': b['centralShare'],
+
+            # 租金（實價登錄 114 年春季視窗）：申報樣本不足 30 筆的一律 None。
+            # 只取整棟（戶）出租，因為分租雅房的月租跟整戶的月租不是同一件事。
+            'rentWhole': rw['all']['rent'], 'rentPing': rw['all']['ping'],
+            'rentArea': rw['all']['area'], 'rentN': RT[n]['n'],
+            'rentSocialPing': rw['social']['ping'],
+            'rentMarketPing': rw['nonSocial']['ping'],
+            'rentGap': (round((rw['nonSocial']['ping'] / rw['social']['ping'] - 1) * 100, 1)
+                        if rw['social']['ping'] and rw['nonSocial']['ping'] else None),
+
             # 負擔能力：連江縣未列，澎湖金門樣本不足
             'pir': a['pir'], 'burden': a['burden'], 'band': a['band'],
             'affThin': a.get('thin', False),
@@ -126,12 +147,15 @@ def main():
     # "1 = the end a housing policy reader would look at first", stated per row.
     RANKED = [
         ('vacancy', True, '空屋率高'), ('perHousehold', True, '宅戶比高'),
-        ('pct', True, '十年人口成長高'), ('since109Pct', True, '109→115 成長高'),
+        ('pct', True, '十年人口成長高'), ('since109Pct', True, '109→115成長高'),
         ('density', True, '人口密度高'), ('houses', True, '住宅存量大'),
         ('moiNow', True, '低度使用率高'), ('moiChange', True, '低度使用上升多'),
         ('pir', True, '房價所得比高'), ('burden', True, '房貸負擔率高'),
         ('shPer1000', True, '包租代管每千家戶多'), ('shMatched', True, '包租代管累計多'),
+        ('shbDonePer1000', True, '社宅已完工每千家戶多'),
+        ('shbTotalPer1000', True, '社宅總計每千家戶多'),
         ('spread', True, '內部差距大'), ('sigRatio', True, '白天淨流入多'),
+        ('rentWhole', True, '整戶月租金高'), ('rentPing', True, '每坪租金高'),
     ]
     rank_meta = {}
     for key, desc, label in RANKED:
@@ -153,17 +177,28 @@ def main():
         'pir': aff['national']['pir'], 'burden': aff['national']['burden'],
         'band': aff['national']['band'],
         'shPer1000': soc['national']['per1000'], 'shMatched': soc['national']['matched'],
+        'shbDone': bld['national']['total']['done'],
+        'shbTotal': bld['national']['total']['total'],
+        'shbDonePer1000': bld['national']['donePer1000'],
+        'shbTotalPer1000': bld['national']['totalPer1000'],
+        'shbCentralShare': bld['national']['centralShare'],
         'shLive': soc['national']['live'], 'shLiveShare': soc['national']['liveShare'],
         'popSeries': pser['national'],
         'sigRatio': round(sig['national']['dayWork'] / sig['national']['nightWork'], 3),
         'density': round(pop['totals']['p109'] / 36197, 1),
+        'rentWhole': rent['national']['grid']['whole']['all']['rent'],
+        'rentPing': rent['national']['grid']['whole']['all']['ping'],
+        'rentArea': rent['national']['grid']['whole']['all']['area'],
+        'rentSocialPing': rent['national']['grid']['whole']['social']['ping'],
+        'rentMarketPing': rent['national']['grid']['whole']['nonSocial']['ping'],
     }
 
     data = {
         'periods': {
-            'census': '民國 109 年 11 月', 'moi': moi['periods'][last]['label'],
-            'social': soc['asOf'], 'afford': aff['period'],
-            'signal': sig['period'], 'pop': f"{pser['years'][-1]} 年",
+            'census': '民國109年11月', 'moi': moi['periods'][last]['label'],
+            'social': soc['asOf'], 'build': bld['asOf'], 'afford': aff['period'],
+            'signal': sig['period'], 'pop': f"{pser['years'][-1]}年",
+            'rent': rent['period'],
         },
         'moiPeriods': [p['short'] for p in moi['periods']],
         'moiMethods': [p['method'] for p in moi['periods']],
@@ -182,14 +217,16 @@ def main():
                    encoding='utf-8')
 
     kb = len(OUT.read_bytes()) / 1024
-    print(f'{OUT.relative_to(ROOT)}：{len(rows)} 縣市 × {len(RANKED)} 項排名，{kb:.0f} KB')
-    print(f'  未辦包租代管：{"、".join(data["notes"]["social"]) or "無"}')
-    print(f'  無負擔能力資料：{"、".join(data["notes"]["afford"]) or "無"}'
+    print(f'{OUT.relative_to(ROOT)}：{len(rows)}縣市 × {len(RANKED)}項排名，{kb:.0f} KB')
+    print(f'未辦包租代管：{"、".join(data["notes"]["social"]) or "無"}')
+    print(f'無負擔能力資料：{"、".join(data["notes"]["afford"]) or "無"}'
           f'　樣本不足：{"、".join(data["notes"]["affordThin"]) or "無"}')
     sp = [r for r in rows if r['spread']]
-    print(f'  內部差距最大：' + '、'.join(
-        f'{r["name"]} {r["spread"]}倍' for r in sorted(sp, key=lambda r: -r['spread'])[:3]))
-    print(f'  全國中位空屋率 {statistics.median(r["vacancy"] for r in rows):.2f}%')
+    print(f'內部差距最大：' + '、'.join(
+        f'{r["name"]}{r["spread"]}倍' for r in sorted(sp, key=lambda r: -r['spread'])[:3]))
+    print(f'全國中位空屋率{statistics.median(r["vacancy"] for r in rows):.2f}%')
+    nr = sum(1 for r in rows if r['rentWhole'] is not None)
+    print(f'有整戶租金中位數的縣市：{nr}個（其餘申報樣本不足{rent["minSample"]}筆）')
 
 
 if __name__ == '__main__':

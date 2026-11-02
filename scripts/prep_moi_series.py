@@ -41,8 +41,8 @@ for p in PERIODS:
                    'recomputed' if p['year'] <= 109 else 'direct')
     p['short'] = f"{p['year']}{'' if p['half'] is None else ('H%d' % p['half'])}"
 
-SIZE_LABELS = ['20 坪以下', '20–40 坪', '40–60 坪', '60–100 坪', '100 坪以上']
-AGE_LABELS = ['5 年以下', '5–10 年', '10–20 年', '20–30 年', '30–40 年', '40–50 年', '50 年以上']
+SIZE_LABELS = ['20坪以下', '20–40坪', '40–60坪', '60–100坪', '100坪以上']
+AGE_LABELS = ['5年以下', '5–10年', '10–20年', '20–30年', '30–40年', '40–50年', '50年以上']
 RECENT = ['113H2', '114H1', '114H2']          # the three periods 表 6/7/8–15 carry
 
 # 表 8–15 are one county each, in this order.
@@ -56,7 +56,7 @@ def text_of(pdf):
     """pdftotext -layout keeps the column alignment, which is the only thing
     holding these tables together: the PDF has no table structure at all."""
     if not shutil.which('pdftotext'):
-        sys.exit('需要 pdftotext（poppler-utils）：apt-get install -y poppler-utils')
+        sys.exit('需要pdftotext（poppler-utils）：apt-get install -y poppler-utils')
     with tempfile.TemporaryDirectory() as d:
         txt = pathlib.Path(d) / 'b.txt'
         subprocess.run(['pdftotext', '-layout', str(pdf), str(txt)], check=True,
@@ -110,18 +110,18 @@ def main():
     # 表 1 — the long series, 23 periods per area.
     t1 = rows_after(lines, find(lines, r'^表1\s'), len(PERIODS), set(AREAS))
     missing = [a for a in AREAS if a not in t1]
-    assert not missing, f'表1 缺少：{missing}'
+    assert not missing, f'表1缺少：{missing}'
 
     # 表 2 — stock and count, so the page can say "幾宅" not just "百分之幾".
     t2 = rows_after(lines, find(lines, r'^表2\s'), 15, set(AREAS))
-    assert len(t2) == len(AREAS), f'表2 只讀到 {len(t2)} 列'
+    assert len(t2) == len(AREAS), f'表2只讀到{len(t2)}列'
 
     t6 = rows_after(lines, find(lines, r'^表6\s'), 15, set(AREAS))
     t7 = rows_after(lines, find(lines, r'^表7\s|^表7\s+\d+\s*$'), 21, set(AREAS))
     if len(t7) != len(AREAS):                      # 表 7's caption wraps oddly
         t7 = rows_after(lines, find(lines, r'依屋齡分'), 21, set(AREAS))
-    assert len(t6) == len(AREAS), f'表6 只讀到 {len(t6)} 列'
-    assert len(t7) == len(AREAS), f'表7 只讀到 {len(t7)} 列'
+    assert len(t6) == len(AREAS), f'表6只讀到{len(t6)}列'
+    assert len(t7) == len(AREAS), f'表7只讀到{len(t7)}列'
 
     # 表 8–15 — the same three periods, one row per 行政區.
     districts, cursor = [], 0
@@ -145,8 +145,8 @@ def main():
 
     data = {
         'source': '內政部不動產資訊平台《低度使用(用電)住宅、待售新成屋統計資訊簡冊》'
-                  '115 年 7 月出刊，資料期 114 年下半年',
-        'definition': '低度使用(用電)住宅：當期 11、12 月抄表之平均用電度數 60 度以下者。'
+                  '115年7月出刊，資料期114年下半年',
+        'definition': '低度使用(用電)住宅：當期11、12月抄表之平均用電度數60度以下者。'
                       '與普查「目前沒有使用」是兩套不同的認定。',
         'matchRate': 81.67,
         'periods': PERIODS,
@@ -175,7 +175,7 @@ def main():
     for area in AREAS:
         a = [t2[area][i * 3 + 2] for i in range(5)]
         b = t1[area][-5:]
-        assert a == b, f'{area} 表1 與表2 比率不一致：{a} vs {b}'
+        assert a == b, f'{area}表1與表2比率不一致：{a} vs {b}'
 
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')),
                    encoding='utf-8')
@@ -183,11 +183,11 @@ def main():
     nat = t1['全國']
     lo = min(range(len(nat)), key=lambda i: nat[i])
     hi = max(range(len(nat)), key=lambda i: nat[i])
-    print(f'{OUT.relative_to(ROOT)}：{len(PERIODS)} 期 × {len(AREAS)} 地區，'
-          f'{len(districts)} 個行政區近三期')
-    print(f'  全國 {PERIODS[0]["label"]} {nat[0]}% → {PERIODS[-1]["label"]} {nat[-1]}%')
-    print(f'  最低 {PERIODS[lo]["label"]} {nat[lo]}%　最高 {PERIODS[hi]["label"]} {nat[hi]}%')
-    print(f'  新屋（5 年以下）{" → ".join(f"{r}%" for r in data["national"]["byAge"][0]["rates"])}')
+    print(f'{OUT.relative_to(ROOT)}：{len(PERIODS)}期 × {len(AREAS)}地區，'
+          f'{len(districts)}個行政區近三期')
+    print(f'全國{PERIODS[0]["label"]}{nat[0]}% → {PERIODS[-1]["label"]}{nat[-1]}%')
+    print(f'最低{PERIODS[lo]["label"]}{nat[lo]}%　最高{PERIODS[hi]["label"]}{nat[hi]}%')
+    print(f'新屋（5年以下）{" → ".join(f"{r}%" for r in data["national"]["byAge"][0]["rates"])}')
 
 
 if __name__ == '__main__':
