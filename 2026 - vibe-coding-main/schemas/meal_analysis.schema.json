@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MealAnalysis",
+  "description": "餐點照片分析的回傳形狀。這份檔案是唯一的事實來源；不准新增欄位。",
+  "type": "object",
+  "required": ["calories_kcal", "protein_g", "is_food", "confidence", "limitations"],
+  "additionalProperties": false,
+  "properties": {
+    "calories_kcal": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5000,
+      "description": "整數。算不出來就給 0 並在 limitations 說明，不要編數字。"
+    },
+    "protein_g": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "is_food": {
+      "type": "boolean",
+      "description": "能力邊界寫在型別裡：不是餐點時必須為 false，由 use case 拒絕。"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "誠實度。看不清楚就要降下來，不要一律 0.99。"
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "模型自己招認看不清楚的部分。比假裝全算到更能建立信任。"
+    },
+    "rejected_reason": {
+      "type": ["string", "null"],
+      "description": "is_food 為 false 時的友善說明；正常情況為 null。"
+    }
+  }
+}
