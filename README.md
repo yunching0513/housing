@@ -472,6 +472,7 @@ node scripts/fetch_pip_browser.mjs --url "https://pip.moi.gov.tw/Publicize/Info/
 | `data/sources/112年11月行政區電信信令人口統計_鄉鎮市區.csv` | SEGIS，112 年 11 月 |
 | `data_TW/2026_社會住宅興辦情形/` | 國土管理署，115 年 7 月 31 日，全國彙整表＋22 縣市總表 |
 | `data_TW/99-115 不動產買賣及租賃/` | 內政部實價登錄逐筆交易，99–115 年，4.2 GB |
+| `data_TW/08_家庭收支調查/原始xls下載/` | 主計總處，原始 xls 下載 4 組共 75 檔，年度對應與內容重疊待查證 |
 
 #### 兩期行政區的對齊
 
