@@ -21,7 +21,6 @@ on:
   push:
     branches:
       - main
-      - claude/taiwan-population-growth-map-ig103q
   workflow_dispatch:
 
 permissions:
